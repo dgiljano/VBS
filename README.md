@@ -8,7 +8,7 @@ For this part the following CMSSW version was used: CMSSW_8_0_26_patch1
 The folder must be included in the src directory.
 The following instructions are necessary.
 
-To change the discriminant: src/run_makeZX.cpp
+The discriminant is defined in: src/run_makeZX.cpp
 
 cd ext/
 

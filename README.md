@@ -1,9 +1,24 @@
 # vbs_analysis
 The repository contains the principal files used in the analysis.
 
-4l channel, ZX data driven MC
+<b> 4l channel, ZX data driven MC
 
+For this part the following CMSSW version was used: CMSSW_8_0_26_patch1
 
+The folder must be included in the src directory.
+The following instructions are necessary.
+
+To change the discriminant:
+src/run_makeZX.cpp
+
+cd ext/
+sh compile_ext.sh
+cd ..
+source set_library.sh
+make run_makeZX
+./run_makeZX
+
+The necessary variables (ZZMass dbkg_kin weight) will be stored in ZX.root
 
 4l channel
 

@@ -1,7 +1,7 @@
 # vbs_analysis
 The repository contains the principal files used in the analysis.
 
-<b> 4l channel, ZX data driven MC <b>
+<b> 4l channel, ZX data driven MC </b>
 
 For this part the following CMSSW version was used: CMSSW_8_0_26_patch1
 
@@ -20,7 +20,7 @@ make run_makeZX
 
 The necessary variables (ZZMass dbkg_kin weight) will be stored in ZX.root
 
-<b> 4l channel <b>
+<b> 4l channel </b>
 
 plotter.c -> The file reads 4l MC + data (from relevant repositories), togetherwith the data drive zx component, contained in the zx.root file. It performs relevant selection, mela cuts, kin_variable generation. The output is the 1D histogram portarying all contributions.
 
@@ -30,7 +30,7 @@ bkg_Workspace.c -> Generation of templates for signal and background (devided by
 
 zx.c -> Reads the ZX.root file, which is the final step of the data-driven ZX monte carlo generation procedure. The output file is zx.root (taken in input by plotter.c and new_plotter.c as explained above).
 
-<b> 2l2q channel <b>
+<b> 2l2q channel </b>
 
 For this part the following CMSSW version was used: CMSSW_8_0_26_patch1
 
@@ -40,6 +40,6 @@ bkgWorkspace_2l2q.c -> Generation of templates for signal and background. The te
 
 alpha.C -> This file has the same structure of the plotMC.c file. It embeds the alpha method used for the the DY component treatment, by operations with 1D histograms. The default output is the whole set of possible 1D plots (all possible contributions and variables). 
 
-<b> note <b>
+<b> note </b>
 
 These are the single files, and the most complete version I was able to find. However I've included a .tar compressed file of the complete directories (quite messy, but containing a long list of different file versions, data cards, plots and so on). It may be useful in case there is some file not included in the above list, but which is used somewhere in the code.

@@ -26,6 +26,8 @@ The necessary variables (ZZMass dbkg_kin weight) will be stored in ZX.root
 
 <b> 4l channel </b>
 
+For this part the following CMSSW version was used: CMSSW_7_4_7
+
 plotter.c -> The file reads 4l MC + data (from relevant repositories), togetherwith the data drive zx component, contained in the zx.root file. It performs relevant selection, mela cuts, kin_variable generation. The output is the 1D histogram portarying all contributions.
 
 new_plotter.c -> Same functions as the previous file, with the exclusion of 1D histogram generation. In addition the file enables the user to generate the mass+kin_variable 2D histograms and to save them on a dedicated root file.
@@ -43,6 +45,10 @@ plotMC.c -> This file is based on Roberto's original 1D template generator for t
 bkgWorkspace_2l2q.c -> Generation of templates for signal and background. The templates are created at workspace level and saved accordingly. The file creates the templates for both the merged and the resolved components. However, since COMBINE requires the two contributions to be saved on two different files, it is necessarry to comment the lines (at the end of the file) where the unwanted templates are imported on the workspace. As can be seen, in this file version this is done for the merged component.
 
 alpha.C -> This file has the same structure of the plotMC.c file. It embeds the alpha method used for the the DY component treatment, by operations with 1D histograms. The default output is the whole set of possible 1D plots (all possible contributions and variables). 
+
+<b> COMBINE </b>
+
+
 
 <b> note </b>
 

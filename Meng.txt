@@ -1,0 +1,88 @@
+----- For looking for the root file
+xrd lxcms03
+dirlist /data3/Higgs/170222
+
+qqZZ /data3/Higgs/170222/ZZTo4l
+ZX see below
+ggZZ+H125(ggH)+I /data3/Higgs/171005/ggTo4mu_0PMH125Contin_MCFM701
+VBS+H125(VBF)+I /data3/Higgs/170222/VBFTo4eJJ_0PMH125Contin_phantom128
+data /data3/Higgs/170222/AllData
+
+to open and read the files,
+TFile *input_file= TFile::Open("root://lxcms03://data3/Higgs/170222/ZZTo4l/ZZ4lAnalysis.root");
+
+--- Building Discriminant and workspace
+
+The full code is here
+https://github.com/meng-xiao/Highmass
+The README explains the neccessary steps, for bkg, you can follow the instructions, i.e. up to runbkg.sh
+
+for signal, you can do mush simpler.
+
+
+
+
+
+What's relavent is to create the 2D template and put them in the workspace. For qqZZ, it's straightforward.
+This code create the tree that contains the final variables "ZZMass dbkg_kin weight", for different final state (chan) and different vbf category (vbfcate)
+https://github.com/meng-xiao/Highmass/blob/master/qqzz.c
+
+Here https://github.com/meng-xiao/Highmass/blob/master/qqzz.c#L109
+dbkg_kin = p0plus_VAJHU/(p0plus_VAJHU + bkg_VAMCFM*getDbkgkinConstant(ZZFlav, ZZMass));
+replace p0plus_VAJHU by p_JJEW_BKG_MCFM_JECNominal or p_JJVBF_BKG_MCFM_JECNominal
+
+Afterwards you will get the qqzz_80_Moriond.root file, now you can dump the 2D histograms for different chan and vbfcate, and put them in a workspace
+
+
+
+
+
+
+
+The same works for zx and data, there are seperate *.c files for them in the repo.
+
+Importing to workspace, code is below, which includes qqzz, zx and data, it's a bit messy
+https://github.com/meng-xiao/Highmass/blob/master/bkgWorkspace.c
+
+For VBS signal, the following lines are all you need, remember to swap T1 and T2 inputs as we discussed this morning, pdfsig_hist_func should be some templates you extract from VBF Higgs sample, something like /data3/Higgs/170222/VBFTo4eJJ_0PMH125_phantom128, hgenm_func is from VBS only, something like VBFTo4eJJ_Contin_phantom12, and interference extracted the above two from the VBFTo4eJJ_0PMH125Contin_phantom128. 
+
+I think it's better for you to just use the xsec stored in the trees (which is SM prediction), so that the final limit of mu corresponds to the signal strength of the VBS, and you can compare that to 1 to see the sensitivity to the SM prediction.
+
+https://github.com/meng-xiao/Highmass/blob/master/construct_4l.c#L667-L677
+
+https://github.com/meng-xiao/Highmass/blob/master/construct_4l.c#L704
+
+We also have the ggH component in the datacards, which now is no long a singal but a bkg, so you can just create the 2D templates as you do for qqZZ, you can directly use this sample /data3/Higgs/171005/ggTo4mu_0PMH125Contin_MCFM701
+
+---------ZX
+git clone https://github.com/meng-xiao/HZZ4l-plotter.git
+git checkout Moriond-2017
+cd ext/
+sh compile_ext.sh
+cd ..
+source set_library.sh
+make run_makeZX
+./run_makeZX
+
+To change the discriminant dbkg_kin, go to
+src/run_makeZX.cpp
+
+The following variables will be stored in ZX.root
+ZZMass dbkg_kin weight
+The variables chan, vbfcate are going to be useful to dump histograms in different categories
+
+---- DataCards
+checkout my combine package where highmass models and so on are added
+
+git clone git@github.com:meng-xiao/HiggsAnalysis-CombinedLimit.git
+git checkout highmass
+
+The datacards can be found here
+https://github.com/meng-xiao/Highmass/blob/master/cards/hzz4l_all_13TeV.txt
+
+For you analysis you need to remove ch2_ch1_ch3 ch3_ch1_ch3
+and replace the input file names if you create new ones.
+
+To run the xsec or mu limit, just follow the README file. Make sure you did cmsenv on the combine area above.
+https://github.com/meng-xiao/Highmass/blob/master/cards/README
+

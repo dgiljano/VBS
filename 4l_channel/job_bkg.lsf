@@ -1,0 +1,7 @@
+workdir=/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass
+cd ..
+eval `scramv1 runtime -sh`
+cd $workdir
+root -q -b "bkgWorkspace.c(\"$1\",$2,$3,$4)"
+#root -q -b "bkgWorkspace2.c(\"$1\",$2,$3,$4)"
+

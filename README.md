@@ -75,4 +75,4 @@ combine -M ProfileLikelihood --significance card_name.txt
 
 <b> note </b>
 
-These are the single files, and the most complete version I was able to find. However I've included a .tar compressed file of the complete directories (quite messy, but containing a long list of different file versions, data cards, plots and so on). It may be useful in case there is some file not included in the above list, but which is used somewhere in the code.
+These are the single files, and the most complete version I was able to find. However I've included .tar compressed file of the complete directories here: https://www.dropbox.com/sh/mahvupqcauchx53/AAAhKMKCSfl-Bhsw1uwJo5HQa?dl=0 (quite messy, but containing a long list of different file versions, data cards, plots and so on). It may be useful in case there is some file not included in the above list, but which is used somewhere in the code.

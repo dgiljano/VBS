@@ -54,7 +54,7 @@ source runbkg_2l2q.sh
 
 alpha.C -> This file has the same structure of the plotMC.c file. It embeds the alpha method used for the the DY component treatment, by operations with 1D histograms. The default output is the whole set of possible 1D plots (all possible contributions and variables). 
 
-<b> COMBINE </b>
+<b> Combine </b>
 
 To combine multiple cards: 
 
@@ -73,6 +73,6 @@ To run the likelihood analysis (observed significance):
 combine -M ProfileLikelihood --significance card_name.txt 
 
 
-<b> note </b>
+<b> Note </b>
 
 These are the single files, and the most complete version I was able to find. However I've included .tar compressed file of the complete directories here: https://www.dropbox.com/sh/mahvupqcauchx53/AAAhKMKCSfl-Bhsw1uwJo5HQa?dl=0 (quite messy, but containing a long list of different file versions, data cards, plots and so on). It may be useful in case there is some file not included in the above list, but which is used somewhere in the code.

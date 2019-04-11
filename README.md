@@ -56,7 +56,7 @@ alpha.C -> This file has the same structure of the plotMC.c file. It embeds the 
 
 <b> Combine </b>
 
-All cards can be found in the COMBINATION_FOLDER, with sub-direcotries for simgle channels and combination of channels. I suggest a double check on the systematics and whether all channels and processes are correctly included/positioned in the right column etc. The following are the Combine commands which I used:
+All cards can be found in the COMBINATION_FOLDER, with sub-directories for single channels and combination of channels. I suggest a double check on the systematics and whether all channels and processes are correctly included/positioned in the right column etc. The following are the Combine commands which I used:
 
 
 To combine multiple cards: 

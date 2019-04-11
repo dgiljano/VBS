@@ -76,3 +76,5 @@ combine -M ProfileLikelihood --significance card_name.txt
 <b> Note </b>
 
 These are the single files, and the most complete version I was able to find. However I've included .tar compressed file of the complete directories here: https://www.dropbox.com/sh/mahvupqcauchx53/AAAhKMKCSfl-Bhsw1uwJo5HQa?dl=0 (quite messy, but containing a long list of different file versions, data cards, plots and so on). It may be useful in case there is some file not included in the above list, but which is used somewhere in the code.
+
+The Meng.txt contains the instructions that Meng gave me at our CERN meeting last Spring. 

@@ -48,6 +48,14 @@ alpha.C -> This file has the same structure of the plotMC.c file. It embeds the 
 
 <b> COMBINE </b>
 
+To combine multiple cards: 
+combineCards.py Name1=old_card1.txt Name2=old_card2.txt .... > new_card.txt
+To run the likelihood analysis (expected significance, without systematics): 
+combine -M ProfileLikelihood --significance card_name.txt -t -1 --expectSignal=1 -S 0 --toysFreq
+To run the likelihood analysis (expected significance, with systematics): 
+combine -M ProfileLikelihood --significance card_name.txt -t -1 --expectSignal=1 -S 1 --toysFreq
+To run the likelihood analysis (observed significance): 
+combine -M ProfileLikelihood --significance card_name.txt 
 
 
 <b> note </b>

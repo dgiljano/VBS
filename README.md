@@ -28,7 +28,7 @@ The necessary variables (ZZMass dbkg_kin weight) will be stored in ZX.root
 
 For this part the following CMSSW version was used: CMSSW_7_4_7
 
-plotter.c -> The file reads 4l MC + data (from relevant repositories), togetherwith the data drive zx component, contained in the zx.root file. It performs relevant selection, mela cuts, kin_variable generation. The output is the 1D histogram portarying all contributions.
+plotter.c -> The file reads 4l MC + data (from relevant repositories), togetherwith the data driven zx component, contained in the zx.root file. It performs relevant selection, mela cuts, kin_variable generation. The output is the 1D histogram portarying all contributions.
 
 new_plotter.c -> Same functions as the previous file, with the exclusion of 1D histogram generation. In addition the file enables the user to generate the mass+kin_variable 2D histograms and to save them on a dedicated root file.
 

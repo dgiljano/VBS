@@ -5,8 +5,8 @@ The repository contains the principal files used in the analysis.
 
 For this part the following CMSSW version was used: CMSSW_8_0_26_patch1
 
-The folder must be included in the src directory.
-The following instructions are necessary.
+The folder data_driven_MC must be included in the src directory.
+The following instructions are necessary:
 
 The discriminant is defined in: src/run_makeZX.cpp
 

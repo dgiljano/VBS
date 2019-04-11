@@ -1,0 +1,5 @@
+workdir=/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/2l2j/CMSSW_8_0_26_patch1/src/ZZAnalysis/Plotter
+cd ..
+eval `scramv1 runtime -sh`
+cd $workdir
+root -q -b "bkgWorkspace2l2q.c(\"$1\",$2,$3,$4)"

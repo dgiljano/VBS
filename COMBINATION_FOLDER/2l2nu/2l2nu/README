@@ -1,7 +1,0 @@
-Commands to run the data cards and obtain limits (using M=600 GeV as an example)
-## the range of the fix is mass dependent
-## for question or comments write to alessio.magitteri@cern.ch
-
-cd 0600
-text2workspace.py hzz2l2nu_all_13TeV_600_0.1.txt -o workspace.root -P HiggsAnalysis.CombinedLimit.HiggsWidth:higgswidth --PO 'is2l2nu' --PO m=600 --PO w=0.1
-combine -M Asymptotic -m 600 workspace.root --run blind --setPhysicsModelParameters fvbf=0.0 --freezeNuisances fvbf -n 2l2nu_ggh 

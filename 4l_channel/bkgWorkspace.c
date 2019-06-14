@@ -1,4 +1,4 @@
-#include "/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/src/ProcessNormalization.cc+"
+//#include "/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/src/ProcessNormalization.cc+"
 //#include "VerticalInterpPdf.cc+"
 
 using namespace RooFit;
@@ -109,7 +109,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//
 		//
 		//
-		tqqzz->Add("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_qqzz_Moriond.root");
+		tqqzz->Add("./template/root_output_files/qqzz_Moriond.root");
 		//	else
 		//	tqqzz->Add("qqzz_80.root");
 
@@ -191,7 +191,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		RooDataSet bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",cuttree,RooArgSet(*mreco,*wt),"weight");
 		RooKeysPdf qqzzpdf_1d("bkg_qqzz_1d","",*mreco,bkgdata,RooKeysPdf::MirrorBoth,rho);
 
-		TFile *ff = new TFile("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_qqzz_Moriond.root");
+		TFile *ff = new TFile("./template/root_output_files/qqzz_Moriond.root");
 		TH2F *temp_zz=(TH2F*)ff->Get("temp_zz_"+chan);
 
 		for(int bx=0;bx<temp_zz->GetNbinsX();bx++){
@@ -282,7 +282,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		RooGenericPdf * zjetpdf_1d;
 		zjetpdf_1d=new RooGenericPdf("bkg_zjet_1d","bkg_zjet_1d",form,*parlist_zx);
 
-		TFile *fzjet = new TFile("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/zx.root");
+		TFile *fzjet = new TFile("./template/root_output_files/zx.root");
 		TH2F *temp_zjet=(TH2F*)fzjet->Get("zx_"+chan);
 
 		RooDataHist* template_zx= new RooDataHist("temp_zx_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),temp_zjet);
@@ -299,7 +299,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//	return;
 		//data
 		TChain *tdata = new TChain("SelectedTree"+treename[cate_vbf]);
-		tdata->Add("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/data.root");
+		tdata->Add("./template/root_output_files/data.root");
 		TTree* reducetree= tdata->CopyTree(Form("chan==%d&&vbfcate==%d",channum,cate_vbf));
 		RooDataSet* data_obs_1d= new RooDataSet("data_obs_1d","data_obs_1d",reducetree,*mreco);
 		RooDataSet* data_obs_2d = new RooDataSet("data_obs_2d","data_obs_2d",reducetree,RooArgSet(*mreco,*dbkg));
@@ -340,7 +340,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 //
                 //
                 //
-                g_tqqzz->Add("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_ggzz_Moriond.root");
+                g_tqqzz->Add("./template/root_output_files/ggzz_Moriond.root");
                 //      else
                 //      tqqzz->Add("qqzz_80.root");
 
@@ -386,7 +386,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 
                 g_tqqzz->SetBranchAddress("chan",&g_channel);
 
-		TFile f1("file1.root","NEW"); 		
+		TFile f1("file1.root","RECREATE"); 		
                 TTree *g_cuttree =new TTree("SelectedTree","SelectedTree");
                 TString g_mrecob = Form("%s/F",g_mreco->GetName());
                 g_cuttree->Branch(g_mreco->GetName(),&g_ZZMass,g_mrecob);
@@ -408,7 +408,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 RooDataSet g_bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",g_cuttree,RooArgSet(*g_mreco,*g_wt),"weight");
                 RooKeysPdf g_qqzzpdf_1d("bkg_ggzz_1d","",*g_mreco,g_bkgdata,RooKeysPdf::MirrorBoth,g_rho);
 
-                TFile *g_ff = new TFile("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_ggzz_Moriond.root");
+                TFile *g_ff = new TFile("./template/root_output_files/ggzz_Moriond.root");
                 TH2F *g_temp_zz=(TH2F*)g_ff->Get("temp_zz_"+chan);
 
                 for(int bx=0;bx<g_temp_zz->GetNbinsX();bx++){
@@ -458,7 +458,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 //
                 //
                 //
-                vbs_tqqzz->Add("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_vbs_Moriond.root");
+                vbs_tqqzz->Add("./template/root_output_files/vbs_Moriond.root");
                 //      else
                 //      tqqzz->Add("qqzz_80.root");
 
@@ -504,7 +504,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 
                 vbs_tqqzz->SetBranchAddress("chan",&vbs_channel);
 
-                TFile f2("file1.root","NEW");
+                TFile f2("file1.root","RECREATE");
                 TTree *vbs_cuttree =new TTree("SelectedTree","SelectedTree");
                 TString vbs_mrecob = Form("%s/F",vbs_mreco->GetName());
                 vbs_cuttree->Branch(vbs_mreco->GetName(),&vbs_ZZMass,vbs_mrecob);
@@ -526,7 +526,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 RooDataSet vbs_bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",vbs_cuttree,RooArgSet(*vbs_mreco,*vbs_wt),"weight");
                 RooKeysPdf vbs_qqzzpdf_1d("bkg_vbs_1d","",*vbs_mreco,vbs_bkgdata,RooKeysPdf::MirrorBoth,vbs_rho);
 
-                TFile *vbs_ff = new TFile("/afs/cern.ch/work/c/cthorbur/VBF_ANALYSIS/CMSSW_7_4_7/src/Highmass/template/root_output_files/mjj_vbs_Moriond.root");
+                TFile *vbs_ff = new TFile("./template/root_output_files/vbs_Moriond.root");
                 TH2F *vbs_temp_zz=(TH2F*)vbs_ff->Get("temp_zz_"+chan);
 
                 for(int bx=0;bx<vbs_temp_zz->GetNbinsX();bx++){

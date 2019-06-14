@@ -1,5 +1,5 @@
 // #include "external_cConstants.h"
-void plotter(int year = 2018, int useMCatNLO = 1){
+void plotter_blind(int year = 2018, int useMCatNLO = 1){
   
        //useMCatNLO = 0 : use just POWHEG
        //useMCatNLO = 1 : use just aMCatNLO
@@ -13,9 +13,9 @@ void plotter(int year = 2018, int useMCatNLO = 1){
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}"};        
         string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175"};     
 	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj"};
-        int bins[vars] = {40,40,40,40};
-        float xmin[vars] = {0.,160.,100.,0.};
-	float xmax[vars] = {1.,800.,1000.,8.};	
+        int bins[vars] = {40,50,40,40};
+        float xmin[vars] = {0.,180.,100.,0.};
+	float xmax[vars] = {1.,1000.,1000.,8.};	
 	bool drawSignal[vars] = {false,false,true,true};
 
 	//histogram stack
@@ -249,7 +249,7 @@ void plotter(int year = 2018, int useMCatNLO = 1){
 		}
 		
 		if (j==3){
-		  /*if (dbkg_kin <= 0.7)*/   h0[iv]->Fill(dbkg_kin);
+		  if (iv != 0 || year == 2016 || dbkg_kin <= 0.75)   h0[iv]->Fill(dbkg_kin);
 		  h0[iv]->SetMarkerStyle(20);
 		  if (chan == 2 ) h0_ee[iv]->Fill(dbkg_kin);
 		  if (chan == 1) h0_mm[iv]->Fill(dbkg_kin);

@@ -1,5 +1,5 @@
 // #include "external_cConstants.h"
-void plotter(int year = 2018, int useMCatNLO = 1){
+void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
   
        //useMCatNLO = 0 : use just POWHEG
        //useMCatNLO = 1 : use just aMCatNLO
@@ -208,7 +208,7 @@ void plotter(int year = 2018, int useMCatNLO = 1){
 	    tqqzz->GetEntry(i);
 	    
 	    //unique selection condition (see paper page 8) & DiJetMass condition
-	    if(fabs(DiJetDEta) > 1 && DiJetMass>100 && nExtraLep==0 && ZZMass > 160 && (((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
+	    if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 && (((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
 	      //unique selection
 	      //	if(nExtraLep==0 && (((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
@@ -294,7 +294,7 @@ void plotter(int year = 2018, int useMCatNLO = 1){
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
-	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d.root",year); 
+	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d_noCut.root",year); 
 	tqqzz_zx->Add(filename);
 	
 	//histogram declaration
@@ -484,9 +484,9 @@ void plotter(int year = 2018, int useMCatNLO = 1){
 	  
 	  //close and print on file
 	  c1->cd();
-	  if (useMCatNLO == 0) sprintf(filename,"%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);	  
-	  if (useMCatNLO == 1) sprintf(filename,"%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);	  
-	  if (useMCatNLO == 2) sprintf(filename,"%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
+	  if (useMCatNLO == 0) sprintf(filename,"onlymjjCut/%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);      
+	  if (useMCatNLO == 1) sprintf(filename,"onlymjjCut/%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);     
+	  if (useMCatNLO == 2) sprintf(filename,"onlymjjCut/%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
 	  gPad->Print(filename);
 	}
 }

@@ -1,4 +1,4 @@
-~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2017_MC_VBS4_4c9c1ab8/AAAOK/ZZTo4lamcatnlo/ZZ4lAnalysis.root
+root://lxcms03://data3/Higgs/190606_vbs2017/ZZTo4lamcatnlo/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/ZZTo4l/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root
@@ -6,7 +6,7 @@ root://lxcms03://data3/Higgs/180721_2017/ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis
 root://lxcms03://data3/Higgs/180721_2017/ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root
-~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2017_MC_VBS2_4c9c1ab8/AAAOK/VBFTo4eJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
-~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2017_MC_VBS2_4c9c1ab8/AAAOK/VBFTo4muJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
-~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2017_MC_VBS3_4c9c1ab8/AAAOK/VBFTo2e2muJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
+root://lxcms03://data3/Higgs/190606_vbs2017/VBFTo4eJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
+root://lxcms03://data3/Higgs/190606_vbs2017/VBFTo4muJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
+root://lxcms03://data3/Higgs/190606_vbs2017/VBFTo2e2muJJ_0PMH125Contin_phantom128/ZZ4lAnalysis.root
 root://lxcms03://data3/Higgs/180721_2017/AllData/ZZ4lAnalysis.root

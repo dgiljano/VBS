@@ -5,6 +5,7 @@
 #include "include/FakeRates.h"
 #include "include/FinalStates.h"
 #include "include/Settings.h"
+#include <TSpline.h>
 #include <vector>
 
 using namespace std;
@@ -13,7 +14,7 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] ){
 	
-        int year = 2016;
+        int year = 2018;
 
 	vector<float> _fs_ROS_SS;
 	_fs_ROS_SS.push_back(1.22);//4mu
@@ -23,24 +24,28 @@ int main( int argc, char *argv[] ){
 	// 2016
  
         char name[200];
-	if (year == 2016) sprintf(name,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/src/FakeRate_SS_Moriond368.root");
-	if (year == 2017) sprintf(name,"~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_Moriond18.root"); 
-        if (year == 2018) sprintf(name,"~/work/vbs2017/CMSSW_9_4_9/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_Moriond19.root");
+	if (year == 2016) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2016_Legacy.root");
+	if (year == 2017) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2017_Legacy.root"); 
+        if (year == 2018) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2018_Legacy.root");
 
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
         //2016
-	if (year == 2016) t->Add("root://lxcms03//data3/Higgs/170222/AllData/ZZ4lAnalysis.root");
+	if (year == 2016) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2016/AllData/ZZ4lAnalysis.root");
 	//2017
-        if (year == 2017) t->Add("root://lxcms03//data3/Higgs/180721_2017/AllData/ZZ4lAnalysis.root");
+        if (year == 2017) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2017/AllData/ZZ4lAnalysis.root");
 	//2018
-        if (year == 2018) t->Add("root://lxcms03//data3/Higgs/190316/AllData/ZZ4lAnalysis.root");
+        if (year == 2018) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2018/AllData/ZZ4lAnalysis.root");
 
-	float c_constant = 0.05;
-        if (year == 2017) c_constant = 2.3;
-	if (year == 2018) c_constant = 2.3; 
+	float c_constant = 8.5;
+        //if (year == 2017) c_constant = 2.3;
+	//if (year == 2018) c_constant = 2.3; 
         
+	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
+	TSpline3* ts = (TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone());
+	f_->Close();
+
 	candTree data(t);
 	Long64_t nentries = data.fChain->GetEntries();
 	cout<< nentries<<endl;
@@ -60,6 +65,8 @@ int main( int argc, char *argv[] ){
 	data.fChain->SetBranchStatus("Z2Flav", 1);
 	data.fChain->SetBranchStatus("LepEta", 1);
 	data.fChain->SetBranchStatus("LepPt", 1);
+        data.fChain->SetBranchStatus("JetEta", 1);
+	data.fChain->SetBranchStatus("JetPt", 1);      
 	data.fChain->SetBranchStatus("LepLepId", 1);
 	data.fChain->SetBranchStatus("p_QQB_BKG_MCFM", 1);
 	data.fChain->SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", 1);
@@ -67,14 +74,18 @@ int main( int argc, char *argv[] ){
 	data.fChain->SetBranchStatus("nCleanedJetsPt30BTagged_bTagSF", 1);
 
 	//my branches	
-	 data.fChain->SetBranchStatus("p_JJVBF_BKG_MCFM_JECNominal",1); //sign
-	 data.fChain->SetBranchStatus("p_JJQCD_BKG_MCFM_JECNominal",1); //bkg
+	data.fChain->SetBranchStatus("p_JJVBF_BKG_MCFM_JECNominal",1); //sign
+	data.fChain->SetBranchStatus("p_JJQCD_BKG_MCFM_JECNominal",1); //bkg
 	
 	float dbkg_kin;
 	float dbkg;
 	float ZZMass_new;
         float dijmass_new;
         float dijeta_new;
+        float ptjet1;
+        float ptjet2;
+        float etajet1;
+        float etajet2;   
 	int chan;
 	int vbfcate;
 	float weight;
@@ -90,7 +101,11 @@ int main( int argc, char *argv[] ){
 	tnew->Branch("dbkg",&dbkg,"dbkg/F");
 	tnew->Branch("ZZMass",&ZZMass_new,"ZZMass/F");
         tnew->Branch("DiJetMass",&dijmass_new,"DiJetMass/F");
-        tnew->Branch("DiJetDEta",&dijeta_new,"DiJetDEta/F");
+	tnew->Branch("DiJetDEta",&dijeta_new,"DiJetDEta/F");
+        tnew->Branch("ptjet1",&ptjet1,"ptjet1/F");
+        tnew->Branch("ptjet2",&ptjet2,"ptjet2/F");
+        tnew->Branch("etajet1",&etajet1,"etajet1/F");
+        tnew->Branch("etajet2",&etajet2,"etajet2/F");
 	tnew->Branch("ZZMassErrCorr",&ZZMassErrCorr_new,"ZZMassErrCorr/F");
 	tnew->Branch("weight",&weight,"weight/F");
 	tnew->Branch("chan",&chan,"chan/I");
@@ -127,19 +142,24 @@ int main( int argc, char *argv[] ){
 		// no deta cut
 		// if( data.ZZMass > 160  && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		// bkgd enriched
-		if( data.ZZMass > 160  && ((fabs(data.DiJetDEta) > 1 && fabs(data.DiJetDEta) < 2.4) || (data.DiJetMass > 100 && data.DiJetMass < 400)) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		if( data.ZZMass > 160  && data.DiJetMass > 100 && (fabs(data.DiJetDEta) < 2.4 || data.DiJetMass < 400) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		  vbfcate=1;
 			//}
 		weight = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(data.LepPt->at(2),data.LepEta->at(2),data.LepLepId->at(2))*FR->GetFakeRate(data.LepPt->at(3),data.LepEta->at(3),data.LepLepId->at(3));
 	
 		//kinematic variable
-		dbkg_kin = data.p_JJVBF_BKG_MCFM_JECNominal / ( data.p_JJVBF_BKG_MCFM_JECNominal + data.p_JJQCD_BKG_MCFM_JECNominal*c_constant );
+                float c_mzz = c_constant*ts->Eval(data.ZZMass);
+		dbkg_kin = data.p_JJVBF_BKG_MCFM_JECNominal / ( data.p_JJVBF_BKG_MCFM_JECNominal + data.p_JJQCD_BKG_MCFM_JECNominal*c_mzz );
 		
 
 		dbkg = data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*data.p_m4l_SIG / ( data.p_m4l_SIG*data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + data.p_m4l_BKG*data.p_QQB_BKG_MCFM*getDbkgkinConstant(data.Z1Flav*data.Z2Flav,data.ZZMass) );
 		ZZMass_new= data.ZZMass;
                 dijmass_new= data.DiJetMass;
                 dijeta_new= data.DiJetDEta;
+                ptjet1=data.JetPt->at(0);
+                ptjet2=data.JetPt->at(1);
+                etajet1=data.JetEta->at(0);
+                etajet2=data.JetEta->at(1);
 		ZZMassErrCorr_new= data.ZZMassErrCorr;
 		}
 		tnew->Fill();

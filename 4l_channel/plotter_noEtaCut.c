@@ -1,4 +1,8 @@
 // #include "external_cConstants.h"
+#include <TSpline.h>
+#include <TString.h>
+#include <memory>
+
 void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
   
        //useMCatNLO = 0 : use just POWHEG
@@ -9,14 +13,14 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	static const int vars = 4;
-        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}"};        
-        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj"};
-        int bins[vars] = {40,40,40,40};
-        float xmin[vars] = {0.,160.,100.,0.};
-	float xmax[vars] = {1.,800.,1000.,8.};	
-	bool drawSignal[vars] = {false,false,true,true};
+	static const int vars = 6;
+        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
+        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175","Events/5 GeV","Events/0.25"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
+        int bins[vars] = {20,20,20,20,30,20};
+        float xmin[vars] = {0.,160.,100.,0.,0.,-5.};
+	float xmax[vars] = {1.,800.,1000.,8.,300.,5.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true};
 
 	//histogram stack
         char filename[300]; char filetitle[300];
@@ -85,14 +89,17 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	gStyle->SetPalette(1);
 	TFile *input_file;
 
-	float c_constant = 0.05;
-        if (year == 2017) c_constant = 2.3;
-	if (year == 2018) c_constant = 2.3;   
+	float c_constant = 8.5;
+        // if (year == 2017) c_constant = 3.5;
+	// if (year == 2018) c_constant = 3.5; 
+	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
+	TSpline3* ts = (TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone());
+	f_->Close();
 
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"samples%d.txt",year);
+ 	sprintf(filename,"newsamples%d_withMGggZZ.txt",year);
 
 	ifstream parInput(filename);
         
@@ -105,6 +112,54 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  parInput.close();
 	} 
 
+	//original variable declarations
+	float ZZPt,ZZMass,DiJetMass,DiJetDEta;
+	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,KFactorQCDqqZZ_M;
+	vector<float> *LepPt=new vector<float>;
+	vector<float> *JetPt=new vector<float>;
+	vector<float> *JetEta=new vector<float>;
+	short Z1Flav,Z2Flav;
+	short nCleanedJetsPt30;
+	float pvbf_VAJHU_old;
+	float phjj_VAJHU_old;
+	float bkg_VAMCFM,p0plus_VAJHU;
+	short ZZsel;
+	vector<short> *LepLepId=0;
+	short nExtraLep;
+	short nCleanedJetsPt30BTagged_bTagSF;
+	
+	//new variable declarations
+	float p_JJEW_BKG_MCFM_JECNominal; //not in use
+	float p_JJQCD_BKG_MCFM_JECNominal;
+	float p_JJVBF_BKG_MCFM_JECNominal;
+	float KFactorQCDggzz_Nominal;
+
+	//additional and output variable declarations
+	float weight, weight_up, weight_dn;
+	float weight_vbf, weight_vbf_up, weight_vbf_dn;
+	int chan;
+	int vbfcate = 0;
+	float dbkg_kin, theVar; 
+	
+	//output branches
+	TTree *tnew[4]; 
+	TFile *fnew[4];
+	for (int it=0; it < 4; it++) {
+	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%d.root",year); 
+	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%d.root",year); 
+	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%d.root",year); 
+	  if (it==3) sprintf(filename,"template/root_output_files/data_%d.root",year); 
+	  fnew[it] = new TFile(filename,"recreate");
+	  tnew[it] = new TTree("SelectedTree","SelectedTree");
+	  tnew[it]->Branch("mreco",&ZZMass,"mreco/F");
+	  tnew[it]->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
+	  tnew[it]->Branch("weight",&weight,"weight/F");
+	  tnew[it]->Branch("weight_up",&weight_up,"weight_up/F");
+	  tnew[it]->Branch("weight_dn",&weight_dn,"weight_dn/F");
+	  tnew[it]->Branch("chan",&chan,"chan/I");
+	  tnew[it]->Branch("vbfcate",&vbfcate,"vbfcate/I");
+	}
+	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++){
 
@@ -123,33 +178,14 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
           //process class
           int j = 0;   // qqzz powheg
 	  if (rootname[is].Contains("AllData")) j = 3;   
-	  if (rootname[is].Contains("ggTo")) j = 1;      
+	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
 	  if (rootname[is].Contains("amcatnlo")) j = 4;
-	  if (year == 2018 && rootname[is].Contains("180721_2017")) j = 5;
-
+	
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
-	  //original variable declarations
-	  float ZZPt,ZZMass,DiJetMass,DiJetDEta;
-	  float xsec,KFactorEWKqqZZ,overallEventWeight,KFactorQCDqqZZ_M;
-	  vector<float> *LepPt=new vector<float>;
-	  short Z1Flav,Z2Flav;
-	  short nCleanedJetsPt30;
-	  float pvbf_VAJHU_old;
-	  float phjj_VAJHU_old;
-	  float bkg_VAMCFM,p0plus_VAJHU;
-	  short ZZsel;
-	  vector<short> *LepLepId=0;
-	  short nExtraLep;
-	  short nCleanedJetsPt30BTagged_bTagSF;
-	  
-	  //new variable declarations
-	  float p_JJEW_BKG_MCFM_JECNominal; //not in use
-	  float p_JJQCD_BKG_MCFM_JECNominal;
-	  float p_JJVBF_BKG_MCFM_JECNominal;
-	  float KFactorQCDggzz_Nominal;
+	
 	  //	float lumi = 35.9E03;
 	  float my_sum = 0;
 	  float mc_integral;
@@ -170,7 +206,10 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  tqqzz->SetBranchAddress("ZZsel",&ZZsel);
 	  tqqzz->SetBranchAddress("LepLepId",&LepLepId);
 	  tqqzz->SetBranchAddress("LepPt",&LepPt);
-	  tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);
+          tqqzz->SetBranchAddress("JetPt",&JetPt);
+          tqqzz->SetBranchAddress("JetEta",&JetEta);
+	  tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);	
+	  tqqzz->SetBranchAddress("L1prefiringWeight",&L1prefiringWeight);
 	  tqqzz->SetBranchAddress("KFactor_QCD_qqZZ_M",&KFactorQCDqqZZ_M);
 	  tqqzz->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
 	  
@@ -181,26 +220,8 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
           tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
-	  //additional and output variable declarations
-	  float weight, weight_up, weight_dn;
-	  float weight_vbf, weight_vbf_up, weight_vbf_dn;
-	  int chan;
-	  int vbfcate = 0;
-	  float dbkg_kin;
-	  
-	  //output branches
-	  TTree *tnew = new TTree("SelectedTree","SelectedTree");
-	  tnew->Branch("mreco",&ZZMass,"mreco/F");
-	  tnew->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
-	  tnew->Branch("weight",&weight,"weight/F");
-	  tnew->Branch("weight_up",&weight_up,"weight_up/F");
-	  tnew->Branch("weight_dn",&weight_dn,"weight_dn/F");
-	  tnew->Branch("weight_vbf",&weight_vbf,"weight_vbf/F");
-	  tnew->Branch("weight_vbf_up",&weight_vbf_up,"weight_vbf_up/F");
-	  tnew->Branch("weight_vbf_dn",&weight_vbf_dn,"weight_vbf_dn/F");
-	  tnew->Branch("chan",&chan,"chan/I");
-	  tnew->Branch("vbfcate",&vbfcate,"vbfcate/I");
-	  
+	 
+
 	  //loop on entries
 	  int enne = tqqzz->GetEntries();
   
@@ -219,78 +240,98 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	      //KFactorEWKqqZZ = 1;
 	      //KFactorQCDqqZZ_M = 1;
 	      //weight=1;
-	      weight= (xsec*KFactorEWKqqZZ * overallEventWeight*KFactorQCDqqZZ_M*lumi)/(gen_sum_weights);
-	      if (j==1) weight= (xsec* overallEventWeight *KFactorQCDggzz_Nominal *lumi)/(gen_sum_weights);
+	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(gen_sum_weights);
+	      // correct k-factor for NNLO/NLO?
+	      if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(gen_sum_weights);
+	      if (j==1 && useMCatNLO==1) weight /=1.7;
+              if (j==2) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(gen_sum_weights);
+	      // TEMPORARY: MISSING KFACTORS FOR ZZamcatnlo
+              //if (j==4 && year ==2017) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(gen_sum_weights);
 	      if (j==3) weight=1.; 
-	      //weight= (xsec*KFactorEWKqqZZ * overallEventWeight*KFactorQCDqqZZ_M*lumi)/(gen_sum_weights);
-	      //dbkg_kin=overallEventWeight;
 
- //division in channels
-	      if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121){
-		chan=2;
-	      }
-	      else if (abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)!=121){
-		chan=1;
-	      }
+	      //TEMPORARY FOR MISSING 2e2mu SAMPLE
+	      if (j==2 && year==2017) weight *= 2.;
+
+	      //division in channels
+	      if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121) chan=2;
+	      else if (abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)!=121) chan=1;
 	      else chan=3;
 	      
 	      //kin variable
-	      for(int iv = 0; iv < vars; iv++){
-		if (iv == 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_constant);
-		if (iv == 1) dbkg_kin = ZZMass;
-		if (iv == 2) dbkg_kin = DiJetMass;
-		if (iv == 3) dbkg_kin = fabs(DiJetDEta);
+              float c_mzz = c_constant*ts->Eval(ZZMass);
+	      dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
+
+	      if (useMCatNLO > 0 && j==4) tnew[0]->Fill();
+	      else if (useMCatNLO == 0 && j==0) tnew[0]->Fill();
+	      else tnew[j]->Fill();
+
+	      for(int il = 0; il < vars+2; il++){
+                int iv = il; 
+		if (il == 0) theVar = dbkg_kin;
+		if (il == 1) theVar = ZZMass;
+		if (il == 2) theVar = DiJetMass;
+		if (il == 3) theVar = fabs(DiJetDEta);
+                if (il == 4) theVar = JetPt->at(0);
+                if (il == 5) theVar = JetEta->at(0);
+                if (il == 6) {theVar = JetPt->at(1);   iv = 4;}
+		if (il == 7) {theVar = JetEta->at(1);   iv = 5;}
    	      
 		//1D kin var hist fill
 		//this is the normalization histogram
 		if (j<3){
-		  if (dbkg_kin <= 1.1) h00[iv]->Fill(dbkg_kin,weight);    
-		  h_complete_data[iv]->Fill(dbkg_kin,weight);
+		  if (theVar <= 1.1) h00[iv]->Fill(theVar,weight);    
+		  h_complete_data[iv]->Fill(theVar,weight);
 		}
 		
 		if (j==3){
-		  /*if (dbkg_kin <= 0.7)*/   h0[iv]->Fill(dbkg_kin);
+		  if (iv > 0 || theVar < 0.75 || year == 2016) h0[iv]->Fill(theVar);
+		  else cout << "Blinded event!" << endl;
 		  h0[iv]->SetMarkerStyle(20);
-		  if (chan == 2 ) h0_ee[iv]->Fill(dbkg_kin);
-		  if (chan == 1) h0_mm[iv]->Fill(dbkg_kin);
-		  if (chan == 3) h0_em[iv]->Fill(dbkg_kin);
+		  if (chan == 2) h0_ee[iv]->Fill(theVar);
+		  if (chan == 1) h0_mm[iv]->Fill(theVar);
+		  if (chan == 3) h0_em[iv]->Fill(theVar);
 		}
 		if (j==0){                              //qqzz
-		  h1[iv]->Fill(dbkg_kin,weight);
+		  h1[iv]->Fill(theVar,weight);
 		  
-		  if (chan == 1) h8[iv]->Fill(dbkg_kin,weight); //mu
-		  if (chan == 2) h7[iv]->Fill(dbkg_kin,weight); //e
-		  if (chan == 3)  h9[iv]->Fill(dbkg_kin,weight);          //mu+e
+		  if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) h7[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  h9[iv]->Fill(theVar,weight);          //mu+e
 		}
 		if (j==1){                              //gg
-		  h2[iv]->Fill(dbkg_kin,weight);
+		  h2[iv]->Fill(theVar,weight);
 		  h2[iv]->SetFillColor(kBlue);
 		  
-		  if (chan == 1) h11[iv]->Fill(dbkg_kin,weight); //mu
-		  if (chan == 2) h10[iv]->Fill(dbkg_kin,weight); //e
-		  if (chan == 3)  h12[iv]->Fill(dbkg_kin,weight);          //mu+e
+		  if (chan == 1) h11[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) h10[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  h12[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
 		if (j==2){                              //vbs
-		  h3[iv]->Fill(dbkg_kin,weight);
+		  h3[iv]->Fill(theVar,weight);
 		  h3[iv]->SetFillColor(kMagenta);
 		  
-		  if (chan == 1) h14[iv]->Fill(dbkg_kin,weight); //mu
-		  if (chan == 2) h13[iv]->Fill(dbkg_kin,weight); //e
-		  if (chan == 3) h15[iv]->Fill(dbkg_kin,weight);          //mu+e
+		  if (chan == 1) h14[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) h13[iv]->Fill(theVar,weight); //e
+		  if (chan == 3) h15[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
-		if (j==4) hnum[iv]->Fill(dbkg_kin,weight);
-		if (j==5) hden[iv]->Fill(dbkg_kin,weight);
+		if (j==4) hnum[iv]->Fill(theVar,weight);
+		if (j==5) hden[iv]->Fill(theVar,weight);
 		//kin_zz->GetYaxis()->SetTitle("Events/0.05");
 		//add histogram to stack
 		//for cycle ends here
-	      }    
+	      }
 	    }
-	      
 	  }//entries loop  end
-	  
 	}//file loop  end
+       
+        for (int it=0; it < 4; it++) {
+	  fnew[it]->cd();
+	  tnew[it]->Write();
+	  fnew[it]->Close();
+	}
+
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
@@ -305,6 +346,7 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	
 	//new variable declarations
 	float var_zx, dbkg_kin_zx, ZZMass_zx, DiJetMass_zx, DiJetDEta_zx;
+	float ptjet1_zx,ptjet2_zx,etajet1_zx,etajet2_zx; 
 	float weight_zx;
 	
 	//original branch addresses
@@ -313,18 +355,27 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	tqqzz_zx->SetBranchAddress("DiJetMass",&DiJetMass_zx);
 	tqqzz_zx->SetBranchAddress("DiJetDEta",&DiJetDEta_zx);
 	tqqzz_zx->SetBranchAddress("weight",&weight_zx);
-	
+	tqqzz_zx->SetBranchAddress("ptjet1",&ptjet1_zx); 
+	tqqzz_zx->SetBranchAddress("ptjet2",&ptjet2_zx);   
+	tqqzz_zx->SetBranchAddress("etajet1",&etajet1_zx); 
+	tqqzz_zx->SetBranchAddress("etajet2",&etajet2_zx);
+
 	//entries loop
 	for(int i=0;i<tqqzz_zx->GetEntries();i++){
 	  tqqzz_zx->GetEntry(i);
 	  
 	  //1D kin var hist fill
-	  for(int iv = 0; iv < vars; iv++){
+	  for(int il = 0; il < vars+2; il++){
+            int iv = il; 
 	    if (iv == 0) var_zx = dbkg_kin_zx;
 	    if (iv == 1) var_zx = ZZMass_zx;
 	    if (iv == 2) var_zx = DiJetMass_zx;
 	    if (iv == 3) var_zx = fabs(DiJetDEta_zx);
-	    if (year == 2016 || weight_zx < 1000000.) {
+	    if (il == 4) var_zx = ptjet1_zx;
+	    if (il == 5) var_zx = etajet1_zx;
+	    if (il == 6) {var_zx = ptjet2_zx;   iv = 4;}
+	    if (il == 7) {var_zx = etajet2_zx;   iv = 5;}
+	    if (fabs(weight_zx) < 100000.) {
 	      kin_zz_zx[iv]->Fill(var_zx,weight_zx);
 	    }
 	    if (var_zx<=0.7) h00[iv]->Fill(var_zx,weight_zx);
@@ -337,6 +388,7 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	for(int iv = 0; iv < vars; iv++){
 	  cout << "Integral check" << endl;
 	  cout <<"qqzz,         integral is " << h1[iv]->Integral() << endl;
+          cout <<"qqzz alternative,         integral is " << hnum[iv]->Integral() << endl;
 	  cout <<"qqzz (4e),    integral is " << h7[iv]->Integral() << endl;
 	  cout <<"qqzz (4mu),   integral is " << h8[iv]->Integral() << endl;
 	  cout <<"qqzz (2e2mu), integral is " << h9[iv]->Integral() << endl;
@@ -348,6 +400,7 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  cout <<"vbs (4e),     integral is " << h13[iv]->Integral() << endl;
 	  cout <<"vbs (4mu),    integral is " << h14[iv]->Integral() << endl;
 	  cout <<"vbs (2e2mu),  integral is " << h15[iv]->Integral() << endl;
+	  cout <<"data,          integral is " << h0[iv]->Integral() << endl;
 	  cout <<"data (4e),     integral is " << h0_ee[iv]->Integral() << endl;
 	  cout <<"data (4mu),    integral is " << h0_mm[iv]->Integral() << endl;
 	  cout <<"data (2e2mu),  integral is " << h0_em[iv]->Integral() << endl;
@@ -355,10 +408,10 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  float zx_integral = (2.00933+1.97468+3.96839)*lumi/35.9E03;
           const float powheg_integral = h1[iv]->Integral();
 	  
-	  if (year == 2018 && useMCatNLO > 0) {
+	  /* if (year == 2018 && useMCatNLO > 0) {
 	    h1[iv]->Multiply(h1[iv],hnum[iv]);
 	    h1[iv]->Divide(h1[iv],hden[iv]);
-	  }
+	    }  */
 	  kin_zz_zx[iv]->Scale(zx_integral/kin_zz_zx[iv]->Integral());
 	  
 	  //data normalisation
@@ -370,13 +423,14 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  h5[iv]->Scale(data_integral/mc_integral);
 	  hnum[iv]->Scale(data_integral/mc_integral);
 	  if (useMCatNLO == 2) {
-	    if (year == 2018) h1[iv]->Scale(powheg_integral/h1[iv]->Integral());
-	    else hnum[iv]->Scale(powheg_integral/hnum[iv]->Integral());
+	    // if (year == 2018) h1[iv]->Scale(powheg_integral/h1[iv]->Integral());
+	    // else 
+	    hnum[iv]->Scale(powheg_integral/hnum[iv]->Integral());
 	  }
 	  
 	  //HISTOGRAMS ADDED TO STACK
 	  kin_zz_zx[iv]->SetFillColor(kGreen);
-	  if (useMCatNLO == 0 || year == 2018) h1bis[iv]->Add(kin_zz_zx[iv],h1[iv],1,1); //real ew
+	  if (useMCatNLO == 0) h1bis[iv]->Add(kin_zz_zx[iv],h1[iv],1,1); //real ew
 	  else h1bis[iv]->Add(kin_zz_zx[iv],hnum[iv],1,1); //real ew
 	  h1bis[iv]->SetFillColor(kCyan);
 	  h4[iv]->Add(h1bis[iv],h2[iv],1,1); //real gg
@@ -419,7 +473,8 @@ void plotter_noEtaCut(int year = 2018, int useMCatNLO = 1){
 	  pad1->Draw();
 	  pad1->cd();
 	  //top plot
-	  hs[iv]->SetMaximum(12.*lumi/35.9E3); 
+	  hs[iv]->SetMaximum(30.*lumi/35.9E3);
+          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv]) {
 	    TH1F* h77 = (TH1F*)h3[iv]->Clone();

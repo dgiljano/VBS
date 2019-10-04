@@ -14,13 +14,15 @@ using namespace RooFit;
 // cate_vbf =3 TLE
 //
 
-void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0){
-	// double lumi = 9.235;
-	double lumi = 35.9;
-	// double lumi = 10;
+void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0,int year=2016){
+
+        float lumi = 35.9;
+        if (year == 2017) lumi = 41.5;
+	if (year == 2018) lumi = 59.7;
+	char filename[200];	
 
 	double parzx_all[5][6]={
-		//		4e
+		//4e
 		1,141.9,21.3,0,0,0,
 		//4mu
 		1,130.4,15.6,0,0,0,
@@ -42,33 +44,32 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 
 	if(cate_vbf!=2){
 		if (chan=="4e") 	{
-			for (int i=0;i<6;i++){parzx[i]=parzx_all[0][i];}
-
+		  for (int i=0;i<6;i++){parzx[i]=parzx_all[0][i];}
 		} 
 		if (chan=="4mu")  {
-			for (int i=0;i<6;i++){parzx[i]=parzx_all[1][i];}
+		  for (int i=0;i<6;i++){parzx[i]=parzx_all[1][i];}
 		}
 		if (chan=="2e2mu") {
-			for (int i=0;i<6;i++){parzx[i]=parzx_all[2][i];}
+		  for (int i=0;i<6;i++){parzx[i]=parzx_all[2][i];}
 		} 
 	}
 	else{
 		if (chan=="2e2mu") {
-			for (int i=0;i<8;i++){parzx_rse[i]=parzx_rse_all[1][i];}
+		  for (int i=0;i<8;i++){parzx_rse[i]=parzx_rse_all[1][i];}
 		} 
 		if (chan=="4e") {
-			for (int i=0;i<8;i++){parzx_rse[i]=parzx_rse_all[0][i];}
+		   for (int i=0;i<8;i++){parzx_rse[i]=parzx_rse_all[0][i];}
 		} 
-		}
-		ofstream yields("yields.txt",std::fstream::app);
-
+	}
+	sprintf(filename,"yields_%d.txt",year);
+	ofstream yields(filename,std::fstream::app);
 
 		RooWorkspace w("w");
 	//	double recolowarr[3]={105.,104,110};
 	//	double recohigharr[3]={140.,1604.,3500};
 	//	const int reconbinsarr[3]={35,750,1695};
-		double recolowarr[3]={110,160,300};
-		double recohigharr[3]={3500.,3500.,3500.};
+		double recolowarr[3]={110,160.,300};
+		double recohigharr[3]={3500.,1500.,3500.};
 		const int reconbinsarr[3]={1695,1670,1600};
 	//	const int reconbinsarr[3]={3390,3390,3200};
 
@@ -76,8 +77,6 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		const double low_reco=recolowarr[cate_vbf];
 		const double high_reco=recohigharr[cate_vbf];
 		const int nbins_reco=reconbinsarr[cate_vbf];
-
-
 
 		RooRealVar* mreco= new RooRealVar("mreco","M_{ZZ} (GeV)",180,low_reco,high_reco);//125
 		if(cate_vbf==2){
@@ -109,7 +108,8 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//
 		//
 		//
-		tqqzz->Add("./template/root_output_files/qqzz_Moriond.root");
+		sprintf(filename,"./template/root_output_files/qqzz_Moriond_%d.root",year);
+		tqqzz->Add(filename);
 		//	else
 		//	tqqzz->Add("qqzz_80.root");
 
@@ -136,7 +136,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		int channel;
 		tqqzz->SetBranchAddress("mreco",&ZZMass);
 		
-		if(cate_vbf!=1){
+		if(cate_vbf==1){
 			tqqzz->SetBranchAddress("weight",&weight);
 			tqqzz->SetBranchAddress("weight_up",&weight_up);
 			tqqzz->SetBranchAddress("weight_dn",&weight_dn);
@@ -176,7 +176,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		cuttree->Branch("weight",&weight,"weight/F");
 		cuttree->Branch("weight_up",&weight_up,"weight_up/F");
 		cuttree->Branch("weight_dn",&weight_dn,"weight_dn/F");
-		std::cout<< endl << "PROBLEM" << endl;
+		//	std::cout<< endl << "PROBLEM" << endl;
 		for(int i =0;i<tqqzz->GetEntries();i++){
 			tqqzz->GetEntry(i);
 			if(channel==channum){
@@ -189,9 +189,10 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		if(highmass==0)
 			rho=4;
 		RooDataSet bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",cuttree,RooArgSet(*mreco,*wt),"weight");
-		RooKeysPdf qqzzpdf_1d("bkg_qqzz_1d","",*mreco,bkgdata,RooKeysPdf::MirrorBoth,rho);
+		RooKeysPdf qqzzpdf_1d("bkg_qqzz_1d"+chan+Form("_%d",cate_vbf),"",*mreco,bkgdata,RooKeysPdf::MirrorBoth,rho);
 
-		TFile *ff = new TFile("./template/root_output_files/qqzz_Moriond.root");
+		sprintf(filename,"./template/root_output_files/qqzz_Moriond_%d.root",year);
+		TFile *ff = new TFile(filename);
 		TH2F *temp_zz=(TH2F*)ff->Get("temp_zz_"+chan);
 
 		for(int bx=0;bx<temp_zz->GetNbinsX();bx++){
@@ -204,16 +205,17 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		RooDataHist* template_sig= new RooDataHist("temp_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),temp_zz);
 		RooHistPdf* pdf_2d_sig = new RooHistPdf("pdf_2d_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),*template_sig);
 		RooProdPdf *qqzzpdf_2d= new RooProdPdf("bkg_qqzz_2d_"+chan+Form("_%d",cate_vbf),"",qqzzpdf_1d,Conditional(*pdf_2d_sig,*dbkg));
+
 // *********************************************************************************************************************************************************
 
 		TF1 *fsum ;
 		int parsize =6;
 		double exp;
-		fsum=new TF1("fsum"+chan,"landau( 0 )+ landau(3)",50,3500);
+		fsum=new TF1("fsum"+chan,"landau( 0 )+ landau(3)",160,1500);
 		if(cate_vbf==2){
-			//fsum=new TF1("fsum"+chan,"landau( 0 )*(1 + exp( pol1(3)))",50,3500);
+			//fsum=new TF1("fsum"+chan,"landau( 0 )*(1 + exp( pol1(3)))",160,1500);
 			parsize=8;
-			fsum= new TF1("fsum"+chan, "[0]*TMath::Landau(x, [1], [2]) + [7]*(1 + TMath::Exp([3] - [4]*x))*TMath::Landau(x, [5], [6])",50,3500);
+			fsum= new TF1("fsum"+chan, "[0]*TMath::Landau(x, [1], [2]) + [7]*(1 + TMath::Exp([3] - [4]*x))*TMath::Landau(x, [5], [6])",160,1500);
 		}
 
 		if(cate_vbf!=2)
@@ -242,16 +244,16 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		cout<<formuO<<endl;
 
 		if(cate_vbf==1){
-			yields<< chan<< " "<< cate_vbf<<" ZX "<< 0.0762466*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(50,3500)<<endl;
-			cout<< chan<< " "<< cate_vbf<<" ZX "<< 0.0762466*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(50,3500)<<endl;
+			yields<< chan<< " "<< cate_vbf<<" ZX "<< 0.0762466*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(160,1500)<<endl;
+			cout<< chan<< " "<< cate_vbf<<" ZX "<< 0.0762466*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(160,1500)<<endl;
 		}
 		else if(cate_vbf==0){
-			yields<< chan<< " "<< cate_vbf<<" ZX "<< (1-0.0762466)*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(50,3500)<<endl;
-			cout<< chan<< " "<< cate_vbf<<" ZX "<< (1-0.0762466)*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(50,3500)<<endl;
+			yields<< chan<< " "<< cate_vbf<<" ZX "<< (1-0.0762466)*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(160,1500)<<endl;
+			cout<< chan<< " "<< cate_vbf<<" ZX "<< (1-0.0762466)*exp*fsum->Integral(low_reco,high_reco)/fsum->Integral(160,1500)<<endl;
 		}
 		else{
-			cout<< chan<< " "<< cate_vbf<<" ZX "<< exp*fsum->Integral(300,high_reco)/fsum->Integral(50,3500)<<endl;
-			yields<< chan<< " "<< cate_vbf<<" ZX "<< exp*fsum->Integral(300,high_reco)/fsum->Integral(50,3500)<<endl;
+			cout<< chan<< " "<< cate_vbf<<" ZX "<< exp*fsum->Integral(300,high_reco)/fsum->Integral(160,1500)<<endl;
+			yields<< chan<< " "<< cate_vbf<<" ZX "<< exp*fsum->Integral(300,high_reco)/fsum->Integral(160,1500)<<endl;
 		}
 		fsum->Draw();
 		
@@ -280,7 +282,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 //		RooGenericPdf *zjetpdf = new RooGenericPdf("bkg_zjet","bkg_zjet","@1*TMath::Landau(@0,@2,@3)+@4*TMath::Landau(@0,@5,@6)",*parlist_zx);
 
 		RooGenericPdf * zjetpdf_1d;
-		zjetpdf_1d=new RooGenericPdf("bkg_zjet_1d","bkg_zjet_1d",form,*parlist_zx);
+		zjetpdf_1d=new RooGenericPdf("bkg_zjet_1d"+chan+Form("_%d",cate_vbf),"bkg_zjet_1d",form,*parlist_zx);
 
 		TFile *fzjet = new TFile("./template/root_output_files/zx.root");
 		TH2F *temp_zjet=(TH2F*)fzjet->Get("zx_"+chan);
@@ -299,7 +301,8 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//	return;
 		//data
 		TChain *tdata = new TChain("SelectedTree"+treename[cate_vbf]);
-		tdata->Add("./template/root_output_files/data.root");
+                sprintf(filename,"./template/root_output_files/data_%d.root",year);
+		tdata->Add(filename);
 		TTree* reducetree= tdata->CopyTree(Form("chan==%d&&vbfcate==%d",channum,cate_vbf));
 		RooDataSet* data_obs_1d= new RooDataSet("data_obs_1d","data_obs_1d",reducetree,*mreco);
 		RooDataSet* data_obs_2d = new RooDataSet("data_obs_2d","data_obs_2d",reducetree,RooArgSet(*mreco,*dbkg));
@@ -340,7 +343,8 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 //
                 //
                 //
-                g_tqqzz->Add("./template/root_output_files/ggzz_Moriond.root");
+		sprintf(filename,"./template/root_output_files/ggzz_Moriond_%d.root",year);
+                g_tqqzz->Add(filename);
                 //      else
                 //      tqqzz->Add("qqzz_80.root");
 
@@ -367,7 +371,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 int g_channel;
                 g_tqqzz->SetBranchAddress("mreco",&g_ZZMass);
 
-                if(cate_vbf!=1){
+                if(cate_vbf==1){
                        g_tqqzz->SetBranchAddress("weight",&g_weight);
                        g_tqqzz->SetBranchAddress("weight_up",&g_weight_up);
                        g_tqqzz->SetBranchAddress("weight_dn",&g_weight_dn);
@@ -406,9 +410,10 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 if(highmass==0)
                        g_rho=4;
                 RooDataSet g_bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",g_cuttree,RooArgSet(*g_mreco,*g_wt),"weight");
-                RooKeysPdf g_qqzzpdf_1d("bkg_ggzz_1d","",*g_mreco,g_bkgdata,RooKeysPdf::MirrorBoth,g_rho);
+                RooKeysPdf g_qqzzpdf_1d("bkg_ggzz_1d"+chan+Form("_%d",cate_vbf),"",*g_mreco,g_bkgdata,RooKeysPdf::MirrorBoth,g_rho);
 
-                TFile *g_ff = new TFile("./template/root_output_files/ggzz_Moriond.root");
+		sprintf(filename,"./template/root_output_files/qqzz_Moriond_%d.root",year);
+                TFile *g_ff = new TFile(filename);
                 TH2F *g_temp_zz=(TH2F*)g_ff->Get("temp_zz_"+chan);
 
                 for(int bx=0;bx<g_temp_zz->GetNbinsX();bx++){
@@ -458,7 +463,8 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 //
                 //
                 //
-                vbs_tqqzz->Add("./template/root_output_files/vbs_Moriond.root");
+                sprintf(filename,"./template/root_output_files/vbs_Moriond_%d.root",year);
+                vbs_tqqzz->Add(filename);
                 //      else
                 //      tqqzz->Add("qqzz_80.root");
 
@@ -485,7 +491,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 int vbs_channel;
                 vbs_tqqzz->SetBranchAddress("mreco",&vbs_ZZMass);
 
-                if(cate_vbf!=1){
+                if(cate_vbf==1){
                        vbs_tqqzz->SetBranchAddress("weight",&vbs_weight);
                        vbs_tqqzz->SetBranchAddress("weight_up",&vbs_weight_up);
                        vbs_tqqzz->SetBranchAddress("weight_dn",&vbs_weight_dn);
@@ -524,9 +530,11 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 if(highmass==0)
                        vbs_rho=4;
                 RooDataSet vbs_bkgdata ("bkgdata"+chan+Form("_%d",cate_vbf),"",vbs_cuttree,RooArgSet(*vbs_mreco,*vbs_wt),"weight");
-                RooKeysPdf vbs_qqzzpdf_1d("bkg_vbs_1d","",*vbs_mreco,vbs_bkgdata,RooKeysPdf::MirrorBoth,vbs_rho);
+                RooKeysPdf vbs_qqzzpdf_1d("bkg_vbs_1d"+chan+Form("_%d",cate_vbf),"",*vbs_mreco,vbs_bkgdata,RooKeysPdf::MirrorBoth,vbs_rho);
 
-                TFile *vbs_ff = new TFile("./template/root_output_files/vbs_Moriond.root");
+		sprintf(filename,"./template/root_output_files/vbs_Moriond_%d.root",year);
+		
+                TFile *vbs_ff = new TFile(filename);
                 TH2F *vbs_temp_zz=(TH2F*)vbs_ff->Get("temp_zz_"+chan);
 
                 for(int bx=0;bx<vbs_temp_zz->GetNbinsX();bx++){
@@ -592,22 +600,22 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//	w.import(qqzzpdf_dn,RecycleConflictNodes());
 		//	w.import(*int_qq,RecycleConflictNodes());
 		//w.import(*zjetpdf,RecycleConflictNodes());
-TFile *fwork ;
-if(highmass==0)
-	fwork= new TFile("workspace/qqzz_hzz4l_"+chan+Form("%dS_13TeV.input_func.root",cate_vbf),"recreate");
-if(highmass==1)
-	fwork= new TFile("workspace/qqzz_hzz4l_"+chan+Form("%dS_13TeV.input_func.root",cate_vbf),"recreate");
-	if(highmass==2){
-		if(is2D)
-			fwork= new TFile("workspace/qqzz_hzz4l_"+chan+Form("%dS_13TeV.input_func.root",cate_vbf),"recreate");
-		else
-			fwork= new TFile("workspace/qqzz_hzz4l_"+chan+Form("%dS_13TeV.input_func.root",cate_vbf),"recreate");
-	}
-fwork->cd();
-w.Write();
-fwork->Close();
+		TFile *fwork ;
+		if(highmass==0)
+		  fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		if(highmass==1)
+		  fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		if(highmass==2){
+		  if(is2D)
+		    fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		  else
+		    fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		}
+		fwork->cd();
+		w.Write();
+		fwork->Close();
 }
 
-void bkgWorkspace(TString chan, int vbfcate, int highmass, int is2D){
-	dosomething(chan,vbfcate,highmass,is2D);
+void bkgWorkspace(TString chan, int vbfcate, int highmass, int is2D,int year){
+  dosomething(chan,vbfcate,highmass,is2D,year);
 }

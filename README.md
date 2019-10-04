@@ -26,22 +26,21 @@ The necessary variables (ZZMass dbkg_kin weight) will be stored in ZX(+suffix).r
 
 <b> 4l channel </b>
 
-For this part the following CMSSW version was used: CMSSW_7_4_7
+zx.c -> Reads the ZX(+suffix).root file, which is the final step of the data-driven ZX monte carlo generation procedure. The output file is zx_<year>.root (taken in input by plotterAndTemplateMaker.c).
 
-plotter.c -> The file reads 4l MC + data (from relevant repositories), togetherwith the data driven zx component, contained in the zx.root file. It performs relevant selection, mela cuts, kin_variable generation. The output is the 1D histogram portarying all contributions.
+plotterAndTemplateMaker.c -> The file reads 4l MC + data (from relevant repositories), together with the data driven zx component, contained in the ZX(+suffix).root file. It performs relevant selection, mela cuts, kin_variable generation. The output is:
+- 1D pictures portraying all contributions (<directory>/<variable>_<useOfNLOMC>_<year>.png)
+- 2D templates, selected trees and their pictures (in template/root_output_files/ divided by MC/data contributions) 
 
-bkg_Workspace.c -> Generation of templates for signal and background (devided by component: vbs, qqZZ etc..). The templates are created at workspace level and saved accordingly.
+bkg_Workspace.c -> Generation of RooWorkspaces for signal and background (devided by component: vbs, qqZZ etc..). The templates are created at workspace level and saved accordingly.
 
 The code is run with:
 
 source runbkg.sh 
 
-zx.c -> Reads the ZX.root file, which is the final step of the data-driven ZX monte carlo generation procedure. The output file is zx.root (taken in input by plotter.c and new_plotter.c as explained above).
-
 <b> Combine </b>
 
-All cards can be found in the COMBINATION_FOLDER, with sub-directories for single channels and combination of channels. I suggest a double check on the systematics and whether all channels and processes are correctly included/positioned in the right column etc. The following are the Combine commands which I used:
-
+All cards can be found in the COMBINATION_FOLDER, with sub-directory 4l. I suggest a double check on the systematics and whether all channels and processes are correctly included/positioned in the right column etc. The following are the Combine commands which I used:
 
 To combine multiple cards: 
 
@@ -49,15 +48,15 @@ combineCards.py Name1=old_card1.txt Name2=old_card2.txt .... > new_card.txt
 
 To run the likelihood analysis (expected significance, without systematics): 
 
-combine -M ProfileLikelihood --significance card_name.txt -t -1 --expectSignal=1 -S 0 --toysFreq
+combine -M Significance card_name.txt -t -1 --expectSignal=1 --freezeNuisanceGroups=all
 
 To run the likelihood analysis (expected significance, with systematics): 
 
-combine -M ProfileLikelihood --significance card_name.txt -t -1 --expectSignal=1 -S 1 --toysFreq
+combine -M Significance card_name.txt -t -1 --expectSignal=1
 
 To run the likelihood analysis (observed significance): 
 
-combine -M ProfileLikelihood --significance card_name.txt 
+combine -M Significance card_name.txt 
 
 
 <b> Note </b>

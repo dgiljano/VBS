@@ -2,18 +2,15 @@ imax 3 number of bins
 jmax 3 number of processes minus 1
 kmax 11 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
-shapes *            ch1_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/vbs4l_4mu1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
-shapes *            ch2_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/vbs4l_4e1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
-shapes *            ch3_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/vbs4l_2e2mu1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
-----------------------------------------------------------------------------------------------------------------------------------
 bin          ch1_ch1_ch2  ch2_ch1_ch2  ch3_ch1_ch2 
-observation  29	          20	       69   
-#observation  -1	          -1	       -1
+#observation  29	          20	       69   
+observation  -1	          -1	       -1
 ----------------------------------------------------------------------------------------------------------------------------------
 bin                                   ch1_ch1_ch2  ch1_ch1_ch2  ch1_ch1_ch2  ch1_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2 
 process                               bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz   
 process                               0            1            2            3            0            1            2            3            0            1            2            3           
-rate                                  2.15427	   2.00933 	17.1208	     5.71263	  1.19477      1.97468 	    9.1128	 3.77645      3.15765	   3.96839 	24.008	     9.7088          
+rate                                  3.03355      0.42204      0.78237      1.3710       1.75306      0.41477      0.43059      0.78531      4.76799      0.83354      1.592688     2.0336
+#rate                                  8.24356	   7.6736 	61.9521	     21.81602	  4.7981      7.5413 	    36.3458	 14.42206     12.63946 	   15.1553 	91.6915	     37.0774           
 ----------------------------------------------------------------------------------------------------------------------------------
 CMS_eff_e               lnN           -            -            -            -            1.08         -            1.08         1.08         1.04         -            1.04         1.04                     
 CMS_eff_m               lnN           1.05         -            1.05         1.05         -            -            -            -            1.025        -            1.025        1.025

@@ -14,7 +14,7 @@ using namespace RooFit;
 // cate_vbf =3 TLE
 //
 
-void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0,int year=2016){
+void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int isDbkg=0,int year=2016){
 
         float lumi = 35.9;
         if (year == 2017) lumi = 41.5;
@@ -202,9 +202,20 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 				}
 			}
 		}
+		TH1F *temp_1d=(TH1F*)ff->Get("temp_1d_"+chan);
+
+		for(int bx=0;bx<temp_1d->GetNbinsX();bx++){
+		  if(temp_1d->GetBinContent(bx+1)==0){
+		    temp_1d->SetBinContent(bx+1,1.0e-6);  
+		  }
+		}
+
 		RooDataHist* template_sig= new RooDataHist("temp_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),temp_zz);
 		RooHistPdf* pdf_2d_sig = new RooHistPdf("pdf_2d_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),*template_sig);
 		RooProdPdf *qqzzpdf_2d= new RooProdPdf("bkg_qqzz_2d_"+chan+Form("_%d",cate_vbf),"",qqzzpdf_1d,Conditional(*pdf_2d_sig,*dbkg));
+
+                RooDataHist* template_sig_1d= new RooDataHist("temp_1d_"+chan+Form("_%d",cate_vbf),"",*dbkg,temp_1d);
+		RooHistPdf* pdf_1d_sig = new RooHistPdf("pdf_1d_sig_"+chan+Form("_%d",cate_vbf),"",*dbkg,*template_sig_1d);
 
 // *********************************************************************************************************************************************************
 
@@ -286,13 +297,22 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 
 		sprintf(filename,"./template/root_output_files/zx%d.root",year);
 		TFile *fzjet = new TFile(filename);
-	
 		TH2F *temp_zjet=(TH2F*)fzjet->Get("zx_"+chan);
+                TH1F *temp_zjet_1d=(TH1F*)fzjet->Get("zx1d_"+chan);
+
+		for(int bx=0;bx<temp_zjet_1d->GetNbinsX();bx++){
+		  if(temp_zjet_1d->GetBinContent(bx+1)==0){
+		    temp_zjet_1d->SetBinContent(bx+1,1.0e-6);  
+		  }
+		}
 
 		RooDataHist* template_zx= new RooDataHist("temp_zx_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),temp_zjet);
 		RooHistPdf* pdf_2d_zx= new RooHistPdf("pdf_2d_zx"+chan+Form("_%d",cate_vbf),"",RooArgSet(*mreco,*dbkg),*template_zx);
 
 		RooProdPdf *zjetpdf_2d= new RooProdPdf("bkg_zjet_2d_"+chan+Form("_%d",cate_vbf),"",*zjetpdf_1d,Conditional(*pdf_2d_zx,*dbkg));
+
+		RooDataHist* template_zx_1d= new RooDataHist("temp_1d_"+chan+Form("_%d",cate_vbf),"",*dbkg,temp_zjet_1d);
+		RooHistPdf* pdf_1d_zx= new RooHistPdf("pdf_1d_zx"+chan+Form("_%d",cate_vbf),"",*dbkg,*template_zx_1d);
 
 		//zjetpdf_1d->plotOn(frame);
 		//frame->Draw();
@@ -306,7 +326,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 sprintf(filename,"./template/root_output_files/data_%d.root",year);
 		tdata->Add(filename);
 		TTree* reducetree= tdata->CopyTree(Form("chan==%d&&vbfcate==%d",channum,cate_vbf));
-		RooDataSet* data_obs_1d= new RooDataSet("data_obs_1d","data_obs_1d",reducetree,*mreco);
+		RooDataSet* data_obs_1d= new RooDataSet("data_obs_1d","data_obs_1d",reducetree,*dbkg);
 		RooDataSet* data_obs_2d = new RooDataSet("data_obs_2d","data_obs_2d",reducetree,RooArgSet(*mreco,*dbkg));
 
 
@@ -425,9 +445,21 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                                 }
                         }
                 }
+
+		TH1F *g_temp_1d=(TH1F*)g_ff->Get("temp_1d_"+chan);
+
+		for(int bx=0;bx<g_temp_1d->GetNbinsX();bx++){
+		  if(g_temp_1d->GetBinContent(bx+1)==0){
+		    g_temp_1d->SetBinContent(bx+1,1.0e-6);  
+		  }
+		}
+
                 RooDataHist* g_template_sig= new RooDataHist("g_temp_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*g_mreco,*g_dbkg),g_temp_zz);
                 RooHistPdf* g_pdf_2d_sig = new RooHistPdf("g_pdf_2d_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*g_mreco,*g_dbkg),*g_template_sig);
                 RooProdPdf *g_qqzzpdf_2d= new RooProdPdf("bkg_ggzz_2d_"+chan+Form("_%d",cate_vbf),"",g_qqzzpdf_1d,Conditional(*g_pdf_2d_sig,*g_dbkg));
+
+		RooDataHist* g_template_sig_1d= new RooDataHist("g_temp_sig_1d_"+chan+Form("_%d",cate_vbf),"",*g_dbkg,g_temp_1d);
+                RooHistPdf* g_pdf_1d_sig = new RooHistPdf("g_pdf_1d_sig_"+chan+Form("_%d",cate_vbf),"",*g_dbkg,*g_template_sig_1d);
 
 // *********************************************************************************************************************************************************
 
@@ -526,6 +558,7 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                                 vbs_cuttree->Fill();
                         }
                 }
+		
 
                 //Remember to revert
                 double vbs_rho =1;
@@ -546,6 +579,14 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                                 }
                         }
                 }
+		
+		TH1F *vbs_temp_1d=(TH1F*)vbs_ff->Get("temp_1d_"+chan);
+
+		for(int bx=0;bx<vbs_temp_1d->GetNbinsX();bx++){
+		  if(vbs_temp_1d->GetBinContent(bx+1)==0){
+		    vbs_temp_1d->SetBinContent(bx+1,1.0e-6);  
+		  }
+		}
 
 
                  if (channum == 3) {
@@ -558,24 +599,29 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
                 RooDataHist* vbs_template_sig= new RooDataHist("vbs_temp_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*vbs_mreco,*vbs_dbkg),vbs_temp_zz);
                 RooHistPdf* vbs_pdf_2d_sig = new RooHistPdf("vbs_pdf_2d_sig_"+chan+Form("_%d",cate_vbf),"",RooArgSet(*vbs_mreco,*vbs_dbkg),*vbs_template_sig);
                 RooProdPdf *vbs_qqzzpdf_2d= new RooProdPdf("bkg_vbs_2d_"+chan+Form("_%d",cate_vbf),"",vbs_qqzzpdf_1d,Conditional(*vbs_pdf_2d_sig,*vbs_dbkg));
+
+
+		RooDataHist* vbs_template_sig_1d= new RooDataHist("vbs_temp_sig_1d_"+chan+Form("_%d",cate_vbf),"",*vbs_dbkg,vbs_temp_1d);
+                RooHistPdf* vbs_pdf_1d_sig = new RooHistPdf("vbs_pdf_1d_sig_"+chan+Form("_%d",cate_vbf),"",*vbs_dbkg,*vbs_template_sig_1d);
+
 // *********************************************************************************************************************************************************
 
 
 
 
 // * Remember to revert
-		if(is2D){
-			data_obs_2d->SetNameTitle("data_obs","data_obs");
-			qqzzpdf_2d->SetNameTitle("bkg_qqzz","bkg_qqzz");
-			g_qqzzpdf_2d->SetNameTitle("bkg_ggzz","bkg_ggzz");
-			zjetpdf_2d->SetNameTitle("bkg_zjet","bkg_zjet");
-			vbs_qqzzpdf_2d->SetNameTitle("bkg_vbs","bkg_vbs");
+		if(isDbkg){
+			data_obs_1d->SetNameTitle("data_obs","data_obs");
+			pdf_1d_sig->SetNameTitle("bkg_qqzz","bkg_qqzz");
+			g_pdf_1d_sig->SetNameTitle("bkg_ggzz","bkg_ggzz");
+			pdf_1d_zx->SetNameTitle("bkg_zjet","bkg_zjet");
+			vbs_pdf_1d_sig->SetNameTitle("bkg_vbs","bkg_vbs");
 			
-			w.import(*qqzzpdf_2d);
-			w.import(*g_qqzzpdf_2d);
-			w.import(*vbs_qqzzpdf_2d);
-			w.import(*zjetpdf_2d);
-			w.import(*data_obs_2d);
+			w.import(*pdf_1d_sig);
+			w.import(*g_pdf_1d_sig);
+			w.import(*vbs_pdf_1d_sig);
+			w.import(*pdf_1d_zx);
+			w.import(*data_obs_1d);
 		}
 		else{
 			data_obs_1d->SetNameTitle("data_obs","data_obs");
@@ -604,20 +650,20 @@ void dosomething(TString chan="2e2mu", int cate_vbf=1, int highmass=0,int is2D=0
 		//w.import(*zjetpdf,RecycleConflictNodes());
 		TFile *fwork ;
 		if(highmass==0)
-		  fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		  fwork= new TFile("workspace/1D_vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
 		if(highmass==1)
-		  fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		  fwork= new TFile("workspace/1D_vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
 		if(highmass==2){
-		  if(is2D)
-		    fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		  if(isDbkg)
+		    fwork= new TFile("workspace/1D_vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
 		  else
-		    fwork= new TFile("workspace/vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
+		    fwork= new TFile("workspace/1D_vbs4l_"+chan+Form("%dS_%d_13TeV.input_func.root",cate_vbf,year),"recreate");
 		}
 		fwork->cd();
 		w.Write();
 		fwork->Close();
 }
 
-void bkgWorkspace(TString chan, int vbfcate, int highmass, int is2D,int year){
-  dosomething(chan,vbfcate,highmass,is2D,year);
+void bkgWorkspace1d(TString chan, int vbfcate, int highmass, int isDbkg,int year){
+  dosomething(chan,vbfcate,highmass,isDbkg,year);
 }

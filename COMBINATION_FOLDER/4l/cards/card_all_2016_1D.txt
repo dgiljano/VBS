@@ -1,0 +1,35 @@
+imax 3 number of bins
+jmax 3 number of processes minus 1
+kmax 11 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *            ch1_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4l_4mu1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
+shapes *            ch2_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4l_4e1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
+shapes *            ch3_ch1_ch2  /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4l_2e2mu1S_2016_13TeV.input_func.root w:$PROCESS w:$PROCESS_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------------------------------------
+bin          ch1_ch1_ch2  ch2_ch1_ch2  ch3_ch1_ch2 
+observation  29	          20	       69   
+#observation  -1	          -1	       -1
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                   ch1_ch1_ch2  ch1_ch1_ch2  ch1_ch1_ch2  ch1_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch2_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2  ch3_ch1_ch2 
+process                               bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz   
+process                               0            1            2            3            0            1            2            3            0            1            2            3           
+#rate                                  2.15427	   2.00933 	17.1208	     5.71263	  1.19477      1.97468 	    9.1128	 3.77645      3.15765	   3.96839 	24.008	     9.7088          
+rate                                   1.88852	  1.46864 	14.8097	    5.78895	1.05085	      1.43402 	    7.82524	3.72779	      2.79161	 2.88707 	20.9818	     9.69629  
+----------------------------------------------------------------------------------------------------------------------------------
+CMS_eff_e               lnN           -            -            -            -            1.08         -            1.08         1.08         1.04         -            1.04         1.04                     
+CMS_eff_m               lnN           1.05         -            1.05         1.05         -            -            -            -            1.025        -            1.025        1.025
+CMS_hzz2e2mu_Zjets      lnN           -            -            -            -            -            -            -            -            -            0.621/1.387  -            -
+CMS_hzz4e_Zjets         lnN           -            -            -            -            -            0.595/1.427  -            -            -            -            -            -
+CMS_hzz4mu_Zjets        lnN           -            0.639/1.362  -            -            -            -            -            -            -            -            -            -
+JES                     lnN           1.14         -            1.085        1.14         1.14         -            1.085        1.14         1.14         -            1.085        1.14 
+SistPDF2                lnN           1.021         -            1.031        1.032       1.021        -            1.031        1.032        1.021         -            1.031       1.032
+QCDScale_vbf            lnN           1.01        -              -           -            1.01         -            -        	 -            1.01        -            -             -
+QCDScale_ggZZ           lnN           -            -              -          1.09         -         -            -        	 1.09         -        -            -             1.09
+QCDscale_ZZ		lnN           -            -            1.032        -            -            -            1.032        -            -            -            1.032        -
+lumi_13TeV              lnN           1.026        -            1.026        1.026        1.026        -            1.026        1.026        1.026        -            1.026        1.026
+
+# lumiScaler rateParam * * 1
+theory group = SistPDF2 QCDScale_vbf QCDScale_ggZZ QCDscale_ZZ 
+experiment group = CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets JES lumi_13TeV 
+all group = SistPDF2 QCDScale_vbf QCDScale_ggZZ QCDscale_ZZ CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets JES lumi_13TeV
+# nuisance edit freeze lumiScaler

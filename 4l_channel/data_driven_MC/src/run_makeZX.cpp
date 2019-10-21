@@ -18,9 +18,9 @@ int main( int argc, char *argv[] ){
 
 	vector<float> _fs_ROS_SS;
 	_fs_ROS_SS.push_back(1.22);//4mu
-	_fs_ROS_SS.push_back(0.97);//4e
+	_fs_ROS_SS.push_back(0.27);//4e
 	_fs_ROS_SS.push_back(1.30);//2e2mu
-	_fs_ROS_SS.push_back(0.98);//2mu2e
+	_fs_ROS_SS.push_back(0.28);//2mu2e
 	// 2016
  
         char name[200];
@@ -63,6 +63,8 @@ int main( int argc, char *argv[] ){
 	data.fChain->SetBranchStatus("nCleanedJetsPt30", 1);
 	data.fChain->SetBranchStatus("Z1Flav", 1);
 	data.fChain->SetBranchStatus("Z2Flav", 1);
+	data.fChain->SetBranchStatus("Z1Mass", 1);
+	data.fChain->SetBranchStatus("Z2Mass", 1);
 	data.fChain->SetBranchStatus("LepEta", 1);
 	data.fChain->SetBranchStatus("LepPt", 1);
         data.fChain->SetBranchStatus("JetEta", 1);
@@ -94,7 +96,7 @@ int main( int argc, char *argv[] ){
 	float ZZMassErrCorr_new;
 	short njet;
 
-        sprintf(name,"ZX%d_bkgdEnr.root",year);
+        sprintf(name,"ZX%d_pt50.root",year);
 	TFile *f = new TFile(name,"recreate");
 	TTree *tnew =new TTree("candTree","");
 	tnew->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
@@ -141,8 +143,11 @@ int main( int argc, char *argv[] ){
 		// if( data.ZZMass > 160  && fabs(data.DiJetDEta) > 1 && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		// no deta cut
 		// if( data.ZZMass > 160  && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		// old fiducial region
+                // if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60){
+                if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
 		// bkgd enriched
-		if( data.ZZMass > 160  && data.DiJetMass > 100 && (fabs(data.DiJetDEta) < 2.4 || data.DiJetMass < 400) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		// if( data.ZZMass > 160  && data.DiJetMass > 100 && (fabs(data.DiJetDEta) < 2.4 || data.DiJetMass < 400) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		  vbfcate=1;
 			//}
 		weight = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(data.LepPt->at(2),data.LepEta->at(2),data.LepLepId->at(2))*FR->GetFakeRate(data.LepPt->at(3),data.LepEta->at(3),data.LepLepId->at(3));

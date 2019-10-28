@@ -3,8 +3,10 @@
 #include <TString.h>
 #include <memory>
 
-TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
+//just a git exercise
 
+TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
+  
   char filename[300];    char pname[30];
   if (itype == 0) sprintf(pname,"qqzz");
   if (itype == 1) sprintf(pname,"ggzz");

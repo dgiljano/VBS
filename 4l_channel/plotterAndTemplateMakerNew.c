@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-//just a git exercise
+string jet_pt_cut = "jet_pt_gt_30";
 
 TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
   
@@ -37,12 +37,12 @@ TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
     }
 
    result->Draw("colz");
-   sprintf(filename,"template/plots/%s_%s_pt50_%d.png",orig->GetName(),pname,year);
+   sprintf(filename,"template/plots/%s_%s_%s_%d.png",orig->GetName(),pname,jet_pt_cut.c_str(),year);
    gPad->Print(filename);
    return result;    
 }
 
-void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
+void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1){
   
        //useMCatNLO = 0 : use just POWHEG
        //useMCatNLO = 1 : use just aMCatNLO
@@ -136,7 +136,7 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	float c_constant = 8.5;
         // if (year == 2017) c_constant = 3.5;
 	// if (year == 2018) c_constant = 3.5; 
-	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
+	TFile* f_ = TFile::Open("/home/llr/cms/giljanovic/scratch/CMSSW_10_2_15/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
 	TSpline3* ts = (TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone());
 	f_->Close();
 
@@ -198,10 +198,10 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	TH2F *temp_zz_2e2mu[4];
 
 	for (int it=0; it < 4; it++) {
-	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_pt50_%d.root",year); 
-	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_pt50_%d.root",year); 
-	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_pt50_%d.root",year); 
-	  if (it==3) sprintf(filename,"template/root_output_files/data_pt50_%d.root",year); 
+	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%s_%d.root",jet_pt_cut.c_str(), year); 
+	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%s_%d.root",jet_pt_cut.c_str(), year); 
+	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%s_%d.root",jet_pt_cut.c_str(), year); 
+	  if (it==3) sprintf(filename,"template/root_output_files/data_%s_%d.root",jet_pt_cut.c_str(), year); 
 	  fnew[it] = new TFile(filename,"recreate");
 	  tnew[it] = new TTree("SelectedTree","SelectedTree");
 	  tnew[it]->Branch("mreco",&ZZMass,"mreco/F");
@@ -296,9 +296,9 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	   	    //unique selection condition (see paper page 8) & DiJetMass condition
 	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	    
-	    // if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
 	    
-	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
+	    //if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 	      
 	      //set vbf_category
 	      vbfcate=1;
@@ -436,7 +436,7 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
-	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d_pt50.root",year); 
+	sprintf(filename,"/home/llr/cms/giljanovic/scratch/VBS/CMSSW_10_2_15/src/vbs_analysis/4l_channel/data_driven_MC/ZX%d_%s.root",year, jet_pt_cut.c_str()); 
 	tqqzz_zx->Add(filename);
 	
 	//histogram declaration
@@ -485,13 +485,13 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	}
 	
 	//INTEGRAL CHECK
-	sprintf(filename,"MCyields_pt50_%d.txt",year);
+	sprintf(filename,"MCyields_%s_%d.txt",jet_pt_cut.c_str(), year);
 	ofstream yields(filename,std::fstream::app);
-        sprintf(filename,"datayields_pt50_%d.txt",year);
+        sprintf(filename,"datayields_%s_%d.txt",jet_pt_cut.c_str(), year);
 	ofstream yields2(filename,std::fstream::app);
-	sprintf(filename,"MCyields_highMELApt50_%d.txt",year);
+	sprintf(filename,"MCyields_highMELA_%s_%d.txt",jet_pt_cut.c_str(), year);
 	ofstream yields3(filename,std::fstream::app);
-        sprintf(filename,"datayields_highMELApt50_%d.txt",year);
+        sprintf(filename,"datayields_highMELA_%s_%d.txt",jet_pt_cut.c_str(), year);
 	ofstream yields4(filename,std::fstream::app);
 
 	for(int iv = 0; iv < vars; iv++){
@@ -670,9 +670,12 @@ void plotterAndTemplateMakerNew(int year = 2018, int useMCatNLO = 1){
 	  
 	  //close and print on file
 	  c1->cd();
-	  if (useMCatNLO == 0) sprintf(filename,"onlymjjCut_pt50/%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);      
-	  if (useMCatNLO == 1) sprintf(filename,"onlymjjCut_pt50/%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);     
-	  if (useMCatNLO == 2) sprintf(filename,"onlymjjCut_pt50/%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
+	  if (useMCatNLO == 0) sprintf(filename,"onlymjjCut_%s/%s_plot_allPOWHEG_%d.png",jet_pt_cut.c_str(), namegif[iv].c_str(),year);      
+	  if (useMCatNLO == 1) sprintf(filename,"onlymjjCut_%s/%s_plot_allMCatNLO_%d.png",jet_pt_cut.c_str(), namegif[iv].c_str(),year);     
+	  if (useMCatNLO == 2) sprintf(filename,"onlymjjCut_%s/%s_plot_MCatNLOshape_POWHEGint_%d.png",jet_pt_cut.c_str(), namegif[iv].c_str(),year);
 	  gPad->Print(filename);
+
+      cout << filename << endl;
+      c1->SaveAs(filename);
 	}
 }

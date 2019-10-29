@@ -14,7 +14,7 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] ){
 	
-        int year = 2018;
+        int year = 2016;
 
 	vector<float> _fs_ROS_SS;
 	_fs_ROS_SS.push_back(1.22);//4mu
@@ -24,25 +24,25 @@ int main( int argc, char *argv[] ){
 	// 2016
  
         char name[200];
-	if (year == 2016) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2016_Legacy.root");
-	if (year == 2017) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2017_Legacy.root"); 
-        if (year == 2018) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2018_Legacy.root");
+	if (year == 2016) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2016/FakeRates/FakeRates_SS_2016_Legacy.root");
+	if (year == 2017) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2017/FakeRates/FakeRates_SS_2017_Legacy.root"); 
+        if (year == 2018) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2018/FakeRates/FakeRates_SS_2018_Legacy.root");
 
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
         //2016
-	if (year == 2016) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2016/AllData/ZZ4lAnalysis.root");
+	if (year == 2016) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2016/AllData/ZZ4lAnalysis.root");
 	//2017
-        if (year == 2017) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2017/AllData/ZZ4lAnalysis.root");
+        if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root");
 	//2018
-        if (year == 2018) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2018/AllData/ZZ4lAnalysis.root");
+        if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2018/AllData/ZZ4lAnalysis.root");
 
 	float c_constant = 8.5;
         //if (year == 2017) c_constant = 2.3;
 	//if (year == 2018) c_constant = 2.3; 
         
-	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
+	TFile* f_ = TFile::Open("/home/llr/cms/giljanovic/scratch/CMSSW_10_2_15/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
 	TSpline3* ts = (TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone());
 	f_->Close();
 

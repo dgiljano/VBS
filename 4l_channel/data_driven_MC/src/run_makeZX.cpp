@@ -14,7 +14,8 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] ){
 	
-        int year = 2016;
+    int year = 2016;
+    string pt_cut = "jet_pt_gt_30";
 
 	vector<float> _fs_ROS_SS;
 	_fs_ROS_SS.push_back(1.22);//4mu
@@ -23,23 +24,23 @@ int main( int argc, char *argv[] ){
 	_fs_ROS_SS.push_back(0.28);//2mu2e
 	// 2016
  
-        char name[200];
+    char name[200];
 	if (year == 2016) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2016/FakeRates/FakeRates_SS_2016_Legacy.root");
 	if (year == 2017) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2017/FakeRates/FakeRates_SS_2017_Legacy.root"); 
-        if (year == 2018) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2018/FakeRates/FakeRates_SS_2018_Legacy.root");
+    if (year == 2018) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2018/FakeRates/FakeRates_SS_2018_Legacy.root");
 
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
-        //2016
+    //2016
 	if (year == 2016) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2016/AllData/ZZ4lAnalysis.root");
 	//2017
-        if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root");
+    if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root");
 	//2018
-        if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2018/AllData/ZZ4lAnalysis.root");
+    if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2018/AllData/ZZ4lAnalysis.root");
 
 	float c_constant = 8.5;
-        //if (year == 2017) c_constant = 2.3;
+    //if (year == 2017) c_constant = 2.3;
 	//if (year == 2018) c_constant = 2.3; 
         
 	TFile* f_ = TFile::Open("/home/llr/cms/giljanovic/scratch/CMSSW_10_2_15/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
@@ -51,7 +52,7 @@ int main( int argc, char *argv[] ){
 	cout<< nentries<<endl;
 	data.fChain->SetBranchStatus("*", 0);
 	data.fChain->SetBranchStatus("DiJetMass", 1);
-        data.fChain->SetBranchStatus("DiJetDEta", 1);
+    data.fChain->SetBranchStatus("DiJetDEta", 1);
 	data.fChain->SetBranchStatus("ZZMass", 1);
 	data.fChain->SetBranchStatus("ZZMassErrCorr", 1);
 	data.fChain->SetBranchStatus("p_JJQCD_SIG_ghg4_1_JHUGen_JECNominal", 1);
@@ -67,7 +68,7 @@ int main( int argc, char *argv[] ){
 	data.fChain->SetBranchStatus("Z2Mass", 1);
 	data.fChain->SetBranchStatus("LepEta", 1);
 	data.fChain->SetBranchStatus("LepPt", 1);
-        data.fChain->SetBranchStatus("JetEta", 1);
+    data.fChain->SetBranchStatus("JetEta", 1);
 	data.fChain->SetBranchStatus("JetPt", 1);      
 	data.fChain->SetBranchStatus("LepLepId", 1);
 	data.fChain->SetBranchStatus("p_QQB_BKG_MCFM", 1);
@@ -82,12 +83,12 @@ int main( int argc, char *argv[] ){
 	float dbkg_kin;
 	float dbkg;
 	float ZZMass_new;
-        float dijmass_new;
-        float dijeta_new;
-        float ptjet1;
-        float ptjet2;
-        float etajet1;
-        float etajet2;   
+    float dijmass_new;
+    float dijeta_new;
+    float ptjet1;
+    float ptjet2;
+    float etajet1;
+    float etajet2;   
 	int chan;
 	int vbfcate;
 	float weight;
@@ -96,18 +97,19 @@ int main( int argc, char *argv[] ){
 	float ZZMassErrCorr_new;
 	short njet;
 
-        sprintf(name,"ZX%d_pt50.root",year);
+    sprintf(name,"ZX%d_%s.root",year,pt_cut.c_str());
 	TFile *f = new TFile(name,"recreate");
+
 	TTree *tnew =new TTree("candTree","");
 	tnew->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
 	tnew->Branch("dbkg",&dbkg,"dbkg/F");
 	tnew->Branch("ZZMass",&ZZMass_new,"ZZMass/F");
-        tnew->Branch("DiJetMass",&dijmass_new,"DiJetMass/F");
+    tnew->Branch("DiJetMass",&dijmass_new,"DiJetMass/F");
 	tnew->Branch("DiJetDEta",&dijeta_new,"DiJetDEta/F");
-        tnew->Branch("ptjet1",&ptjet1,"ptjet1/F");
-        tnew->Branch("ptjet2",&ptjet2,"ptjet2/F");
-        tnew->Branch("etajet1",&etajet1,"etajet1/F");
-        tnew->Branch("etajet2",&etajet2,"etajet2/F");
+    tnew->Branch("ptjet1",&ptjet1,"ptjet1/F");
+    tnew->Branch("ptjet2",&ptjet2,"ptjet2/F");
+    tnew->Branch("etajet1",&etajet1,"etajet1/F");
+    tnew->Branch("etajet2",&etajet2,"etajet2/F");
 	tnew->Branch("ZZMassErrCorr",&ZZMassErrCorr_new,"ZZMassErrCorr/F");
 	tnew->Branch("weight",&weight,"weight/F");
 	tnew->Branch("chan",&chan,"chan/I");
@@ -144,8 +146,8 @@ int main( int argc, char *argv[] ){
 		// no deta cut
 		// if( data.ZZMass > 160  && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		// old fiducial region
-                // if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60){
-                if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
+        if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60){
+                //if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
 		// bkgd enriched
 		// if( data.ZZMass > 160  && data.DiJetMass > 100 && (fabs(data.DiJetDEta) < 2.4 || data.DiJetMass < 400) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		  vbfcate=1;
@@ -159,12 +161,12 @@ int main( int argc, char *argv[] ){
 
 		dbkg = data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*data.p_m4l_SIG / ( data.p_m4l_SIG*data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + data.p_m4l_BKG*data.p_QQB_BKG_MCFM*getDbkgkinConstant(data.Z1Flav*data.Z2Flav,data.ZZMass) );
 		ZZMass_new= data.ZZMass;
-                dijmass_new= data.DiJetMass;
-                dijeta_new= data.DiJetDEta;
-                ptjet1=data.JetPt->at(0);
-                ptjet2=data.JetPt->at(1);
-                etajet1=data.JetEta->at(0);
-                etajet2=data.JetEta->at(1);
+        dijmass_new= data.DiJetMass;
+        dijeta_new= data.DiJetDEta;
+        ptjet1=data.JetPt->at(0);
+        ptjet2=data.JetPt->at(1);
+        etajet1=data.JetEta->at(0);
+        etajet2=data.JetEta->at(1);
 		ZZMassErrCorr_new= data.ZZMassErrCorr;
 		}
 		tnew->Fill();

@@ -108,6 +108,21 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	TH1F *h0_em[vars];//vbs e mu
 	TH1F *hnum[vars];//for 2018 rescale
 	TH1F *hden[vars];//for 2018 rescale
+	
+	//TF_8 and TF_9 files
+	Float_t bins_FT8[] = { 0, 200, 300, 400, 500, 600, 800, 1000, 1200, 1400 };
+
+	TFile *f_ewk_FT8 = new TFile("aQGC/ewk_FT8.root");
+	TH1F *hewk_FT8 = new TH1F("ewk_FT8","ewk_FT8", 9, bins_FT8);
+	hewk_FT8 = (TH1F*)f_ewk_FT8->Get("BLS_h3_1_rescaled_FT8_1");
+	//f_ewk_FT8->Close();
+
+	TFile *f_ewk_FT9 = new TFile("aQGC/ewk_FT9.root");
+	TH1F *hewk_FT9 = new TH1F("ewk_FT9","ewk_FT9", 9, bins_FT8);
+	hewk_FT9 = (TH1F*)f_ewk_FT9->Get("BLS_h3_1_rescaled_FT9_2");
+	//f_ewk_FT9->Close();
+
+	//hewk_FT8->Draw();
 
 	for(int iv = 0; iv < vars; iv++)
 	{
@@ -708,6 +723,31 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 			kin_zz_zx[iv]->SetBinContent(kin_zz_zx[iv]->GetNbinsX(), kin_zz_zx[iv]->GetBinContent(kin_zz_zx[iv]->GetNbinsX()) + kin_zz_zx[iv]->GetBinContent(kin_zz_zx[iv]->GetNbinsX() + 1));	//full Z+X (green)
 			h0[iv]->SetBinContent(h0[iv]->GetNbinsX(), h0[iv]->GetBinContent(h0[iv]->GetNbinsX()) + h0[iv]->GetBinContent(h0[iv]->GetNbinsX() + 1));	//data
 		}
+
+		//saving EWK histogram in root file for aQGC part
+		if (iv == 1)
+		{
+			TFile *ewk_hist = new TFile("ewk.root","recreate");
+			h3[iv]->Write();
+			ewk_hist->Write();
+			ewk_hist->Close();
+		}
+
+		//FT8 and FT9 ADDED TO STACK
+		if (iv == 1)
+		{
+			hewk_FT8->Add(h5[iv], 1);
+			hewk_FT8->SetLineColor(kYellow+1);
+			hewk_FT8->SetLineWidth(3);
+			hewk_FT8->SetLineStyle(9);
+			//hewk_FT8->SetFillColor(kYellow+1);
+			
+			hewk_FT9->Add(h5[iv], 1);
+			hewk_FT9->SetLineColor(kRed+1);
+			hewk_FT9->SetLineWidth(3);
+			hewk_FT9->SetLineStyle(9);
+			//hewk_FT9->SetFillColor(kRed+1);
+		}
 		
 	  
 	  	//add histograms to stack
@@ -717,6 +757,13 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	  	hs[iv]->Add(kin_zz_zx[iv],"hist");
 	  	TH1F *h0divide = (TH1F*)h0[iv]->Clone();
 	  	hs[iv]->Add(h0[iv],"E1");
+		if (iv == 1)
+		{
+			cout << "TUUUUUUU";
+			hs[iv]->Add(hewk_FT8);
+			cout << "OPET TUUUUUUUU";
+			hs[iv]->Add(hewk_FT9);
+		}
 	  
 	  	// draw the legend
 	  	TLegend *legend=new TLegend(0.6,0.65,0.88,0.85);

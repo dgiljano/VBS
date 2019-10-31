@@ -63,7 +63,7 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 
 	static const int vars = 6;
     string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
-    string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175","Events/5 GeV","Events/0.25"};     
+    string titley[vars] = {"Events/bin","Events/bin","Events/bin GeV","Events/bin","Events/bin","Events/bin"};     
 	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
     int bins[vars] = {20,20,20,20,30,20};
     float xmin[vars] = {0.,0.,100.,0.,0.,-5.};
@@ -686,6 +686,7 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	    	// else 
 	    	hnum[iv]->Scale(powheg_integral/hnum[iv]->Integral());
 	  	}
+
 	  
 	  	//HISTOGRAMS ADDED TO STACK
 	  	kin_zz_zx[iv]->SetFillColor(kGreen);
@@ -696,6 +697,18 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	  	h4[iv]->SetFillColor(kBlue);
 	  	h5[iv]->Add(h4[iv],h3[iv],1,1);    //real vbs
 	  	h5[iv]->SetFillColor(kMagenta);
+
+
+		//INCLUDING OVERFLOW INTO THE LAST BIN (for m4l plot)
+		if (iv == 1)
+		{
+			h5[iv]->SetBinContent(h5[iv]->GetNbinsX(), h5[iv]->GetBinContent(h5[iv]->GetNbinsX()) + h5[iv]->GetBinContent(h5[iv]->GetNbinsX() + 1));	//gg+ew+vbs (magenta -> signal)
+			h4[iv]->SetBinContent(h4[iv]->GetNbinsX(), h4[iv]->GetBinContent(h4[iv]->GetNbinsX()) + h4[iv]->GetBinContent(h4[iv]->GetNbinsX() + 1));	//gg+ew ->real gg (blue)
+			h1bis[iv]->SetBinContent(h1bis[iv]->GetNbinsX(), h1bis[iv]->GetBinContent(h1bis[iv]->GetNbinsX()) + h1bis[iv]->GetBinContent(h1bis[iv]->GetNbinsX() + 1));	//real ew (cyan)
+			kin_zz_zx[iv]->SetBinContent(kin_zz_zx[iv]->GetNbinsX(), kin_zz_zx[iv]->GetBinContent(kin_zz_zx[iv]->GetNbinsX()) + kin_zz_zx[iv]->GetBinContent(kin_zz_zx[iv]->GetNbinsX() + 1));	//full Z+X (green)
+			h0[iv]->SetBinContent(h0[iv]->GetNbinsX(), h0[iv]->GetBinContent(h0[iv]->GetNbinsX()) + h0[iv]->GetBinContent(h0[iv]->GetNbinsX() + 1));	//data
+		}
+		
 	  
 	  	//add histograms to stack
 	  	hs[iv]->Add(h5[iv],"hist");

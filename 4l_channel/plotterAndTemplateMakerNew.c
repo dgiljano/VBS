@@ -724,13 +724,33 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 			h0[iv]->SetBinContent(h0[iv]->GetNbinsX(), h0[iv]->GetBinContent(h0[iv]->GetNbinsX()) + h0[iv]->GetBinContent(h0[iv]->GetNbinsX() + 1));	//data
 		}
 
-		//saving EWK histogram in root file for aQGC part
+		//saving EWK, qq, gg and data histogram in root file for aQGC part
 		if (iv == 1)
 		{
 			TFile *ewk_hist = new TFile("ewk.root","recreate");
 			h3[iv]->Write();
 			ewk_hist->Write();
 			ewk_hist->Close();
+
+			TFile *qq_hist = new TFile("qq.root","recreate");
+			h1[iv]->Write();
+			qq_hist->Write();
+			qq_hist->Close();
+
+			TFile *gg_hist = new TFile("gg.root","recreate");
+			h2[iv]->Write();
+			gg_hist->Write();
+			gg_hist->Close();
+
+			TFile *data_hist = new TFile("data.root","recreate");
+			h0[iv]->Write();
+			data_hist->Write();
+			data_hist->Close();
+
+			TFile *zx_hist = new TFile("zx.root","recreate");
+			kin_zz_zx[iv]->Write();
+			zx_hist->Write();
+			zx_hist->Close();
 		}
 
 		//FT8 and FT9 ADDED TO STACK

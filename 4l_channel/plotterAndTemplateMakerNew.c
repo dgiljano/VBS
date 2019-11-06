@@ -751,6 +751,25 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 			kin_zz_zx[iv]->Write();
 			zx_hist->Write();
 			zx_hist->Close();
+
+			TFile *h_all_contributions = new TFile("./aQGC/raw_histos/all_contributions.root", "recreate");
+			TH1F *h_ewk = (TH1F*) h3[iv]->Clone();
+			h_ewk->SetName("diboson");
+			h_ewk->Write();
+			TH1F *h_qq = (TH1F*) h1[iv]->Clone();
+			h_qq->SetName("QCD_qq");
+			h_qq->Write();
+			TH1F *h_gg = (TH1F*) h2[iv]->Clone();
+			h_gg->SetName("QCD_gg");
+			h_gg->Write();
+			TH1F *h_data = (TH1F*) h0[iv]->Clone();
+			h_data->SetName("data_obs");
+			h_data->Write();
+			TH1F *h_zx = (TH1F*) kin_zz_zx[iv]->Clone();
+			h_zx->SetName("ZpX");
+			h_zx->Write();
+			
+			h_all_contributions->Close();
 		}
 
 		//FT8 and FT9 ADDED TO STACK
@@ -779,9 +798,7 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	  	hs[iv]->Add(h0[iv],"E1");
 		if (iv == 1)
 		{
-			cout << "TUUUUUUU";
 			hs[iv]->Add(hewk_FT8);
-			cout << "OPET TUUUUUUUU";
 			hs[iv]->Add(hewk_FT9);
 		}
 	  

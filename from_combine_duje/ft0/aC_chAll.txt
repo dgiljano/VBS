@@ -1,0 +1,30 @@
+
+# Simple counting experiment, with one signal and a few background processes 
+imax 1  number of channels
+jmax 3  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes anomalousCoupling_bkg1_chAll  chAll ./chAll_ws.root proc_chAll:$PROCESS proc_chAll:$PROCESS_$SYSTEMATIC
+shapes anomalousCoupling_bkg2_chAll  chAll ./chAll_ws.root proc_chAll:$PROCESS proc_chAll:$PROCESS_$SYSTEMATIC
+shapes anomalousCoupling_bkg3_chAll  chAll ./chAll_ws.root proc_chAll:$PROCESS proc_chAll:$PROCESS_$SYSTEMATIC
+shapes data_obs                chAll ./chAll_ws.root proc_chAll:$PROCESS    
+shapes anoCoupl_process_chAll chAll ./chAll_ws.root proc_chAll:ATGCPdf_$PROCESS
+   
+------------
+bin chAll 
+observation 100.0
+------------
+bin                         chAll					chAll			chAll			chAll       
+process			    anoCoupl_process_chAll    	anomalousCoupling_bkg1_chAll	anomalousCoupling_bkg2_chAll	anomalousCoupling_bkg3_chAll       
+process                     0	  	       				1 				2 				3       
+rate                        5.52576465532	 			43.5748568475 			19.2024395042 			7.95240020566           
+------------
+
+lumi      			lnN 		1.026 		1.026		1.026		-
+eff 				lnN			1.065		1.065		1.065		-
+ZX_normalis			lnN			-			-			1.45        -   
+JES					lnN			1.14		1.085		1.14		-
+PDF					lnN			1.021		1.031		1.032		-
+QCDScale_vbf		lnN			1.01		-			-			-
+QCDScale_gg			lnN			-			-			1.09		-
+QCDScale_qq			lnN			-			1.032		-			-

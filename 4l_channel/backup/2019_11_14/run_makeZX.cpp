@@ -12,27 +12,17 @@ using namespace std;
 
 int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
-int main( int argc, char *argv[] )
-{
+int main( int argc, char *argv[] ){
 	
     int year = 2016;
-	string pt_cut = "jet_pt_gt_30";
-
-    int passtot = 0;
-    int n2e2mu = 0;
-    int n2mu2e = 0;
-    int n4e = 0;
-    int n4mu = 0;
-    int njet2 = 0;
-    int njet3 = 0;
-    int njet4 = 0;
-    int njet5p = 0;
+    string pt_cut = "jet_pt_gt_30";
 
 	vector<float> _fs_ROS_SS;
-    _fs_ROS_SS.push_back(1.04);//4mu  
-    _fs_ROS_SS.push_back(1.01);//4e                                                                         
-    _fs_ROS_SS.push_back(1.04);//2e2mu                                                                            
-    _fs_ROS_SS.push_back(1.00);//2mu2e   	
+	_fs_ROS_SS.push_back(1.22);//4mu
+	_fs_ROS_SS.push_back(0.27);//4e
+	_fs_ROS_SS.push_back(1.30);//2e2mu
+	_fs_ROS_SS.push_back(0.28);//2mu2e
+	// 2016
  
     char name[200];
 	if (year == 2016) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2016/FakeRates/FakeRates_SS_2016_Legacy.root");
@@ -42,8 +32,11 @@ int main( int argc, char *argv[] )
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
+    //2016
 	if (year == 2016) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2016/AllData/ZZ4lAnalysis.root");
+	//2017
     if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root");
+	//2018
     if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2018/AllData/ZZ4lAnalysis.root");
 
 	float c_constant = 8.5;
@@ -125,8 +118,7 @@ int main( int argc, char *argv[] )
 	tnew->Branch("d_2j",&d_2j,"d_2j/F");
 	tnew->Branch("nCleanedJetsPt30",&njet,"nCleanedJetsPt30/S");
 
-	for(Long64_t jentry=0; jentry<nentries;jentry++)
-	{
+	for(Long64_t jentry=0; jentry<nentries;jentry++){
 		data.fChain->GetEntry(jentry);
 		if(jentry%1000==0)
 			cout<< jentry<<endl;
@@ -139,7 +131,7 @@ int main( int argc, char *argv[] )
 			case Settings::fs2e2mu : chan=3; break;
 			case Settings::fs2mu2e : chan=3; break;
 			case Settings::fs4mu:    chan=1; break;
-			case Settings::fs4e:     chan=2; break;
+			case Settings::fs4e:    chan=2; break;
 			default: cerr<<"ERROR! No final state";
 		}
 		njet = data.nCleanedJetsPt30;
@@ -149,54 +141,37 @@ int main( int argc, char *argv[] )
 		d_2j= data.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/(data.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal+data.p_JJQCD_SIG_ghg4_1_JHUGen_JECNominal); 
 		float WP_VBF2j = getDVBF2jetsWP(data.ZZMass, 0);
 		
-		
-        if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60)
-		{
-		  	passtot++;
-		  
-		  	vbfcate=1;
-		  	switch (_current_final_state)
-			{ 
-		     	case Settings::fs2e2mu : n2e2mu++; break;
-		     	case Settings::fs2mu2e : n2mu2e++; break;
-		     	case Settings::fs4mu:    n4mu++; break;
-		     	case Settings::fs4e:     n4e++; break;
-		     	default: cerr<<"ERROR! No final state";
-		  	} 
-		  	if (njet == 2) njet2++;
-            else if (njet == 3) njet3++;		
-		  	else if (njet == 4) njet4++;
-            else njet5p++;
-		  
-		  	weight = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(data.LepPt->at(2),data.LepEta->at(2),data.LepLepId->at(2))*FR->GetFakeRate(data.LepPt->at(3),data.LepEta->at(3),data.LepLepId->at(3));
-
-			//kinematic variable
-		  	float c_mzz = c_constant*ts->Eval(data.ZZMass);
-		  	dbkg_kin = data.p_JJVBF_BKG_MCFM_JECNominal / ( data.p_JJVBF_BKG_MCFM_JECNominal + data.p_JJQCD_BKG_MCFM_JECNominal*c_mzz );
-		  
-		  
-		  	dbkg = data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*data.p_m4l_SIG / ( data.p_m4l_SIG*data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + data.p_m4l_BKG*data.p_QQB_BKG_MCFM*getDbkgkinConstant(data.Z1Flav*data.Z2Flav,data.ZZMass) );
-		  	ZZMass_new= data.ZZMass;
-		  	dijmass_new= data.DiJetMass;
-		  	dijeta_new= data.DiJetDEta;
-		  	ptjet1=data.JetPt->at(0);
-		  	ptjet2=data.JetPt->at(1);
-		  	etajet1=data.JetEta->at(0);
-		  	etajet2=data.JetEta->at(1);
-		  	ZZMassErrCorr_new= data.ZZMassErrCorr;
+		//deta cut
+		// if( data.ZZMass > 160  && fabs(data.DiJetDEta) > 1 && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		// no deta cut
+		// if( data.ZZMass > 160  && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		// old fiducial region
+        if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60){
+                //if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
+		// bkgd enriched
+		// if( data.ZZMass > 160  && data.DiJetMass > 100 && (fabs(data.DiJetDEta) < 2.4 || data.DiJetMass < 400) && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
+		  vbfcate=1;
+			//}
+		weight = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(data.LepPt->at(2),data.LepEta->at(2),data.LepLepId->at(2))*FR->GetFakeRate(data.LepPt->at(3),data.LepEta->at(3),data.LepLepId->at(3));
 	
-		  	tnew->Fill();
-		}	
+		//kinematic variable
+                float c_mzz = c_constant*ts->Eval(data.ZZMass);
+		dbkg_kin = data.p_JJVBF_BKG_MCFM_JECNominal / ( data.p_JJVBF_BKG_MCFM_JECNominal + data.p_JJQCD_BKG_MCFM_JECNominal*c_mzz );
+		
+
+		dbkg = data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*data.p_m4l_SIG / ( data.p_m4l_SIG*data.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + data.p_m4l_BKG*data.p_QQB_BKG_MCFM*getDbkgkinConstant(data.Z1Flav*data.Z2Flav,data.ZZMass) );
+		ZZMass_new= data.ZZMass;
+        dijmass_new= data.DiJetMass;
+        dijeta_new= data.DiJetDEta;
+        ptjet1=data.JetPt->at(0);
+        ptjet2=data.JetPt->at(1);
+        etajet1=data.JetEta->at(0);
+        etajet2=data.JetEta->at(1);
+		ZZMassErrCorr_new= data.ZZMassErrCorr;
+		}
+		tnew->Fill();
+
 	}
-        
-	cout << "n2mu2e : " << n2mu2e << "/" << passtot << " = " << (float)n2mu2e/(float)passtot << endl;
-	cout << "n2e2mu : " << n2e2mu << "/" << passtot << " = " << (float)n2e2mu/(float)passtot << endl;
-	cout << "n4e : " << n4e << "/" << passtot << " = " << (float)n4e/(float)passtot << endl;
-	cout << "n4mu : " << n4mu << "/" << passtot << " = " << (float)n4mu/(float)passtot << endl;
-    cout << "njet = 2 : " << njet2 << "/" << passtot << " = " << (float)njet2/(float)passtot << endl;      
-	cout << "njet = 3 : " << njet3 << "/" << passtot << " = " << (float)njet3/(float)passtot << endl;      
-	cout << "njet = 4 : " << njet4 << "/" << passtot << " = " << (float)njet4/(float)passtot << endl;      
-	cout << "njet >= 5 : " << njet5p << "/" << passtot << " = " << (float)njet5p/(float)passtot << endl;
 	f->cd();
 	tnew->Write();
 	f->Close();
@@ -231,3 +206,4 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav)
 
 	return final_state;
 }
+

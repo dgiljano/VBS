@@ -3,19 +3,19 @@ from shutil import copyfile
 
 in_file_name = 'ewk.root'
 
-operator = 'FT8'
+operator = 'FT9'
 
 old_file_name = in_file_name
 new_file_name = 'ewk_%s.root'%(operator)
 
-copyfile(old_file_name, new_file_name)
+copyfile("raw_histos/"+old_file_name, new_file_name)
 
 yield_ratio_file_name = 'templates/templates_%s_cutoff_none.root'%(operator)
 yield_ratio_file = rt.TFile.Open(yield_ratio_file_name, 'READ')
 in_file = rt.TFile.Open(new_file_name, 'UPDATE')
 
 selection = 'BLS'
-in_histo_name = 'h3_1'
+in_histo_name = 'hvbs_1'
 
 print in_file
 for agqc_param in [2.08, 2, 1, 1.94, 0.975, 1.89, 0.5] :

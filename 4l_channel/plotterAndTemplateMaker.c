@@ -3,6 +3,7 @@
 #include <TString.h>
 #include <memory>
 #include "TMath.h"
+#include "helper_functions.h"
 
 string jet_pt_cut = "jet_pt_gt_30";
 
@@ -52,7 +53,6 @@ TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0)
 
 void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 {
-  
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO
     //useMCatNLO = 2 : use aMCatNLO for shape, POWHEG for integral
@@ -61,14 +61,14 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
     if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	static const int vars = 12;
-    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","#eta(j_1)","#eta(j_2)","p_T(j_1)","p_T(j_2)","sum(#eta_j)","m_{jj}/#Delta#eta_{jj}"};        
-    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj"};
-    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30};
-    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.};
-	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true};
+	static const int vars = 16;
+    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","#eta(j_1)","#eta(j_2)","p_T(j_1)","p_T(j_2)","sum(#eta_j)","m_{jj}/#Delta#eta_{jj}","#eta(Z_{1}*)","#eta(Z_{2}*)","R(p_{T}^{hard})","R(p_{T}^{jet})"};        
+    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj","eta_Z1_star","eta_Z2_star","R_pt_hard","R_pt_jet"};
+    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30,20,20,30,30};
+    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.,-6.,-6.,0.,0.};
+	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.,6.,6.,1.,1.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true};
 
 	//histogram stack
     char filename[300]; char filetitle[300];
@@ -109,8 +109,22 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	TH1F *httzwwz_mm[vars];//ttz + wwz mu
 	TH1F *httzwwz_em[vars];//ttz + wwz e mu
 
+	//------------------------------------------------------------------------------- my histograms ------------------------------------------------------------------------------
+
+	TH1F *hZ1Mass_duje = new TH1F ("Z1Mass_duje", "", 40, 50, 130);
+	TH1F *hZ1Mass = new TH1F ("Z1Mass", "", 40, 50, 130);
+	TH1F *hZ2Mass_duje = new TH1F ("Z2Mass_duje", "", 40, 50, 130);
+	TH1F *hZ2Mass = new TH1F ("Z2Mass", "", 40, 50, 130);
+	TH1F *hZMass_duje = new TH1F ("ZMass_duje", "", 40, 50, 130);
+	TH1F *hZMass = new TH1F ("ZMass", "", 40, 50, 130);
+	TH1F *hZ1M_difference = new TH1F ("hZ1M_difference", "", 100, -2, 2);
+	TH1F *hZ2M_difference = new TH1F ("hZ2M_difference", "", 100, -2, 2);
+
+
+	//--------------------------------------------------------------------------- end of my histograms ---------------------------------------------------------------------------
+
 	//TF_8 and TF_9 files
-	bool calculate_aQGC_limits = false;
+	bool calculate_aQGC_limits = true;
 	//TH1F *hewk_FT8, *hewk_FT9;
 
 	//if (calculate_aQGC_limits)
@@ -124,6 +138,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		TFile *f_ewk_FT9 = new TFile("aQGC/ewk_FT9.root");
 		TH1F *hewk_FT9 = new TH1F("ewk_FT9","ewk_FT9", 9, bins_FT);
 		hewk_FT9 = (TH1F*)f_ewk_FT9->Get("BLS_hvbs_1_rescaled_FT9_2");
+
 	//}
 	
 
@@ -219,6 +234,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	vector<float> *LepPt=new vector<float>;
 	vector<float> *JetPt=new vector<float>;
 	vector<float> *JetEta=new vector<float>;
+	vector<float> *JetPhi=new vector<float>;
 	short Z1Flav,Z2Flav;
 	short nCleanedJetsPt30;
 	float pvbf_VAJHU_old;
@@ -276,6 +292,25 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	temp_1d_4mu[it] = new TH1F("temp_1d_4mu","",50,0.,1.);
 	  	temp_1d_2e2mu[it] = new TH1F("temp_1d_2e2mu","",50,0.,1.);
 	}
+
+	// ------------------------------------------------------------------------------------------------- my declarations ---------------------------------------------------------------------------------------------
+
+	vector<short> *lepId = new vector<short>;
+	vector<float> *lepPt = new vector<float>;
+	vector<float> *lepEta = new vector<float>;
+	vector<float> *lepPhi = new vector<float>;
+
+	vector<TLorentzVector> electrons;
+	vector<TLorentzVector> muons;
+	vector<short> electrons_charge;
+	vector<short> muons_charge;
+
+	TLorentzVector Z1, Z2;
+
+	float eta_Z1_star, eta_Z2_star, R_pt_hard, R_pt_jet;
+
+	// --------------------------------------------------------------------------------------------- end of my declarations ------------------------------------------------------------------------------------------
+
 	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++)
@@ -329,6 +364,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	tqqzz->SetBranchAddress("LepPt",&LepPt);
         tqqzz->SetBranchAddress("JetPt",&JetPt);
         tqqzz->SetBranchAddress("JetEta",&JetEta);
+		tqqzz->SetBranchAddress("JetPhi",&JetPhi);
 	  	tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);
 	  	tqqzz->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
 	  	tqqzz->SetBranchAddress("L1prefiringWeight",&L1prefiringWeight);
@@ -342,6 +378,17 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
         tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  	tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
+
+
+		// --------------------------------------------------------------------------------- my branches ---------------------------------------------------------------
+
+		tqqzz->SetBranchAddress("LepLepId",&lepId);
+		tqqzz->SetBranchAddress("LepPt",&lepPt);
+		tqqzz->SetBranchAddress("LepEta",&lepEta);
+		tqqzz->SetBranchAddress("LepPhi",&lepPhi);
+
+		// ----------------------------------------------------------------------------- end of my branches ------------------------------------------------------------
+
 
 	  	//loop on entries
 	  	int enne = tqqzz->GetEntries();
@@ -360,15 +407,40 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	    	if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
 			{
 				
-	      		// if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
+	      		// ------------------------------------------------------------ construc electron and muon objects -----------------------------------------
+				
+				clear_vectors(electrons, muons, electrons_charge, muons_charge);
+				create_electron_and_muon_objects(electrons, muons, electrons_charge, muons_charge, lepId, lepPt, lepEta, lepPhi);
+				build_ZZ_pair(electrons, muons, electrons_charge, muons_charge, Z1, Z2);
+
+				if (is == 0)
+				{
+					hZ1Mass->Fill(Z1Mass);
+					hZ1Mass_duje->Fill(Z1.M());
+					hZ2Mass->Fill(Z2Mass);
+					hZ2Mass_duje->Fill(Z2.M());
+
+					hZMass->Fill(Z1Mass);
+					hZMass->Fill(Z2Mass);
+					hZMass_duje->Fill(Z1.M());
+					hZMass_duje->Fill(Z2.M());
+
+					hZ1M_difference->Fill(Z1Mass-Z1.M());
+					hZ2M_difference->Fill(Z2Mass-Z2.M());
+				}
+				
+				// ------------------------------------------------------- end of construc electron and muon objects ---------------------------------------
+
+				// ------------------------------------------------------------ calculate aditional variables ----------------------------------------------
+
+				calculate_Zeppenfeld_Z(Z1, Z2, JetEta, eta_Z1_star, eta_Z2_star);
+				calculate_R_pt_hard(Z1, Z2, JetEta, JetPhi, JetPt, R_pt_hard);
+				calculate_R_pt_jet(JetEta, JetPhi, JetPt, R_pt_jet);
+
+				// -------------------------------------------------------- end of calculate aditional variables -------------------------------------------
 				  
 	      		//set vbf_category
 	      		vbfcate=1;
-	      		//weight definition
-	      		//KFactorEWKqqZZ = 1;
-	      		//KFactorQCDqqZZ_M = 1;
-	      		//weight=1;
-
 
 	      		weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
 	      		// correct k-factor for NNLO/NLO?
@@ -472,6 +544,26 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 					{
 						theVar = ZZMass/fabs(DiJetDEta);
 						iv = 11;
+					}
+					if (il == 14)
+					{
+						theVar = eta_Z1_star;
+						iv = 12;
+					}
+					if (il == 15)
+					{
+						theVar = eta_Z2_star;
+						iv = 13;
+					}
+					if (il == 16)
+					{
+						theVar = R_pt_hard;
+						iv = 14;
+					}
+					if (il == 17)
+					{
+						theVar = R_pt_jet;
+						iv = 15;
 					}
 	
 					//1D kin var hist fill
@@ -646,7 +738,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 				iv = 11;
 			}			
 
-	    	if (fabs(weight_zx) < 100000.) 
+	    	if (fabs(weight_zx) < 100000. && iv < 12) 
 			{
 	      		hzx[iv]->Fill(var_zx,weight_zx);
 	      		if (chan_zx == 2) hzx_ee[iv]->Fill(var_zx,weight_zx);
@@ -785,6 +877,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 			hdata[iv]->SetBinContent(hdata[iv]->GetNbinsX(), hdata[iv]->GetBinContent(hdata[iv]->GetNbinsX()) + hdata[iv]->GetBinContent(hdata[iv]->GetNbinsX() + 1));	//data
 		}
 
+
 		//saving EWK, qq, gg and data histogram in root file for aQGC part
 		if (iv == 1 && calculate_aQGC_limits == false)
 		{
@@ -842,13 +935,13 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		//FT8 and FT9 ADDED TO STACK
 		if (iv == 1 && calculate_aQGC_limits)
 		{
-			hewk_FT8->Add(hsum2[iv], 1);
+			hewk_FT8->Add(hsum1[iv], 1);
 			hewk_FT8->SetLineColor(kYellow+1);
 			hewk_FT8->SetLineWidth(3);
 			hewk_FT8->SetLineStyle(9);
 			//hewk_FT8->SetFillColor(kYellow+1);
 			
-			hewk_FT9->Add(hsum2[iv], 1);
+			hewk_FT9->Add(hsum1[iv], 1);
 			hewk_FT9->SetLineColor(kRed+1);
 			hewk_FT9->SetLineWidth(3);
 			hewk_FT9->SetLineStyle(9);
@@ -901,12 +994,15 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	pad1->Draw();
 		if (iv == 1) pad1->SetLogy();
 	  	pad1->cd();
+
 	  	//top plot
 	  	if (iv == 1) hs[iv]->SetMaximum(100.*lumi/35.9E3);	// for m4l
 		if (iv == 3) hs[iv]->SetMaximum(20.*lumi/35.9E3);  
         if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
 		if (iv == 6 || iv == 7) hs[iv]->SetMaximum(30.*lumi/35.9E3); // for eta_jet1 and eta_jet2
 		if (iv == 8 || iv == 9) hs[iv]->SetMaximum(50.*lumi/35.9E3); // for pt_jet1 and pt_jet2
+		if (iv == 12) hs[iv]->SetMaximum(60);
+
 	  	hs[iv]->Draw("nostack"); //old
 	  	if (drawSignal[iv]) 
 		{
@@ -925,7 +1021,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	//pad2
 	  	TPad *pad2 = new TPad("pad2","pad2",0,0.1,1,0.3+eps,0); //old position
 	  	pad2->SetTopMargin(0);
-	  	pad2->SetBottomMargin(0.15);
+	  	pad2->SetBottomMargin(0.25);
 	  	//make bottom pad transparent
 	  	//pad2->SetFrameFillColor(0);
 	  	//pad2->SetFrameBorderMode(0);
@@ -980,4 +1076,57 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		cout << filename << endl;
       	c1->SaveAs(filename);
 	}
+	TCanvas *c2 = new TCanvas();
+	c2->cd();
+	hZ1Mass->SetMaximum(4500);
+	hZ1Mass->SetLineColor(kRed);
+	hZ1Mass->SetLineWidth(3);
+	hZ1Mass->Draw();
+
+	hZ1Mass_duje->SetLineColor(kBlue);
+	hZ1Mass_duje->SetLineWidth(3);
+	hZ1Mass_duje->Draw("same");
+	c2->SaveAs("Z1Mass.png");
+
+	TCanvas *c3 = new TCanvas();
+	c3->cd();
+	hZ2Mass->SetMaximum(2600);
+	hZ2Mass->SetLineColor(kRed);
+	hZ2Mass->SetLineWidth(3);
+	hZ2Mass->Draw();
+
+	hZ2Mass_duje->SetLineColor(kBlue);
+	hZ2Mass_duje->SetLineWidth(3);
+	hZ2Mass_duje->Draw("same");
+	c3->SaveAs("Z2Mass.png");
+
+	TCanvas *c4 = new TCanvas();
+	c4->cd();
+	hZMass->SetMaximum(2600);
+	hZMass->SetLineColor(kRed);
+	hZMass->SetLineWidth(3);
+	hZMass->Draw();
+
+	hZMass_duje->SetLineColor(kBlue);
+	hZMass_duje->SetLineWidth(3);
+	hZMass_duje->Draw("same");
+	c4->SaveAs("ZMass.png");
+
+
+	TCanvas *c5 = new TCanvas();
+	c5->cd();
+	hZ1M_difference->SetMaximum(2600);
+	hZ1M_difference->SetLineColor(kRed);
+	hZ1M_difference->SetLineWidth(3);
+	hZ1M_difference->Draw();
+	c5->SaveAs("Z1Mass_difference.png");
+
+	TCanvas *c6 = new TCanvas();
+	c6->cd();
+	hZ2M_difference->SetMaximum(2600);
+	hZ2M_difference->SetLineColor(kRed);
+	hZ2M_difference->SetLineWidth(3);
+	hZ2M_difference->Draw();
+	c6->SaveAs("Z2Mass_difference.png");
+
 }

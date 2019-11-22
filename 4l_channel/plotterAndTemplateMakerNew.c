@@ -6,8 +6,7 @@
 string jet_pt_cut = "jet_pt_gt_30";
 
 TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) 
-{
-  
+{ 
   	char filename[300];    
   	char pname[30];
   	if (itype == 0) sprintf(pname,"qqzz");
@@ -61,14 +60,14 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
     if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	static const int vars = 6;
-    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
-    string titley[vars] = {"Events/bin","Events/bin","Events/bin GeV","Events/bin","Events/bin","Events/bin"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
-    int bins[vars] = {20,20,20,20,30,20};
-    float xmin[vars] = {0.,0.,100.,0.,0.,-5.};
-	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true};
+	static const int vars = 10;
+    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","#eta(j_1)","#eta(j_2)","p_T(j_1)","p_T(j_2)"};        
+    string titley[vars] = {"Events/bin","Events/bin","Events/bin GeV","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2"};
+    int bins[vars] = {20,20,20,20,30,20,20,20,30,30};
+    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.};
+	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true};
 
 	//histogram stack
     char filename[300]; char filetitle[300];
@@ -110,15 +109,15 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	TH1F *hden[vars];//for 2018 rescale
 	
 	//TF_8 and TF_9 files
-	Float_t bins_FT8[] = { 0, 200, 300, 400, 500, 600, 800, 1000, 1200, 1400 };
+	Float_t bins_FT[] = { 0, 200, 300, 400, 500, 600, 800, 1000, 1200, 1400 };
 
 	TFile *f_ewk_FT8 = new TFile("aQGC/ewk_FT8.root");
-	TH1F *hewk_FT8 = new TH1F("ewk_FT8","ewk_FT8", 9, bins_FT8);
+	TH1F *hewk_FT8 = new TH1F("ewk_FT8","ewk_FT8", 9, bins_FT);
 	hewk_FT8 = (TH1F*)f_ewk_FT8->Get("BLS_h3_1_rescaled_FT8_1");
 	//f_ewk_FT8->Close();
 
 	TFile *f_ewk_FT9 = new TFile("aQGC/ewk_FT9.root");
-	TH1F *hewk_FT9 = new TH1F("ewk_FT9","ewk_FT9", 9, bins_FT8);
+	TH1F *hewk_FT9 = new TH1F("ewk_FT9","ewk_FT9", 9, bins_FT);
 	hewk_FT9 = (TH1F*)f_ewk_FT9->Get("BLS_h3_1_rescaled_FT9_2");
 	//f_ewk_FT9->Close();
 
@@ -484,6 +483,26 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 						theVar = JetEta->at(1);
 						iv = 5;
 					}
+					if (il == 8)
+					{
+						theVar = JetEta->at(0);
+						iv = 6;
+					}
+					if (il == 9)
+					{
+						theVar = JetEta->at(1);
+						iv = 7;
+					}
+					if (il == 10)
+					{
+						theVar = JetPt->at(0);
+						iv = 8;
+					}
+					if (il == 11)
+					{
+						theVar = JetPt->at(1);
+						iv = 9;
+					}
    	      
 					//1D kin var hist fill
 					//this is the normalization histogram
@@ -614,13 +633,44 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	    	if (iv == 3) var_zx = fabs(DiJetDEta_zx);
 	    	if (il == 4) var_zx = ptjet1_zx;
 	    	if (il == 5) var_zx = etajet1_zx;
-	    	if (il == 6) {var_zx = ptjet2_zx;   iv = 4;}
-	    	if (il == 7) {var_zx = etajet2_zx;   iv = 5;}
-	    	if (fabs(weight_zx) < 100000.) {
-	      	kin_zz_zx[iv]->Fill(var_zx,weight_zx);
-	    }
+	    	if (il == 6) 
+			{
+				var_zx = ptjet2_zx;
+				iv = 4;
+			}
+	    	if (il == 7) 
+			{
+				var_zx = etajet2_zx;   
+				iv = 5;
+			}
+			if (il == 8)
+			{
+				var_zx = etajet1_zx;
+				iv = 6;
+			}
+			if (il == 9)
+			{
+				var_zx = etajet1_zx;
+				iv = 7;
+			}
+			if (il == 10)
+			{
+				var_zx = ptjet1_zx;
+				iv = 8;
+			}
+			if (il == 11)
+			{
+				var_zx = ptjet2_zx;
+				iv = 9;
+			}
 
-	    if (var_zx<=0.7) h00[iv]->Fill(var_zx,weight_zx);    
+
+	    	if (fabs(weight_zx) < 100000.) 
+			{
+	      		kin_zz_zx[iv]->Fill(var_zx,weight_zx);
+	    	}
+
+	    	if (var_zx<=0.7) h00[iv]->Fill(var_zx,weight_zx);    
 	  	}
 	}
 	
@@ -833,6 +883,8 @@ void plotterAndTemplateMakerNew(int year = 2016, int useMCatNLO = 1)
 	  	//top plot
 	  	hs[iv]->SetMaximum(60.*lumi/35.9E3);
         if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
+		if (iv == 6 || iv == 7) hs[iv]->SetMaximum(30.*lumi/35.9E3); // for eta_jet1 and eta_jet2
+		if (iv == 8 || iv == 9) hs[iv]->SetMaximum(50.*lumi/35.9E3); // for pt_jet1 and pt_jet2
 	  	hs[iv]->Draw("nostack"); //old
 	  	if (drawSignal[iv])
 		{

@@ -7,14 +7,17 @@
 #include "include/Settings.h"
 #include <TSpline.h>
 #include <vector>
+#include "TMath.h"
+#include "TLorentzVector.h"
+#include "../helper_functions.h"
+
 
 using namespace std;
 
 int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] )
-{
-	
+{	
     int year = 2016;
 	string pt_cut = "jet_pt_gt_30";
 
@@ -76,12 +79,26 @@ int main( int argc, char *argv[] )
 	data.fChain->SetBranchStatus("LepEta", 1);
 	data.fChain->SetBranchStatus("LepPt", 1);
     data.fChain->SetBranchStatus("JetEta", 1);
+	data.fChain->SetBranchStatus("JetPhi", 1);
 	data.fChain->SetBranchStatus("JetPt", 1);      
 	data.fChain->SetBranchStatus("LepLepId", 1);
 	data.fChain->SetBranchStatus("p_QQB_BKG_MCFM", 1);
 	data.fChain->SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", 1);
 	data.fChain->SetBranchStatus("nExtraLep", 1);
 	data.fChain->SetBranchStatus("nCleanedJetsPt30BTagged_bTagSF", 1);
+
+	// --------------------------------------------------------------------------------- my branches ---------------------------------------------------------------
+
+	data.fChain->SetBranchStatus("LepLepId", 1);
+	data.fChain->SetBranchStatus("LepPt", 1);
+	data.fChain->SetBranchStatus("LepEta", 1);
+	data.fChain->SetBranchStatus("LepPhi", 1);
+	data.fChain->SetBranchStatus("JetQGLikelihood", 1);
+
+
+	// ----------------------------------------------------------------------------- end of my branches ------------------------------------------------------------
+
+	
 
 	//my branches	
 	data.fChain->SetBranchStatus("p_JJVBF_BKG_MCFM_JECNominal",1); //sign
@@ -104,6 +121,33 @@ int main( int argc, char *argv[] )
 	float ZZMassErrCorr_new;
 	short njet;
 
+	// --------------------------------------------------- my declarations ------------------------------------------------------------
+
+	vector<short> *lepId = data.LepLepId;
+	vector<float> *lepPt = data.LepPt;
+	vector<float> *lepEta = data.LepEta;
+	vector<float> *lepPhi = data.LepPhi;
+	vector<float> *jet_qg_tagger = data.JetQGLikelihood;
+
+
+	vector<TLorentzVector> electrons;
+	vector<TLorentzVector> muons;
+	vector<short> electrons_charge;
+	vector<short> muons_charge;
+
+	TLorentzVector Z1, Z2;
+
+	float eta_Z1_star, eta_Z2_star, R_pt_hard, R_pt_jet;
+	float abs_etajet_min, abs_etajet_max, abs_etalep_min, abs_etalep_max;
+	float delta_phi_ZZ;
+
+	float rapidity_Z1, rapidity_Z2, rapidity_j1, rapidity_j2;
+	float pt_Z1, pt_Z2, pt_l3;
+
+	float j1_qg_tagger, j2_qg_tagger;
+
+	// ------------------------------------------------ end of my declarations --------------------------------------------------------
+
     sprintf(name,"ZX%d_%s.root",year,pt_cut.c_str());
 	TFile *f = new TFile(name,"recreate");
 
@@ -124,6 +168,27 @@ int main( int argc, char *argv[] )
 	tnew->Branch("vbfMela",&d2jet,"vbfMela/F");
 	tnew->Branch("d_2j",&d_2j,"d_2j/F");
 	tnew->Branch("nCleanedJetsPt30",&njet,"nCleanedJetsPt30/S");
+
+	// ----------------------- my variables ------------------------------
+	tnew->Branch("eta_Z1_star",&eta_Z1_star,"eta_Z1_star/F");
+	tnew->Branch("eta_Z2_star",&eta_Z2_star,"eta_Z2_star/F");
+	tnew->Branch("R_pt_hard",&R_pt_hard,"R_pt_hard/F");
+	tnew->Branch("R_pt_jet",&R_pt_jet,"R_pt_jet/F");
+	tnew->Branch("abs_etajet_min",&abs_etajet_min,"abs_etajet_min/F");
+	tnew->Branch("abs_etajet_max",&abs_etajet_max,"abs_etajet_max/F");
+	tnew->Branch("abs_etalep_min",&abs_etalep_min,"abs_etalep_min/F");
+	tnew->Branch("abs_etalep_max",&abs_etalep_max,"abs_etalep_max/F");
+	tnew->Branch("delta_phi_ZZ",&delta_phi_ZZ,"delta_phi_ZZ/F");
+	tnew->Branch("rapidity_Z1",&rapidity_Z1,"rapidity_Z1/F");
+	tnew->Branch("rapidity_Z2",&rapidity_Z2,"rapidity_Z2/F");
+	tnew->Branch("rapidity_j1",&rapidity_j1,"rapidity_j1/F");
+	tnew->Branch("rapidity_j2",&rapidity_j2,"rapidity_j2/F");
+	tnew->Branch("pt_Z1",&pt_Z1,"pt_Z1/F");
+	tnew->Branch("pt_Z2",&pt_Z2,"pt_Z2/F");
+	tnew->Branch("pt_l3",&pt_l3,"pt_l3/F");
+	tnew->Branch("j1_qg_tagger",&j1_qg_tagger,"j1_qg_tagger/F");
+	tnew->Branch("j2_qg_tagger",&j2_qg_tagger,"j2_qg_tagger/F");
+	// --------------------------------------------------------------------
 
 	for(Long64_t jentry=0; jentry<nentries;jentry++)
 	{
@@ -184,6 +249,26 @@ int main( int argc, char *argv[] )
 		  	etajet1=data.JetEta->at(0);
 		  	etajet2=data.JetEta->at(1);
 		  	ZZMassErrCorr_new= data.ZZMassErrCorr;
+
+			// ------------------------------------------------- calculate additional variables ------------------------------------------------------
+			bool ZX = true;
+
+			clear_vectors(electrons, muons, electrons_charge, muons_charge);
+			create_electron_and_muon_objects(electrons, muons, electrons_charge, muons_charge, lepId, lepPt, lepEta, lepPhi);
+			build_ZZ_pair(electrons, muons, electrons_charge, muons_charge, Z1, Z2, ZX);
+
+			calculate_Zeppenfeld_Z(Z1, Z2, data.JetEta, eta_Z1_star, eta_Z2_star);
+			calculate_R_pt_hard(Z1, Z2, data.JetEta, data.JetPhi, data.JetPt, R_pt_hard);
+			calculate_R_pt_jet(data.JetEta, data.JetPhi, data.JetPt, R_pt_jet);
+			calculate_min_max_jet_eta(data.JetEta, abs_etajet_min, abs_etajet_max);
+			calculate_min_max_lepton_eta(electrons, muons, abs_etalep_min, abs_etalep_max);
+			calculate_dphi_ZZ(Z1, Z2, delta_phi_ZZ);			
+			calculate_rapidity_Z1_Z2(Z1, Z2, rapidity_Z1, rapidity_Z2);
+			calculate_rapidity_j1_j2(data.JetEta, data.JetPhi, data.JetPt, rapidity_j1, rapidity_j2);
+			calculate_pt_Z1_Z2_l3(Z1, Z2, lepPt, pt_Z1, pt_Z2, pt_l3);
+			
+			j1_qg_tagger = data.JetQGLikelihood->at(0);
+			j2_qg_tagger = data.JetQGLikelihood->at(1);
 	
 		  	tnew->Fill();
 		}	

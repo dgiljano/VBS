@@ -61,14 +61,15 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
     if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	static const int vars = 16;
-    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","#eta(j_1)","#eta(j_2)","p_T(j_1)","p_T(j_2)","sum(#eta_j)","m_{jj}/#Delta#eta_{jj}","#eta(Z_{1}*)","#eta(Z_{2}*)","R(p_{T}^{hard})","R(p_{T}^{jet})"};        
-    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj","eta_Z1_star","eta_Z2_star","R_pt_hard","R_pt_jet"};
-    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30,20,20,30,30};
-    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.,-6.,-6.,0.,0.};
-	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.,6.,6.,1.,1.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true};
+	static const int vars = 31;
+    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","#eta(j_{1})","#eta(j_{2})","p_T(j_{1})","p_T(j_{2})","sum(#eta_{j})","m_{jj}/#Delta#eta_{jj}","#eta(Z_{1}*)","#eta(Z_{2}*)","R(p_{T}^{hard})","R(p_{T}^{jet})","|#eta_{min}(j)|","|#eta_{max}(j)|","|#eta_{min}(l)|","|#eta_{max}(l)|","#Delta#Phi(Z_{1}Z_{2})","y(Z_{1})","y(Z_{2})","y(j_{1})","y(j_{2})","p_{T}(Z_{1})","p_{T}(Z_{2})","p_{T}(l_{3})","qg tagger(j_{1})","qg tagger(j_{2})","M_{4l} [GeV]"};        
+    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj","eta_Z1_star","eta_Z2_star","R_pt_hard","R_pt_jet","abs_etajet_min","abs_etajet_max","abs_etalep_min","abs_etalep_max","delta_phi_ZZ","rapidity_Z1","rapidity_Z2","rapidity_j1","rapidity_j2","pt_Z1","pt_Z2","pt_l3","j1_qg_tagger","j2_qg_tagger","m4l_original"};
+    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30,20,20,30,30,30,30,30,30,70,30,30,30,30,30,30,30,50,50,20};
+    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.,-6.,-6.,0.,0.,0.,0.,0.,0.,0.,-2.5,-2.5,-2.5,-2.5,0.,0.,0.,-1.3,-1.3,0.};
+	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.,6.,6.,1.,1.,3.,3.,3.,3.,3.15,2.5,2.5,2.5,2.5,600.,600.,600.,1.3,1.3,1400.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true};
+
 
 	//histogram stack
     char filename[300]; char filetitle[300];
@@ -308,6 +309,13 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	TLorentzVector Z1, Z2;
 
 	float eta_Z1_star, eta_Z2_star, R_pt_hard, R_pt_jet;
+	float abs_etajet_min, abs_etajet_max, abs_etalep_min, abs_etalep_max;
+	float delta_phi_ZZ;
+
+	float rapidity_Z1, rapidity_Z2, rapidity_j1, rapidity_j2;
+	float pt_Z1, pt_Z2, pt_l3;
+
+	vector<float> *jet_qg_tagger = new vector<float>;
 
 	// --------------------------------------------------------------------------------------------- end of my declarations ------------------------------------------------------------------------------------------
 
@@ -334,8 +342,8 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		if (rootname[is].Contains("AllData")) j = 3;   
 	  	if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
         if (rootname[is].Contains("VBFTo")) j = 2;
-	  	if (rootname[is].Contains("amcatnlo")) j = 4;
-	  	//if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 5;   
+	  	if (rootname[is].Contains("amcatnlo")) j = 5;
+	  	if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 4;   
 	  	//histogram declaration
 	  	//TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -386,6 +394,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		tqqzz->SetBranchAddress("LepPt",&lepPt);
 		tqqzz->SetBranchAddress("LepEta",&lepEta);
 		tqqzz->SetBranchAddress("LepPhi",&lepPhi);
+		tqqzz->SetBranchAddress("JetQGLikelihood",&jet_qg_tagger);
 
 		// ----------------------------------------------------------------------------- end of my branches ------------------------------------------------------------
 
@@ -406,7 +415,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	    
 	    	if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
 			{
-				
 	      		// ------------------------------------------------------------ construc electron and muon objects -----------------------------------------
 				
 				clear_vectors(electrons, muons, electrons_charge, muons_charge);
@@ -436,6 +444,14 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 				calculate_Zeppenfeld_Z(Z1, Z2, JetEta, eta_Z1_star, eta_Z2_star);
 				calculate_R_pt_hard(Z1, Z2, JetEta, JetPhi, JetPt, R_pt_hard);
 				calculate_R_pt_jet(JetEta, JetPhi, JetPt, R_pt_jet);
+				calculate_min_max_jet_eta(JetEta, abs_etajet_min, abs_etajet_max);
+				calculate_min_max_lepton_eta(electrons, muons, abs_etalep_min, abs_etalep_max);
+				calculate_dphi_ZZ(Z1, Z2, delta_phi_ZZ);
+				
+				calculate_rapidity_Z1_Z2(Z1, Z2, rapidity_Z1, rapidity_Z2);
+				calculate_rapidity_j1_j2(JetEta, JetPhi, JetPt, rapidity_j1, rapidity_j2);
+				calculate_pt_Z1_Z2_l3(Z1, Z2, lepPt, pt_Z1, pt_Z2, pt_l3);
+
 
 				// -------------------------------------------------------- end of calculate aditional variables -------------------------------------------
 				  
@@ -542,9 +558,10 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 					}
 					if (il == 13)
 					{
-						theVar = ZZMass/fabs(DiJetDEta);
+						theVar = DiJetMass/fabs(DiJetDEta);
 						iv = 11;
 					}
+					// tu je sta Z+X
 					if (il == 14)
 					{
 						theVar = eta_Z1_star;
@@ -564,6 +581,82 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 					{
 						theVar = R_pt_jet;
 						iv = 15;
+					}
+					if (il == 18)
+					{
+						theVar = abs_etajet_min;
+						iv = 16;
+					}
+					if (il == 19)
+					{
+						theVar = abs_etajet_max;
+						iv = 17;
+					}
+					if (il == 20)
+					{
+						theVar = abs_etalep_min;
+						iv = 18;
+					}
+					if (il == 21)
+					{
+						theVar = abs_etalep_max;
+						iv = 19;
+					}
+					if (il == 22)
+					{
+						theVar = delta_phi_ZZ;
+						iv = 20;
+					}
+
+					if (il == 23)
+					{
+						theVar = rapidity_Z1;
+						iv = 21;
+					}
+					if (il == 24)
+					{
+						theVar = rapidity_Z2;
+						iv = 22;
+					}
+					if (il == 25)
+					{
+						theVar = rapidity_j1;
+						iv = 23;
+					}
+					if (il == 26)
+					{
+						theVar = rapidity_j2;
+						iv = 24;
+					}
+					if (il == 27)
+					{
+						theVar = pt_Z1;
+						iv = 25;
+					}
+					if (il == 28)
+					{
+						theVar = pt_Z2;
+						iv = 26;
+					}
+					if (il == 29)
+					{
+						theVar = pt_l3;
+						iv = 27;
+					}
+					if (il == 30)
+					{
+						theVar = jet_qg_tagger->at(0);
+						iv = 28;
+					}
+					if (il == 31)
+					{
+						theVar = jet_qg_tagger->at(1);
+						iv = 29;
+					}
+					if (il == 32)
+					{
+						theVar = ZZMass;
+						iv = 30;
 					}
 	
 					//1D kin var hist fill
@@ -610,7 +703,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 					  	if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
 
 					}
-					if (j==4) 
+					if (j==5) 
 					{
 					  	hqqzz[iv]->Fill(theVar,weight);
 
@@ -618,7 +711,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 					  	if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
 					  	if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);
 					}
-					if (j==5) 
+					if (j==4) 
 					{
 					  	httzwwz[iv]->Fill(theVar,weight);
 
@@ -682,6 +775,47 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	tqqzz_zx->SetBranchAddress("etajet2",&etajet2_zx);
 	tqqzz_zx->SetBranchAddress("chan",&chan_zx);
 
+	// -------------------------------------------- my variables -----------------------------------------
+
+	float eta_Z1_star_zx, eta_Z2_star_zx, R_pt_hard_zx, R_pt_jet_zx;
+	float abs_etajet_min_zx, abs_etajet_max_zx, abs_etalep_min_zx, abs_etalep_max_zx;
+	float delta_phi_ZZ_zx;
+
+	float rapidity_Z1_zx, rapidity_Z2_zx, rapidity_j1_zx, rapidity_j2_zx;
+	float pt_Z1_zx, pt_Z2_zx, pt_l3_zx;
+
+	float j1_qg_tagger_zx, j2_qg_tagger_zx;
+
+	// ---------------------------------------------------------------------------------------------------
+
+	// ---------------------------------------- my branches ----------------------------------------------
+
+	tqqzz_zx->SetBranchAddress("eta_Z1_star",&eta_Z1_star_zx);
+	tqqzz_zx->SetBranchAddress("eta_Z2_star",&eta_Z2_star_zx);
+	tqqzz_zx->SetBranchAddress("R_pt_hard",&R_pt_hard_zx);
+	tqqzz_zx->SetBranchAddress("R_pt_jet",&R_pt_jet_zx);
+
+	tqqzz_zx->SetBranchAddress("abs_etajet_min",&abs_etajet_min_zx);
+	tqqzz_zx->SetBranchAddress("abs_etajet_max",&abs_etajet_max_zx);
+	tqqzz_zx->SetBranchAddress("abs_etalep_min",&abs_etalep_min_zx);
+	tqqzz_zx->SetBranchAddress("abs_etalep_max",&abs_etalep_max_zx);
+
+	tqqzz_zx->SetBranchAddress("delta_phi_ZZ",&delta_phi_ZZ_zx);
+
+	tqqzz_zx->SetBranchAddress("rapidity_Z1",&rapidity_Z1_zx);
+	tqqzz_zx->SetBranchAddress("rapidity_Z2",&rapidity_Z2_zx);
+	tqqzz_zx->SetBranchAddress("rapidity_j1",&rapidity_j1_zx);
+	tqqzz_zx->SetBranchAddress("rapidity_j2",&rapidity_j2_zx);
+
+	tqqzz_zx->SetBranchAddress("pt_Z1",&pt_Z1_zx);
+	tqqzz_zx->SetBranchAddress("pt_Z2",&pt_Z2_zx);
+	tqqzz_zx->SetBranchAddress("pt_l3",&pt_l3_zx);
+
+	tqqzz_zx->SetBranchAddress("j1_qg_tagger",&j1_qg_tagger_zx);
+	tqqzz_zx->SetBranchAddress("j2_qg_tagger",&j2_qg_tagger_zx);
+
+	// ---------------------------------------------------------------------------------------------------
+
 	//entries loop
 	for(int i=0;i<tqqzz_zx->GetEntries();i++)
 	{
@@ -734,11 +868,106 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 			}
 			if (il == 13)
 			{
-				theVar = ZZMass_zx/fabs(DiJetDEta_zx);
+				var_zx = DiJetMass_zx/fabs(DiJetDEta_zx);
 				iv = 11;
-			}			
+			}	
+			if (il == 14)
+			{
+				var_zx = eta_Z1_star_zx;
+				iv = 12;
+			}
+			if (il == 15)
+			{
+				var_zx = eta_Z2_star_zx;
+				iv = 13;
+			}
+			if (il == 16)
+			{
+				var_zx = R_pt_hard_zx;
+				iv = 14;
+			}
+			if (il == 17)
+			{
+				var_zx = R_pt_jet_zx;
+				iv = 15;
+			}
+			if (il == 18)
+			{
+				var_zx = abs_etajet_min_zx;
+				iv = 16;
+			}
+			if (il == 19)
+			{
+				var_zx = abs_etajet_max_zx;
+				iv = 17;
+			}
+			if (il == 20)
+			{
+				var_zx = abs_etalep_min_zx;
+				iv = 18;
+			}
+			if (il == 21)
+			{
+				var_zx = abs_etalep_max_zx;
+				iv = 19;
+			}
+			if (il == 22)
+			{
+				var_zx = delta_phi_ZZ_zx;
+				iv = 20;
+			}
+			if (il == 23)
+			{
+				var_zx = rapidity_Z1_zx;
+				iv = 21;
+			}
+			if (il == 24)
+			{
+				var_zx = rapidity_Z2_zx;
+				iv = 22;
+			}
+			if (il == 25)
+			{
+				var_zx = rapidity_j1_zx;
+				iv = 23;
+			}
+			if (il == 26)
+			{
+				var_zx = rapidity_j2_zx;
+				iv = 24;
+			}
+			if (il == 27)
+			{
+				var_zx = pt_Z1_zx;
+				iv = 25;
+			}
+			if (il == 28)
+			{
+				var_zx = pt_Z2_zx;
+				iv = 26;
+			}
+			if (il == 29)
+			{
+				var_zx = pt_l3_zx;
+				iv = 27;
+			}
+			if (il == 30)
+			{
+				var_zx = j1_qg_tagger_zx;
+				iv = 28;
+			}
+			if (il == 31)
+			{
+				var_zx = j2_qg_tagger_zx;
+				iv = 29;
+			}
+			if (il == 32)
+			{
+				var_zx = ZZMass_zx;
+				iv = 30;
+			}		
 
-	    	if (fabs(weight_zx) < 100000. && iv < 12) 
+	    	if (fabs(weight_zx) < 100000.) 
 			{
 	      		hzx[iv]->Fill(var_zx,weight_zx);
 	      		if (chan_zx == 2) hzx_ee[iv]->Fill(var_zx,weight_zx);

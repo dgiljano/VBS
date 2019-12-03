@@ -11,14 +11,13 @@
 #include "TLorentzVector.h"
 #include "../helper_functions.h"
 
-
 using namespace std;
 
 int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] )
 {	
-    int year = 2016;
+    int year = 2018;
 	string pt_cut = "jet_pt_gt_30";
 
     int passtot = 0;

@@ -1,5 +1,6 @@
 double static e = TMath::E();
 const double PI  =3.141592653589793238463;
+#include "THStack.h"
 
 void create_electron_and_muon_objects(vector<TLorentzVector> &electrons, vector<TLorentzVector> &muons, vector<short> &electrons_charge, vector<short> &muons_charge, vector<short> *lepId, vector<float> *lepPt, vector<float> *lepEta, vector<float> *lepPhi)
 {    
@@ -48,6 +49,17 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
 
         // ------------------ choosing Z1 and Z2 --------------------
 
+        /*if(Z1_temp.Pt() > Z2_temp.Pt())
+        {
+            Z1 = Z1_temp;
+            Z2 = Z2_temp;
+        }
+        else
+        {
+            Z1 = Z2_temp;
+            Z2 = Z1_temp;
+        }*/
+
         if (abs(Z1_temp.M() - 91.1876) < abs(Z2_temp.M() - 91.1876))
         {
             Z1 = Z1_temp;
@@ -73,6 +85,11 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
                 i_pos.push_back(i);
         }
 
+        /*if ((electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(0))).M() > 12 && (electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(0))).M() < 120) Z_temp.push_back(electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(0)));
+        if ((electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(1))).M() > 12 && (electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(1))).M() < 120) Z_temp.push_back(electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(1)));
+        if ((electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(0))).M() > 12 && (electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(0))).M() < 120) Z_temp.push_back(electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(0)));
+        if ((electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(1))).M() > 12 && (electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(1))).M() < 120) Z_temp.push_back(electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(1)));*/
+
         Z_temp.push_back(electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(0)));
         Z_temp.push_back(electrons.at(i_ele.at(0)) + electrons.at(i_pos.at(1)));
         Z_temp.push_back(electrons.at(i_ele.at(1)) + electrons.at(i_pos.at(0)));
@@ -80,9 +97,9 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
 
         // ----------------- sort Zs by the closest to nominal Z mass -----------------
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < Z_temp.size(); i++)
         {
-            for (int j = i; j < 4; j++)
+            for (int j = i; j < Z_temp.size(); j++)
             {
                 TLorentzVector temp;
                 if (abs(Z_temp.at(i).M() - 91.1876) > abs(Z_temp.at(j).M() - 91.1876)) 
@@ -92,7 +109,20 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
                     Z_temp.at(j) = temp;
                 }
             }
-        }        
+        }
+
+        // amongst 2 Z candidates with mass closest to nominal Z mass choose for Z1 the one with higher pT        
+        /*if (Z_temp.at(0).Pt() > Z_temp.at(1).Pt()) 
+        {
+            Z1 = Z_temp.at(0);
+            Z2 = Z_temp.at(1);
+        }
+        else
+        {
+            Z1 = Z_temp.at(1);
+            Z2 = Z_temp.at(0);
+        }*/
+
         Z1 = Z_temp.at(0);
         Z2 = Z_temp.at(1);
     }
@@ -110,6 +140,11 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
             else 
                 i_uplus.push_back(i);
         }
+        /*if ((muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(0))).M() > 12 && (muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(0))).M() < 120) Z_temp.push_back(muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(0)));
+        if ((muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(1))).M() > 12 && (muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(1))).M() < 120) Z_temp.push_back(muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(1)));
+        if ((muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(0))).M() > 12 && (muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(0))).M() < 120) Z_temp.push_back(muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(0)));
+        if ((muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(1))).M() > 12 && (muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(1))).M() < 120) Z_temp.push_back(muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(1)));*/
+
         Z_temp.push_back(muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(0)));
         Z_temp.push_back(muons.at(i_uminus.at(0)) + muons.at(i_uplus.at(1)));
         Z_temp.push_back(muons.at(i_uminus.at(1)) + muons.at(i_uplus.at(0)));
@@ -117,9 +152,11 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
 
         // ----------------- sort Zs by the closest to nominal Z mass -----------------
 
-        for (int i = 0; i < 4; i++)
+        if (Z_temp.size() < 2) cout << "N muons = " << Z_temp.size() << endl;
+
+        for (int i = 0; i < Z_temp.size(); i++)
         {
-            for (int j = i; j < 4; j++)
+            for (int j = i; j < Z_temp.size(); j++)
             {
                 TLorentzVector temp;
                 if (abs(Z_temp.at(i).M() - 91.1876) > abs(Z_temp.at(j).M() - 91.1876)) 
@@ -130,6 +167,18 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
                 }
             }
         }
+
+        // amongst 2 Z candidates with mass closest to nominal Z mass choose for Z1 the one with higher pT        
+        /*if (Z_temp.at(0).Pt() > Z_temp.at(1).Pt()) 
+        {
+            Z1 = Z_temp.at(0);
+            Z2 = Z_temp.at(1);
+        }
+        else
+        {
+            Z1 = Z_temp.at(1);
+            Z2 = Z_temp.at(0);
+        }*/
 
         Z1 = Z_temp.at(0);
         Z2 = Z_temp.at(1);
@@ -192,26 +241,26 @@ void calculate_R_pt_jet(vector<float> *JetEta, vector<float> *JetPhi, vector<flo
 
 void calculate_min_max_jet_eta(vector<float> *JetEta, float &abs_etajet_min, float &abs_etajet_max)
 {
-    vector<float> *JetEta_ordered = JetEta;
+    vector<float> JetEta_ordered = *JetEta;
 
     // --------------- sort |jet eta| --------------------
-    for (int i = 0; i < JetEta_ordered->size(); i++)
+    for (int i = 0; i < JetEta_ordered.size(); i++)
     {
-        for (int j = i; j < JetEta_ordered->size(); j++)
+        for (int j = i; j < JetEta_ordered.size(); j++)
         {
             float temp;
-            if (abs(JetEta_ordered->at(i)) < abs(JetEta_ordered->at(j))) 
+            if (abs(JetEta_ordered.at(i)) < abs(JetEta_ordered.at(j))) 
             {
-                temp = JetEta_ordered->at(i);
-                JetEta_ordered->at(i) = JetEta_ordered->at(j);
-                JetEta_ordered->at(j) = temp;
+                temp = JetEta_ordered.at(i);
+                JetEta_ordered.at(i) = JetEta_ordered.at(j);
+                JetEta_ordered.at(j) = temp;
             }
         }
     }
     //--------------------------------------------------
 
-    abs_etajet_min = abs(JetEta_ordered->at(JetEta_ordered->size()-1));
-    abs_etajet_max = abs(JetEta_ordered->at(0));
+    abs_etajet_min = abs(JetEta_ordered.at(JetEta_ordered.size()-1));
+    abs_etajet_max = abs(JetEta_ordered.at(0));
 }
 
 void calculate_min_max_lepton_eta(vector<TLorentzVector> &electrons, vector<TLorentzVector> &muons, float &abs_etalep_min, float &abs_etalep_max)
@@ -554,4 +603,47 @@ void build_ZZ_pair(vector<TLorentzVector> &electrons, vector<TLorentzVector> &mu
             Z2 = Z2_candidates.at(0);
         }
     }
+}
+
+void set_y_axis_scale(THStack *hs, int iv, int year)
+{
+    float scale = 0;
+    if (year == 2017) scale = 0.2;
+    if (year == 2018) scale = 1.2;
+
+    if (iv == 0) hs->SetMaximum(35 + scale*35);
+    if (iv == 1) hs->SetMaximum(100 + scale*100);
+    if (iv == 2) hs->SetMaximum(25 + scale*25);
+    if (iv == 3) hs->SetMaximum(20 + scale*20);
+    if (iv == 4) hs->SetMaximum(35 + scale*35);
+    if (iv == 5) hs->SetMaximum(50 + scale*50);
+    if (iv == 6) hs->SetMaximum(30 + scale*30);
+    if (iv == 7) hs->SetMaximum(30 + scale*30);
+    if (iv == 8) hs->SetMaximum(35 + scale*35);
+    if (iv == 9) hs->SetMaximum(35 + scale*35);
+    if (iv == 10) hs->SetMaximum(45 + scale*45);
+    if (iv == 11) hs->SetMaximum(20 + scale*20);
+    if (iv == 12) hs->SetMaximum(45 + scale*45);
+    if (iv == 13) hs->SetMaximum(45 + scale*45);
+    if (iv == 14) hs->SetMaximum(45 + scale*45);
+    if (iv == 15) hs->SetMaximum(25 + scale*25);
+    if (iv == 16) hs->SetMaximum(25 + scale*25);
+    if (iv == 17) hs->SetMaximum(25 + scale*25);
+    if (iv == 18) hs->SetMaximum(45 + scale*45);
+    if (iv == 19) hs->SetMaximum(30 + scale*30);
+    if (iv == 20) hs->SetMaximum(17 + scale*17);
+    if (iv == 21) hs->SetMaximum(25 + scale*25);
+    if (iv == 22) hs->SetMaximum(25 + scale*25);
+    if (iv == 23) hs->SetMaximum(20 + scale*20);
+    if (iv == 24) hs->SetMaximum(20 + scale*20);
+    if (iv == 25) hs->SetMaximum(35 + scale*35);
+    if (iv == 26) hs->SetMaximum(35 + scale*35);
+    if (iv == 27) hs->SetMaximum(45 + scale*45);
+    if (iv == 28) hs->SetMaximum(45 + scale*45);
+    if (iv == 29) hs->SetMaximum(45 + scale*45);
+    if (iv == 30) hs->SetMaximum(55 + scale*55);
+    if (iv == 31) hs->SetMaximum(45 + scale*45);
+    if (iv == 32) hs->SetMaximum(45 + scale*45);
+    if (iv == 33) hs->SetMaximum(25 + scale*25);
+
 }

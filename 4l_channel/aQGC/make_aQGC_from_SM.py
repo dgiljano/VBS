@@ -1,7 +1,8 @@
 import ROOT as rt
 from shutil import copyfile
 
-in_file_name = 'ewk.root'
+#in_file_name = 'ewk.root'
+in_file_name = 'all_contributions_2018.root'
 
 operator = 'FT9'
 
@@ -15,7 +16,8 @@ yield_ratio_file = rt.TFile.Open(yield_ratio_file_name, 'READ')
 in_file = rt.TFile.Open(new_file_name, 'UPDATE')
 
 selection = 'BLS'
-in_histo_name = 'hvbs_1'
+#in_histo_name = 'hvbs_1'
+in_histo_name = 'diboson'
 
 print in_file
 for agqc_param in [2.08, 2, 1, 1.94, 0.975, 1.89, 0.5] :

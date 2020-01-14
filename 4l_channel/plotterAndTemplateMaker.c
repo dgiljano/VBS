@@ -127,7 +127,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	//--------------------------------------------------------------------------- end of my histograms ---------------------------------------------------------------------------
 
 	//TF_8 and TF_9 files
-	bool calculate_aQGC_limits = false;
+	bool calculate_aQGC_limits = true;
+	TString aQGC_filename = "onlymjjCut_jet_pt_gt_30/m4l_histos_" + to_string(year) + ".root";
+	TFile *aQGC_histos_file = new TFile(aQGC_filename, "RECREATE");
 	//TH1F *hewk_FT8, *hewk_FT9;
 
 	//if (calculate_aQGC_limits)
@@ -136,11 +138,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 
 		TFile *f_ewk_FT8 = new TFile("aQGC/ewk_FT8.root");
 		TH1F *hewk_FT8 = new TH1F("ewk_FT8","ewk_FT8", 9, bins_FT);
-		hewk_FT8 = (TH1F*)f_ewk_FT8->Get("BLS_hvbs_1_rescaled_FT8_1");
+		hewk_FT8 = (TH1F*)f_ewk_FT8->Get("BLS_diboson_rescaled_FT8_1");
 
 		TFile *f_ewk_FT9 = new TFile("aQGC/ewk_FT9.root");
 		TH1F *hewk_FT9 = new TH1F("ewk_FT9","ewk_FT9", 9, bins_FT);
-		hewk_FT9 = (TH1F*)f_ewk_FT9->Get("BLS_hvbs_1_rescaled_FT9_2");
+		hewk_FT9 = (TH1F*)f_ewk_FT9->Get("BLS_diboson_rescaled_FT9_2");
 
 	//}
 	
@@ -324,6 +326,272 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	vector<float> *jet_qg_tagger = new vector<float>;
 
 	// --------------------------------------------------------------------------------------------- end of my declarations ------------------------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------------------------- preparing MVA trees -------------------------------------------------------------------------------------------
+
+	TFile *mva_file = new TFile("TMVA/MVA.root","RECREATE");
+
+	TTree *tree_sig = new TTree("signal","signal");
+
+	float mva_sig_mjj, mva_sig_deta_jj, mva_sig_m4l, mva_sig_eta_star_Z1, mva_sig_eta_star_Z2, mva_sig_R_pt_hard, mva_sig_R_pt_jet;
+
+	float mva_sig_abs_etajet_min, mva_sig_abs_etajet_max, mva_sig_abs_etalep_min, mva_sig_abs_etalep_max;
+	float mva_sig_delta_phi_ZZ;
+	float mva_sig_rapidity_Z1, mva_sig_rapidity_Z2, mva_sig_rapidity_j1, mva_sig_rapidity_j2;
+	float mva_sig_pt_Z1, mva_sig_pt_Z2, mva_sig_pt_l3;
+	float mva_sig_jet1_qg_tagger, mva_sig_jet2_qg_tagger;
+	float mva_sig_dbkg_kin, mva_sig_eta_j1, mva_sig_eta_j2, mva_sig_pt_jet1, mva_sig_pt_jet2, mva_sig_eta_j_sum;
+	float mva_sig_mjj_over_detajj, mva_sig_abs_etajet_sum;
+
+	tree_sig->Branch("mjj", &mva_sig_mjj, "mva_sig_mjj/F");
+	tree_sig->Branch("deta_jj", &mva_sig_deta_jj, "mva_sig_deta_jj/F");
+	tree_sig->Branch("m4l", &mva_sig_m4l, "mva_sig_m4l/F");
+	tree_sig->Branch("eta_star_Z1", &mva_sig_eta_star_Z1, "mva_sig_eta_star_Z1/F");
+	tree_sig->Branch("eta_star_Z2", &mva_sig_eta_star_Z2, "mva_sig_eta_star_Z2/F");
+	tree_sig->Branch("R_pt_hard", &mva_sig_R_pt_hard, "mva_sig_R_pt_hard/F");
+	tree_sig->Branch("R_pt_jet", &mva_sig_R_pt_jet, "mva_sig_R_pt_jet/F");
+	
+	tree_sig->Branch("abs_etajet_min", &mva_sig_abs_etajet_min, "mva_sig_abs_etajet_min/F");
+	tree_sig->Branch("abs_etajet_max", &mva_sig_abs_etajet_max, "mva_sig_abs_etajet_max/F");
+	tree_sig->Branch("abs_etalep_min", &mva_sig_abs_etalep_min, "mva_sig_abs_etalep_min/F");
+	tree_sig->Branch("abs_etalep_max", &mva_sig_abs_etalep_max, "mva_sig_abs_etalep_max/F");
+	tree_sig->Branch("delta_phi_ZZ", &mva_sig_delta_phi_ZZ, "mva_sig_delta_phi_ZZ/F");
+	tree_sig->Branch("rapidity_Z1", &mva_sig_rapidity_Z1, "mva_sig_rapidity_Z1/F");
+	tree_sig->Branch("rapidity_Z2", &mva_sig_rapidity_Z2, "mva_sig_rapidity_Z2/F");
+	tree_sig->Branch("rapidity_j1", &mva_sig_rapidity_j1, "mva_sig_rapidity_j1/F");
+	tree_sig->Branch("rapidity_j2", &mva_sig_rapidity_j2, "mva_sig_rapidity_j2/F");
+	tree_sig->Branch("pt_Z1", &mva_sig_pt_Z1, "mva_sig_pt_Z1/F");
+	tree_sig->Branch("pt_Z2", &mva_sig_pt_Z2, "mva_sig_pt_Z2/F");
+	tree_sig->Branch("pt_l3", &mva_sig_pt_l3, "mva_sig_pt_l3/F");
+	tree_sig->Branch("jet1_qg_tagger", &mva_sig_jet1_qg_tagger, "mva_sig_jet1_qg_tagger/F");
+	tree_sig->Branch("jet2_qg_tagger", &mva_sig_jet2_qg_tagger, "mva_sig_jet2_qg_tagger/F");
+	tree_sig->Branch("dbkg_kin", &mva_sig_dbkg_kin, "mva_sig_dbkg_kin/F");
+	tree_sig->Branch("eta_j1", &mva_sig_eta_j1, "mva_sig_eta_j1/F");
+	tree_sig->Branch("eta_j2", &mva_sig_eta_j2, "mva_sig_eta_j2/F");
+	tree_sig->Branch("pt_jet1", &mva_sig_pt_jet1, "mva_sig_pt_jet1/F");
+	tree_sig->Branch("pt_jet2", &mva_sig_pt_jet2, "mva_sig_pt_jet2/F");
+	tree_sig->Branch("eta_j_sum", &mva_sig_eta_j_sum, "mva_sig_eta_j_sum/F");
+	tree_sig->Branch("mjj_over_detajj", &mva_sig_mjj_over_detajj, "mva_sig_mjj_over_detajj/F");
+	tree_sig->Branch("abs_etajet_sum", &mva_sig_abs_etajet_sum, "mva_sig_abs_etajet_sum/F");
+
+
+	TTree *tree_qq = new TTree("qq","qq");
+
+	float mva_qq_mjj, mva_qq_deta_jj, mva_qq_m4l, mva_qq_eta_star_Z1, mva_qq_eta_star_Z2, mva_qq_R_pt_hard, mva_qq_R_pt_jet;
+	float mva_qq_abs_etajet_min, mva_qq_abs_etajet_max, mva_qq_abs_etalep_min, mva_qq_abs_etalep_max;
+	float mva_qq_delta_phi_ZZ;
+	float mva_qq_rapidity_Z1, mva_qq_rapidity_Z2, mva_qq_rapidity_j1, mva_qq_rapidity_j2;
+	float mva_qq_pt_Z1, mva_qq_pt_Z2, mva_qq_pt_l3;
+	float mva_qq_jet1_qg_tagger, mva_qq_jet2_qg_tagger;
+	float mva_qq_dbkg_kin, mva_qq_eta_j1, mva_qq_eta_j2, mva_qq_pt_jet1, mva_qq_pt_jet2, mva_qq_eta_j_sum;
+	float mva_qq_mjj_over_detajj, mva_qq_abs_etajet_sum;
+
+	tree_qq->Branch("mjj", &mva_qq_mjj, "mva_qq_mjj/F");
+	tree_qq->Branch("deta_jj", &mva_qq_deta_jj, "mva_qq_deta_jj/F");
+	tree_qq->Branch("m4l", &mva_qq_m4l, "mva_qq_m4l/F");
+	tree_qq->Branch("eta_star_Z1", &mva_qq_eta_star_Z1, "mva_qq_eta_star_Z1/F");
+	tree_qq->Branch("eta_star_Z2", &mva_qq_eta_star_Z2, "mva_qq_eta_star_Z2/F");
+	tree_qq->Branch("R_pt_hard", &mva_qq_R_pt_hard, "mva_qq_R_pt_hard/F");
+	tree_qq->Branch("R_pt_jet", &mva_qq_R_pt_jet, "mva_qq_R_pt_jet/F");
+
+	tree_qq->Branch("abs_etajet_min", &mva_qq_abs_etajet_min, "mva_qq_abs_etajet_min/F");
+	tree_qq->Branch("abs_etajet_max", &mva_qq_abs_etajet_max, "mva_qq_abs_etajet_max/F");
+	tree_qq->Branch("abs_etalep_min", &mva_qq_abs_etalep_min, "mva_qq_abs_etalep_min/F");
+	tree_qq->Branch("abs_etalep_max", &mva_qq_abs_etalep_max, "mva_qq_abs_etalep_max/F");
+	tree_qq->Branch("delta_phi_ZZ", &mva_qq_delta_phi_ZZ, "mva_qq_delta_phi_ZZ/F");
+	tree_qq->Branch("rapidity_Z1", &mva_qq_rapidity_Z1, "mva_qq_rapidity_Z1/F");
+	tree_qq->Branch("rapidity_Z2", &mva_qq_rapidity_Z2, "mva_qq_rapidity_Z2/F");
+	tree_qq->Branch("rapidity_j1", &mva_qq_rapidity_j1, "mva_qq_rapidity_j1/F");
+	tree_qq->Branch("rapidity_j2", &mva_qq_rapidity_j2, "mva_qq_rapidity_j2/F");
+	tree_qq->Branch("pt_Z1", &mva_qq_pt_Z1, "mva_qq_pt_Z1/F");
+	tree_qq->Branch("pt_Z2", &mva_qq_pt_Z2, "mva_qq_pt_Z2/F");
+	tree_qq->Branch("pt_l3", &mva_qq_pt_l3, "mva_qq_pt_l3/F");
+	tree_qq->Branch("jet1_qg_tagger", &mva_qq_jet1_qg_tagger, "mva_qq_jet1_qg_tagger/F");
+	tree_qq->Branch("jet2_qg_tagger", &mva_qq_jet2_qg_tagger, "mva_qq_jet2_qg_tagger/F");
+	tree_qq->Branch("dbkg_kin", &mva_qq_dbkg_kin, "mva_qq_dbkg_kin/F");
+	tree_qq->Branch("eta_j1", &mva_qq_eta_j1, "mva_qq_eta_j1/F");
+	tree_qq->Branch("eta_j2", &mva_qq_eta_j2, "mva_qq_eta_j2/F");
+	tree_qq->Branch("pt_jet1", &mva_qq_pt_jet1, "mva_qq_pt_jet1/F");
+	tree_qq->Branch("pt_jet2", &mva_qq_pt_jet2, "mva_qq_pt_jet2/F");
+	tree_qq->Branch("eta_j_sum", &mva_qq_eta_j_sum, "mva_qq_eta_j_sum/F");
+	tree_qq->Branch("mjj_over_detajj", &mva_qq_mjj_over_detajj, "mva_qq_mjj_over_detajj/F");
+	tree_qq->Branch("abs_etajet_sum", &mva_qq_abs_etajet_sum, "mva_qq_abs_etajet_sum/F");
+
+
+	TTree *tree_gg = new TTree("gg","gg");
+
+	float mva_gg_mjj, mva_gg_deta_jj, mva_gg_m4l, mva_gg_eta_star_Z1, mva_gg_eta_star_Z2, mva_gg_R_pt_hard, mva_gg_R_pt_jet;
+	float mva_gg_abs_etajet_min, mva_gg_abs_etajet_max, mva_gg_abs_etalep_min, mva_gg_abs_etalep_max;
+	float mva_gg_delta_phi_ZZ;
+	float mva_gg_rapidity_Z1, mva_gg_rapidity_Z2, mva_gg_rapidity_j1, mva_gg_rapidity_j2;
+	float mva_gg_pt_Z1, mva_gg_pt_Z2, mva_gg_pt_l3;
+	float mva_gg_jet1_qg_tagger, mva_gg_jet2_qg_tagger;
+	float mva_gg_dbkg_kin, mva_gg_eta_j1, mva_gg_eta_j2, mva_gg_pt_jet1, mva_gg_pt_jet2, mva_gg_eta_j_sum;
+	float mva_gg_mjj_over_detajj, mva_gg_abs_etajet_sum;
+
+	tree_gg->Branch("mjj", &mva_gg_mjj, "mva_gg_mjj/F");
+	tree_gg->Branch("deta_jj", &mva_gg_deta_jj, "mva_gg_deta_jj/F");
+	tree_gg->Branch("m4l", &mva_gg_m4l, "mva_gg_m4l/F");
+	tree_gg->Branch("eta_star_Z1", &mva_gg_eta_star_Z1, "mva_gg_eta_star_Z1/F");
+	tree_gg->Branch("eta_star_Z2", &mva_gg_eta_star_Z2, "mva_gg_eta_star_Z2/F");
+	tree_gg->Branch("R_pt_hard", &mva_gg_R_pt_hard, "mva_gg_R_pt_hard/F");
+	tree_gg->Branch("R_pt_jet", &mva_gg_R_pt_jet, "mva_gg_R_pt_jet/F");
+
+	tree_gg->Branch("abs_etajet_min", &mva_gg_abs_etajet_min, "mva_gg_abs_etajet_min/F");
+	tree_gg->Branch("abs_etajet_max", &mva_gg_abs_etajet_max, "mva_gg_abs_etajet_max/F");
+	tree_gg->Branch("abs_etalep_min", &mva_gg_abs_etalep_min, "mva_gg_abs_etalep_min/F");
+	tree_gg->Branch("abs_etalep_max", &mva_gg_abs_etalep_max, "mva_gg_abs_etalep_max/F");
+	tree_gg->Branch("delta_phi_ZZ", &mva_gg_delta_phi_ZZ, "mva_gg_delta_phi_ZZ/F");
+	tree_gg->Branch("rapidity_Z1", &mva_gg_rapidity_Z1, "mva_gg_rapidity_Z1/F");
+	tree_gg->Branch("rapidity_Z2", &mva_gg_rapidity_Z2, "mva_gg_rapidity_Z2/F");
+	tree_gg->Branch("rapidity_j1", &mva_gg_rapidity_j1, "mva_gg_rapidity_j1/F");
+	tree_gg->Branch("rapidity_j2", &mva_gg_rapidity_j2, "mva_gg_rapidity_j2/F");
+	tree_gg->Branch("pt_Z1", &mva_gg_pt_Z1, "mva_gg_pt_Z1/F");
+	tree_gg->Branch("pt_Z2", &mva_gg_pt_Z2, "mva_gg_pt_Z2/F");
+	tree_gg->Branch("pt_l3", &mva_gg_pt_l3, "mva_gg_pt_l3/F");
+	tree_gg->Branch("jet1_qg_tagger", &mva_gg_jet1_qg_tagger, "mva_gg_jet1_qg_tagger/F");
+	tree_gg->Branch("jet2_qg_tagger", &mva_gg_jet2_qg_tagger, "mva_gg_jet2_qg_tagger/F");
+	tree_gg->Branch("dbkg_kin", &mva_gg_dbkg_kin, "mva_gg_dbkg_kin/F");
+	tree_gg->Branch("eta_j1", &mva_gg_eta_j1, "mva_gg_eta_j1/F");
+	tree_gg->Branch("eta_j2", &mva_gg_eta_j2, "mva_gg_eta_j2/F");
+	tree_gg->Branch("pt_jet1", &mva_gg_pt_jet1, "mva_gg_pt_jet1/F");
+	tree_gg->Branch("pt_jet2", &mva_gg_pt_jet2, "mva_gg_pt_jet2/F");
+	tree_gg->Branch("eta_j_sum", &mva_gg_eta_j_sum, "mva_gg_eta_j_sum/F");
+	tree_gg->Branch("mjj_over_detajj", &mva_gg_mjj_over_detajj, "mva_gg_mjj_over_detajj/F");
+	tree_gg->Branch("abs_etajet_sum", &mva_gg_abs_etajet_sum, "mva_gg_abs_etajet_sum/F");
+
+
+	TTree *tree_zx = new TTree("zx","zx");
+
+	float mva_zx_mjj, mva_zx_deta_jj, mva_zx_m4l, mva_zx_eta_star_Z1, mva_zx_eta_star_Z2, mva_zx_R_pt_hard, mva_zx_R_pt_jet;
+
+	float mva_zx_abs_etajet_min, mva_zx_abs_etajet_max, mva_zx_abs_etalep_min, mva_zx_abs_etalep_max;
+	float mva_zx_delta_phi_ZZ;
+	float mva_zx_rapidity_Z1, mva_zx_rapidity_Z2, mva_zx_rapidity_j1, mva_zx_rapidity_j2;
+	float mva_zx_pt_Z1, mva_zx_pt_Z2, mva_zx_pt_l3;
+	float mva_zx_jet1_qg_tagger, mva_zx_jet2_qg_tagger;
+	float mva_zx_dbkg_kin, mva_zx_eta_j1, mva_zx_eta_j2, mva_zx_pt_jet1, mva_zx_pt_jet2, mva_zx_eta_j_sum;
+	float mva_zx_mjj_over_detajj, mva_zx_abs_etajet_sum;
+
+	tree_zx->Branch("mjj", &mva_zx_mjj, "mva_zx_mjj/F");
+	tree_zx->Branch("deta_jj", &mva_zx_deta_jj, "mva_zx_deta_jj/F");
+	tree_zx->Branch("m4l", &mva_zx_m4l, "mva_zx_m4l/F");
+	tree_zx->Branch("eta_star_Z1", &mva_zx_eta_star_Z1, "mva_zx_eta_star_Z1/F");
+	tree_zx->Branch("eta_star_Z2", &mva_zx_eta_star_Z2, "mva_zx_eta_star_Z2/F");
+	tree_zx->Branch("R_pt_hard", &mva_zx_R_pt_hard, "mva_zx_R_pt_hard/F");
+	tree_zx->Branch("R_pt_jet", &mva_zx_R_pt_jet, "mva_zx_R_pt_jet/F");
+
+	tree_zx->Branch("abs_etajet_min", &mva_zx_abs_etajet_min, "mva_zx_abs_etajet_min/F");
+	tree_zx->Branch("abs_etajet_max", &mva_zx_abs_etajet_max, "mva_zx_abs_etajet_max/F");
+	tree_zx->Branch("abs_etalep_min", &mva_zx_abs_etalep_min, "mva_zx_abs_etalep_min/F");
+	tree_zx->Branch("abs_etalep_max", &mva_zx_abs_etalep_max, "mva_zx_abs_etalep_max/F");
+	tree_zx->Branch("delta_phi_ZZ", &mva_zx_delta_phi_ZZ, "mva_zx_delta_phi_ZZ/F");
+	tree_zx->Branch("rapidity_Z1", &mva_zx_rapidity_Z1, "mva_zx_rapidity_Z1/F");
+	tree_zx->Branch("rapidity_Z2", &mva_zx_rapidity_Z2, "mva_zx_rapidity_Z2/F");
+	tree_zx->Branch("rapidity_j1", &mva_zx_rapidity_j1, "mva_zx_rapidity_j1/F");
+	tree_zx->Branch("rapidity_j2", &mva_zx_rapidity_j2, "mva_zx_rapidity_j2/F");
+	tree_zx->Branch("pt_Z1", &mva_zx_pt_Z1, "mva_zx_pt_Z1/F");
+	tree_zx->Branch("pt_Z2", &mva_zx_pt_Z2, "mva_zx_pt_Z2/F");
+	tree_zx->Branch("pt_l3", &mva_zx_pt_l3, "mva_zx_pt_l3/F");
+	tree_zx->Branch("jet1_qg_tagger", &mva_zx_jet1_qg_tagger, "mva_zx_jet1_qg_tagger/F");
+	tree_zx->Branch("jet2_qg_tagger", &mva_zx_jet2_qg_tagger, "mva_zx_jet2_qg_tagger/F");
+	tree_zx->Branch("dbkg_kin", &mva_zx_dbkg_kin, "mva_zx_dbkg_kin/F");
+	tree_zx->Branch("eta_j1", &mva_zx_eta_j1, "mva_zx_eta_j1/F");
+	tree_zx->Branch("eta_j2", &mva_zx_eta_j2, "mva_zx_eta_j2/F");
+	tree_zx->Branch("pt_jet1", &mva_zx_pt_jet1, "mva_zx_pt_jet1/F");
+	tree_zx->Branch("pt_jet2", &mva_zx_pt_jet2, "mva_zx_pt_jet2/F");
+	tree_zx->Branch("eta_j_sum", &mva_zx_eta_j_sum, "mva_zx_eta_j_sum/F");
+	tree_zx->Branch("mjj_over_detajj", &mva_zx_mjj_over_detajj, "mva_zx_mjj_over_detajj/F");
+	tree_zx->Branch("abs_etajet_sum", &mva_zx_abs_etajet_sum, "mva_zx_abs_etajet_sum/F");
+
+
+	TTree *tree_ttzwwz = new TTree("ttzwwz","ttzwwz");
+
+	float mva_ttzwwz_mjj, mva_ttzwwz_deta_jj, mva_ttzwwz_m4l, mva_ttzwwz_eta_star_Z1, mva_ttzwwz_eta_star_Z2, mva_ttzwwz_R_pt_hard, mva_ttzwwz_R_pt_jet;
+	float mva_ttzwwz_abs_etajet_min, mva_ttzwwz_abs_etajet_max, mva_ttzwwz_abs_etalep_min, mva_ttzwwz_abs_etalep_max;
+	float mva_ttzwwz_delta_phi_ZZ;
+	float mva_ttzwwz_rapidity_Z1, mva_ttzwwz_rapidity_Z2, mva_ttzwwz_rapidity_j1, mva_ttzwwz_rapidity_j2;
+	float mva_ttzwwz_pt_Z1, mva_ttzwwz_pt_Z2, mva_ttzwwz_pt_l3;
+	float mva_ttzwwz_jet1_qg_tagger, mva_ttzwwz_jet2_qg_tagger;
+	float mva_ttzwwz_dbkg_kin, mva_ttzwwz_eta_j1, mva_ttzwwz_eta_j2, mva_ttzwwz_pt_jet1, mva_ttzwwz_pt_jet2, mva_ttzwwz_eta_j_sum;
+	float mva_ttzwwz_mjj_over_detajj, mva_ttzwwz_abs_etajet_sum;
+
+	tree_ttzwwz->Branch("mjj", &mva_ttzwwz_mjj, "mva_ttzwwz_mjj/F");
+	tree_ttzwwz->Branch("deta_jj", &mva_ttzwwz_deta_jj, "mva_ttzwwz_deta_jj/F");
+	tree_ttzwwz->Branch("m4l", &mva_ttzwwz_m4l, "mva_ttzwwz_m4l/F");
+	tree_ttzwwz->Branch("eta_star_Z1", &mva_ttzwwz_eta_star_Z1, "mva_ttzwwz_eta_star_Z1/F");
+	tree_ttzwwz->Branch("eta_star_Z2", &mva_ttzwwz_eta_star_Z2, "mva_ttzwwz_eta_star_Z2/F");
+	tree_ttzwwz->Branch("R_pt_hard", &mva_ttzwwz_R_pt_hard, "mva_ttzwwz_R_pt_hard/F");
+	tree_ttzwwz->Branch("R_pt_jet", &mva_ttzwwz_R_pt_jet, "mva_ttzwwz_R_pt_jet/F");
+
+	tree_ttzwwz->Branch("abs_etajet_min", &mva_ttzwwz_abs_etajet_min, "mva_ttzwwz_abs_etajet_min/F");
+	tree_ttzwwz->Branch("abs_etajet_max", &mva_ttzwwz_abs_etajet_max, "mva_ttzwwz_abs_etajet_max/F");
+	tree_ttzwwz->Branch("abs_etalep_min", &mva_ttzwwz_abs_etalep_min, "mva_ttzwwz_abs_etalep_min/F");
+	tree_ttzwwz->Branch("abs_etalep_max", &mva_ttzwwz_abs_etalep_max, "mva_ttzwwz_abs_etalep_max/F");
+	tree_ttzwwz->Branch("delta_phi_ZZ", &mva_ttzwwz_delta_phi_ZZ, "mva_ttzwwz_delta_phi_ZZ/F");
+	tree_ttzwwz->Branch("rapidity_Z1", &mva_ttzwwz_rapidity_Z1, "mva_ttzwwz_rapidity_Z1/F");
+	tree_ttzwwz->Branch("rapidity_Z2", &mva_ttzwwz_rapidity_Z2, "mva_ttzwwz_rapidity_Z2/F");
+	tree_ttzwwz->Branch("rapidity_j1", &mva_ttzwwz_rapidity_j1, "mva_ttzwwz_rapidity_j1/F");
+	tree_ttzwwz->Branch("rapidity_j2", &mva_ttzwwz_rapidity_j2, "mva_ttzwwz_rapidity_j2/F");
+	tree_ttzwwz->Branch("pt_Z1", &mva_ttzwwz_pt_Z1, "mva_ttzwwz_pt_Z1/F");
+	tree_ttzwwz->Branch("pt_Z2", &mva_ttzwwz_pt_Z2, "mva_ttzwwz_pt_Z2/F");
+	tree_ttzwwz->Branch("pt_l3", &mva_ttzwwz_pt_l3, "mva_ttzwwz_pt_l3/F");
+	tree_ttzwwz->Branch("jet1_qg_tagger", &mva_ttzwwz_jet1_qg_tagger, "mva_ttzwwz_jet1_qg_tagger/F");
+	tree_ttzwwz->Branch("jet2_qg_tagger", &mva_ttzwwz_jet2_qg_tagger, "mva_ttzwwz_jet2_qg_tagger/F");
+	tree_ttzwwz->Branch("dbkg_kin", &mva_ttzwwz_dbkg_kin, "mva_ttzwwz_dbkg_kin/F");
+	tree_ttzwwz->Branch("eta_j1", &mva_ttzwwz_eta_j1, "mva_ttzwwz_eta_j1/F");
+	tree_ttzwwz->Branch("eta_j2", &mva_ttzwwz_eta_j2, "mva_ttzwwz_eta_j2/F");
+	tree_ttzwwz->Branch("pt_jet1", &mva_ttzwwz_pt_jet1, "mva_ttzwwz_pt_jet1/F");
+	tree_ttzwwz->Branch("pt_jet2", &mva_ttzwwz_pt_jet2, "mva_ttzwwz_pt_jet2/F");
+	tree_ttzwwz->Branch("eta_j_sum", &mva_ttzwwz_eta_j_sum, "mva_ttzwwz_eta_j_sum/F");
+	tree_ttzwwz->Branch("mjj_over_detajj", &mva_ttzwwz_mjj_over_detajj, "mva_ttzwwz_mjj_over_detajj/F");
+	tree_ttzwwz->Branch("abs_etajet_sum", &mva_ttzwwz_abs_etajet_sum, "mva_ttzwwz_abs_etajet_sum/F");
+
+
+	TTree *tree_data = new TTree("data","data");
+
+	float mva_data_mjj, mva_data_deta_jj, mva_data_m4l, mva_data_eta_star_Z1, mva_data_eta_star_Z2, mva_data_R_pt_hard, mva_data_R_pt_jet;
+	float mva_data_abs_etajet_min, mva_data_abs_etajet_max, mva_data_abs_etalep_min, mva_data_abs_etalep_max;
+	float mva_data_delta_phi_ZZ;
+	float mva_data_rapidity_Z1, mva_data_rapidity_Z2, mva_data_rapidity_j1, mva_data_rapidity_j2;
+	float mva_data_pt_Z1, mva_data_pt_Z2, mva_data_pt_l3;
+	float mva_data_jet1_qg_tagger, mva_data_jet2_qg_tagger;
+	float mva_data_dbkg_kin, mva_data_eta_j1, mva_data_eta_j2, mva_data_pt_jet1, mva_data_pt_jet2, mva_data_eta_j_sum;
+	float mva_data_mjj_over_detajj, mva_data_abs_etajet_sum;
+
+	tree_data->Branch("mjj", &mva_data_mjj, "mva_data_mjj/F");
+	tree_data->Branch("deta_jj", &mva_data_deta_jj, "mva_data_deta_jj/F");
+	tree_data->Branch("m4l", &mva_data_m4l, "mva_data_m4l/F");
+	tree_data->Branch("eta_star_Z1", &mva_data_eta_star_Z1, "mva_data_eta_star_Z1/F");
+	tree_data->Branch("eta_star_Z2", &mva_data_eta_star_Z2, "mva_data_eta_star_Z2/F");
+	tree_data->Branch("R_pt_hard", &mva_data_R_pt_hard, "mva_data_R_pt_hard/F");
+	tree_data->Branch("R_pt_jet", &mva_data_R_pt_jet, "mva_data_R_pt_jet/F");
+
+	tree_data->Branch("abs_etajet_min", &mva_data_abs_etajet_min, "mva_data_abs_etajet_min/F");
+	tree_data->Branch("abs_etajet_max", &mva_data_abs_etajet_max, "mva_data_abs_etajet_max/F");
+	tree_data->Branch("abs_etalep_min", &mva_data_abs_etalep_min, "mva_data_abs_etalep_min/F");
+	tree_data->Branch("abs_etalep_max", &mva_data_abs_etalep_max, "mva_data_abs_etalep_max/F");
+	tree_data->Branch("delta_phi_ZZ", &mva_data_delta_phi_ZZ, "mva_data_delta_phi_ZZ/F");
+	tree_data->Branch("rapidity_Z1", &mva_data_rapidity_Z1, "mva_data_rapidity_Z1/F");
+	tree_data->Branch("rapidity_Z2", &mva_data_rapidity_Z2, "mva_data_rapidity_Z2/F");
+	tree_data->Branch("rapidity_j1", &mva_data_rapidity_j1, "mva_data_rapidity_j1/F");
+	tree_data->Branch("rapidity_j2", &mva_data_rapidity_j2, "mva_data_rapidity_j2/F");
+	tree_data->Branch("pt_Z1", &mva_data_pt_Z1, "mva_data_pt_Z1/F");
+	tree_data->Branch("pt_Z2", &mva_data_pt_Z2, "mva_data_pt_Z2/F");
+	tree_data->Branch("pt_l3", &mva_data_pt_l3, "mva_data_pt_l3/F");
+	tree_data->Branch("jet1_qg_tagger", &mva_data_jet1_qg_tagger, "mva_data_jet1_qg_tagger/F");
+	tree_data->Branch("jet2_qg_tagger", &mva_data_jet2_qg_tagger, "mva_data_jet2_qg_tagger/F");
+	tree_data->Branch("dbkg_kin", &mva_data_dbkg_kin, "mva_data_dbkg_kin/F");
+	tree_data->Branch("eta_j1", &mva_data_eta_j1, "mva_data_eta_j1/F");
+	tree_data->Branch("eta_j2", &mva_data_eta_j2, "mva_data_eta_j2/F");
+	tree_data->Branch("pt_jet1", &mva_data_pt_jet1, "mva_data_pt_jet1/F");
+	tree_data->Branch("pt_jet2", &mva_data_pt_jet2, "mva_data_pt_jet2/F");
+	tree_data->Branch("eta_j_sum", &mva_data_eta_j_sum, "mva_data_eta_j_sum/F");
+	tree_data->Branch("mjj_over_detajj", &mva_data_mjj_over_detajj, "mva_data_mjj_over_detajj/F");
+	tree_data->Branch("abs_etajet_sum", &mva_data_abs_etajet_sum, "mva_data_abs_etajet_sum/F");
+
+
+	// ------------------------------------------------------------------------------------------- end of preparing MVA trees ----------------------------------------------------------------------------------------
 
 	
 	//for loop for different samples
@@ -766,6 +1034,188 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					if (is_ttZ) httz[iv]->Fill(theVar,weight);
 					if (is_wwZ) hwwz[iv]->Fill(theVar,weight);
 	      		}
+                // filling trees for TMVA
+
+				if (j==2)	//signal
+				{
+					mva_sig_mjj = DiJetMass;
+					mva_sig_deta_jj = fabs(DiJetDEta);
+					mva_sig_m4l = ZZMass;
+					mva_sig_eta_star_Z1 = eta_Z1_star;
+					mva_sig_eta_star_Z2 = eta_Z2_star;
+					mva_sig_R_pt_hard = R_pt_hard;
+					mva_sig_R_pt_jet = R_pt_jet;
+
+					mva_sig_abs_etajet_min = abs_etajet_min;
+					mva_sig_abs_etajet_max = abs_etajet_max;
+					mva_sig_abs_etalep_min = abs_etalep_min;
+					mva_sig_abs_etalep_max = abs_etalep_max;
+					mva_sig_delta_phi_ZZ = delta_phi_ZZ;
+					mva_sig_rapidity_Z1 = rapidity_Z1;
+					mva_sig_rapidity_Z2 = rapidity_Z2;
+					mva_sig_rapidity_j1 = rapidity_j1;
+					mva_sig_rapidity_j2 = rapidity_j2;
+					mva_sig_pt_Z1 = pt_Z1;
+					mva_sig_pt_Z2 = pt_Z2;
+					mva_sig_pt_l3 = pt_l3;
+					mva_sig_jet1_qg_tagger = jet_qg_tagger->at(0);
+					mva_sig_jet2_qg_tagger = jet_qg_tagger->at(1);
+					mva_sig_dbkg_kin = dbkg_kin;
+					mva_sig_eta_j1 = JetEta->at(0);
+					mva_sig_eta_j2 = JetEta->at(1);
+					mva_sig_pt_jet1 = JetPt->at(0);
+					mva_sig_pt_jet2 = JetPt->at(1);
+					mva_sig_eta_j_sum = JetEta->at(0) + JetEta->at(1);
+					mva_sig_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
+					mva_sig_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+
+					if (overallEventWeight > 0)
+						tree_sig->Fill();
+				}
+				if (j==5)	//qq
+				{
+					mva_qq_mjj = DiJetMass;
+					mva_qq_deta_jj = fabs(DiJetDEta);
+					mva_qq_m4l = ZZMass;
+					mva_qq_eta_star_Z1 = eta_Z1_star;
+					mva_qq_eta_star_Z2 = eta_Z2_star;
+					mva_qq_R_pt_hard = R_pt_hard;
+					mva_qq_R_pt_jet = R_pt_jet;
+
+					mva_qq_abs_etajet_min = abs_etajet_min;
+					mva_qq_abs_etajet_max = abs_etajet_max;
+					mva_qq_abs_etalep_min = abs_etalep_min;
+					mva_qq_abs_etalep_max = abs_etalep_max;
+					mva_qq_delta_phi_ZZ = delta_phi_ZZ;
+					mva_qq_rapidity_Z1 = rapidity_Z1;
+					mva_qq_rapidity_Z2 = rapidity_Z2;
+					mva_qq_rapidity_j1 = rapidity_j1;
+					mva_qq_rapidity_j2 = rapidity_j2;
+					mva_qq_pt_Z1 = pt_Z1;
+					mva_qq_pt_Z2 = pt_Z2;
+					mva_qq_pt_l3 = pt_l3;
+					mva_qq_jet1_qg_tagger = jet_qg_tagger->at(0);
+					mva_qq_jet2_qg_tagger = jet_qg_tagger->at(1);
+					mva_qq_dbkg_kin = dbkg_kin;
+					mva_qq_eta_j1 = JetEta->at(0);
+					mva_qq_eta_j2 = JetEta->at(1);
+					mva_qq_pt_jet1 = JetPt->at(0);
+					mva_qq_pt_jet2 = JetPt->at(1);
+					mva_qq_eta_j_sum = JetEta->at(0) + JetEta->at(1);
+					mva_qq_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
+					mva_qq_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+
+					if (overallEventWeight > 0)
+						tree_qq->Fill();
+				}
+				if (j==1)	//gg
+				{
+					mva_gg_mjj = DiJetMass;
+					mva_gg_deta_jj = fabs(DiJetDEta);
+					mva_gg_m4l = ZZMass;
+					mva_gg_eta_star_Z1 = eta_Z1_star;
+					mva_gg_eta_star_Z2 = eta_Z2_star;
+					mva_gg_R_pt_hard = R_pt_hard;
+					mva_gg_R_pt_jet = R_pt_jet;
+
+					mva_gg_abs_etajet_min = abs_etajet_min;
+					mva_gg_abs_etajet_max = abs_etajet_max;
+					mva_gg_abs_etalep_min = abs_etalep_min;
+					mva_gg_abs_etalep_max = abs_etalep_max;
+					mva_gg_delta_phi_ZZ = delta_phi_ZZ;
+					mva_gg_rapidity_Z1 = rapidity_Z1;
+					mva_gg_rapidity_Z2 = rapidity_Z2;
+					mva_gg_rapidity_j1 = rapidity_j1;
+					mva_gg_rapidity_j2 = rapidity_j2;
+					mva_gg_pt_Z1 = pt_Z1;
+					mva_gg_pt_Z2 = pt_Z2;
+					mva_gg_pt_l3 = pt_l3;
+					mva_gg_jet1_qg_tagger = jet_qg_tagger->at(0);
+					mva_gg_jet2_qg_tagger = jet_qg_tagger->at(1);
+					mva_gg_dbkg_kin = dbkg_kin;
+					mva_gg_eta_j1 = JetEta->at(0);
+					mva_gg_eta_j2 = JetEta->at(1);
+					mva_gg_pt_jet1 = JetPt->at(0);
+					mva_gg_pt_jet2 = JetPt->at(1);
+					mva_gg_eta_j_sum = JetEta->at(0) + JetEta->at(1);
+					mva_gg_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
+					mva_gg_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+
+					if (overallEventWeight > 0)
+						tree_gg->Fill();
+				}
+				if (j==4)	//ttZ,WWZ
+				{
+					mva_ttzwwz_mjj = DiJetMass;
+					mva_ttzwwz_deta_jj = fabs(DiJetDEta);
+					mva_ttzwwz_m4l = ZZMass;
+					mva_ttzwwz_eta_star_Z1 = eta_Z1_star;
+					mva_ttzwwz_eta_star_Z2 = eta_Z2_star;
+					mva_ttzwwz_R_pt_hard = R_pt_hard;
+					mva_ttzwwz_R_pt_jet = R_pt_jet;
+
+					mva_ttzwwz_abs_etajet_min = abs_etajet_min;
+					mva_ttzwwz_abs_etajet_max = abs_etajet_max;
+					mva_ttzwwz_abs_etalep_min = abs_etalep_min;
+					mva_ttzwwz_abs_etalep_max = abs_etalep_max;
+					mva_ttzwwz_delta_phi_ZZ = delta_phi_ZZ;
+					mva_ttzwwz_rapidity_Z1 = rapidity_Z1;
+					mva_ttzwwz_rapidity_Z2 = rapidity_Z2;
+					mva_ttzwwz_rapidity_j1 = rapidity_j1;
+					mva_ttzwwz_rapidity_j2 = rapidity_j2;
+					mva_ttzwwz_pt_Z1 = pt_Z1;
+					mva_ttzwwz_pt_Z2 = pt_Z2;
+					mva_ttzwwz_pt_l3 = pt_l3;
+					mva_ttzwwz_jet1_qg_tagger = jet_qg_tagger->at(0);
+					mva_ttzwwz_jet2_qg_tagger = jet_qg_tagger->at(1);
+					mva_ttzwwz_dbkg_kin = dbkg_kin;
+					mva_ttzwwz_eta_j1 = JetEta->at(0);
+					mva_ttzwwz_eta_j2 = JetEta->at(1);
+					mva_ttzwwz_pt_jet1 = JetPt->at(0);
+					mva_ttzwwz_pt_jet2 = JetPt->at(1);
+					mva_ttzwwz_eta_j_sum = JetEta->at(0) + JetEta->at(1);
+					mva_ttzwwz_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
+					mva_ttzwwz_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+
+					if (overallEventWeight > 0)
+						tree_ttzwwz->Fill();
+				}
+				if (j==3)	//data
+				{
+					mva_data_mjj = DiJetMass;
+					mva_data_deta_jj = fabs(DiJetDEta);
+					mva_data_m4l = ZZMass;
+					mva_data_eta_star_Z1 = eta_Z1_star;
+					mva_data_eta_star_Z2 = eta_Z2_star;
+					mva_data_R_pt_hard = R_pt_hard;
+					mva_data_R_pt_jet = R_pt_jet;
+
+					mva_data_abs_etajet_min = abs_etajet_min;
+					mva_data_abs_etajet_max = abs_etajet_max;
+					mva_data_abs_etalep_min = abs_etalep_min;
+					mva_data_abs_etalep_max = abs_etalep_max;
+					mva_data_delta_phi_ZZ = delta_phi_ZZ;
+					mva_data_rapidity_Z1 = rapidity_Z1;
+					mva_data_rapidity_Z2 = rapidity_Z2;
+					mva_data_rapidity_j1 = rapidity_j1;
+					mva_data_rapidity_j2 = rapidity_j2;
+					mva_data_pt_Z1 = pt_Z1;
+					mva_data_pt_Z2 = pt_Z2;
+					mva_data_pt_l3 = pt_l3;
+					mva_data_jet1_qg_tagger = jet_qg_tagger->at(0);
+					mva_data_jet2_qg_tagger = jet_qg_tagger->at(1);
+					mva_data_dbkg_kin = dbkg_kin;
+					mva_data_eta_j1 = JetEta->at(0);
+					mva_data_eta_j2 = JetEta->at(1);
+					mva_data_pt_jet1 = JetPt->at(0);
+					mva_data_pt_jet2 = JetPt->at(1);
+					mva_data_eta_j_sum = JetEta->at(0) + JetEta->at(1);
+					mva_data_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
+					mva_data_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+
+					if (overallEventWeight > 0)
+						tree_data->Fill();
+				}
 	    	}
 		}//entries loop  end
 	}//file loop  end
@@ -1033,6 +1483,40 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	      		if (chan_zx == 3) hzx_em[iv]->Fill(var_zx,weight_zx);
 	    	}	    
 	  	}
+
+		mva_zx_mjj = DiJetMass_zx;
+		mva_zx_deta_jj = fabs(DiJetDEta_zx);
+		mva_zx_m4l = ZZMass_zx;
+		mva_zx_eta_star_Z1 = eta_Z1_star_zx;
+		mva_zx_eta_star_Z2 = eta_Z2_star_zx;
+		mva_zx_R_pt_hard = R_pt_hard_zx;
+		mva_zx_R_pt_jet = R_pt_jet_zx;
+
+		mva_zx_abs_etajet_min = abs_etajet_min_zx;
+		mva_zx_abs_etajet_max = abs_etajet_max_zx;
+		mva_zx_abs_etalep_min = abs_etalep_min_zx;
+		mva_zx_abs_etalep_max = abs_etalep_max_zx;
+		mva_zx_delta_phi_ZZ = delta_phi_ZZ_zx;
+		mva_zx_rapidity_Z1 = rapidity_Z1_zx;
+		mva_zx_rapidity_Z2 = rapidity_Z2_zx;
+		mva_zx_rapidity_j1 = rapidity_j1_zx;
+		mva_zx_rapidity_j2 = rapidity_j2_zx;
+		mva_zx_pt_Z1 = pt_Z1_zx;
+		mva_zx_pt_Z2 = pt_Z2_zx;
+		mva_zx_pt_l3 = pt_l3_zx;
+		mva_zx_jet1_qg_tagger = j1_qg_tagger_zx;
+		mva_zx_jet2_qg_tagger = j2_qg_tagger_zx;
+		mva_zx_dbkg_kin = dbkg_kin_zx;
+		mva_zx_eta_j1 = etajet1_zx;
+		mva_zx_eta_j2 = etajet2_zx;
+		mva_zx_pt_jet1 = ptjet1_zx;
+		mva_zx_pt_jet2 = ptjet2_zx;
+		mva_zx_eta_j_sum = etajet1_zx + etajet2_zx;
+		mva_zx_mjj_over_detajj = DiJetMass_zx/fabs(DiJetDEta_zx);
+		mva_zx_abs_etajet_sum = fabs(etajet1_zx) + fabs(etajet2_zx);
+
+		if (overallEventWeight > 0)
+			tree_zx->Fill();
 	}
 	
 	for (int it=0; it < 5; it++) 
@@ -1061,6 +1545,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	  	tnew[it]->Write();
 	  	fnew[it]->Close();
 	}
+
 	
 	//INTEGRAL CHECK
 	sprintf(filename,"MCyields_%d.txt",year);
@@ -1239,6 +1724,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 			hewk_FT9->SetLineWidth(3);
 			hewk_FT9->SetLineStyle(9);
 			//hewk_FT9->SetFillColor(kRed+1);
+
+			//aQGC_histos_file->cd();
+			//hewk_FT8->Write();
+			//aQGC_histos_file->Close();
 		}
 	  
 	  	//add histograms to stack
@@ -1251,6 +1740,17 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	  	hs[iv]->Add(hdata[iv],"E1");
 		if (iv == 1 && calculate_aQGC_limits)
 		{
+			aQGC_histos_file->cd();
+			hsum2[iv]->Write();
+			hsum1[iv]->Write();
+			hqqzz[iv]->Write();
+			httzwzz[iv]->Write();
+			hzx[iv]->Write();
+			hdata[iv]->Write();
+			hewk_FT8->Write();
+			hewk_FT9->Write();
+			aQGC_histos_file->Close();
+
 			hs[iv]->Add(hewk_FT8);
 			hs[iv]->Add(hewk_FT9);
 		}
@@ -1418,4 +1918,16 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	hZ2M_difference->Draw();
 	//hZ2M_difference->SetMaximum(350000);
 	c6->SaveAs("Z2Mass_difference.png");
+
+	// ------------------------------------- Write TMVA trees ----------------------------------------
+
+	mva_file->cd();
+	tree_sig->Write();
+	tree_qq->Write();
+	tree_gg->Write();
+	tree_ttzwwz->Write();
+	tree_data->Write();
+	tree_zx->Write();
+
+	mva_file->Close();
 }

@@ -7,7 +7,7 @@
 
 string jet_pt_cut = "jet_pt_gt_30";
 
-TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
+TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
 
   	char filename[300];
 	char pname[30];
@@ -51,9 +51,8 @@ TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
    	return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
+void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 {
-  
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO
     //useMCatNLO = 2 : use aMCatNLO for shape, POWHEG for integral
@@ -127,7 +126,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	//--------------------------------------------------------------------------- end of my histograms ---------------------------------------------------------------------------
 
 	//TF_8 and TF_9 files
-	bool calculate_aQGC_limits = true;
+	bool calculate_aQGC_limits = false;
 	TString aQGC_filename = "onlymjjCut_jet_pt_gt_30/m4l_histos_" + to_string(year) + ".root";
 	TFile *aQGC_histos_file = new TFile(aQGC_filename, "RECREATE");
 	//TH1F *hewk_FT8, *hewk_FT9;
@@ -342,6 +341,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_sig_jet1_qg_tagger, mva_sig_jet2_qg_tagger;
 	float mva_sig_dbkg_kin, mva_sig_eta_j1, mva_sig_eta_j2, mva_sig_pt_jet1, mva_sig_pt_jet2, mva_sig_eta_j_sum;
 	float mva_sig_mjj_over_detajj, mva_sig_abs_etajet_sum;
+	float mva_sig_weight;
 
 	tree_sig->Branch("mjj", &mva_sig_mjj, "mva_sig_mjj/F");
 	tree_sig->Branch("deta_jj", &mva_sig_deta_jj, "mva_sig_deta_jj/F");
@@ -373,7 +373,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_sig->Branch("eta_j_sum", &mva_sig_eta_j_sum, "mva_sig_eta_j_sum/F");
 	tree_sig->Branch("mjj_over_detajj", &mva_sig_mjj_over_detajj, "mva_sig_mjj_over_detajj/F");
 	tree_sig->Branch("abs_etajet_sum", &mva_sig_abs_etajet_sum, "mva_sig_abs_etajet_sum/F");
-
+	tree_sig->Branch("weight", &mva_sig_weight, "mva_sig_weight/F");
 
 	TTree *tree_qq = new TTree("qq","qq");
 
@@ -385,6 +385,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_qq_jet1_qg_tagger, mva_qq_jet2_qg_tagger;
 	float mva_qq_dbkg_kin, mva_qq_eta_j1, mva_qq_eta_j2, mva_qq_pt_jet1, mva_qq_pt_jet2, mva_qq_eta_j_sum;
 	float mva_qq_mjj_over_detajj, mva_qq_abs_etajet_sum;
+	float mva_qq_weight;
 
 	tree_qq->Branch("mjj", &mva_qq_mjj, "mva_qq_mjj/F");
 	tree_qq->Branch("deta_jj", &mva_qq_deta_jj, "mva_qq_deta_jj/F");
@@ -416,6 +417,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_qq->Branch("eta_j_sum", &mva_qq_eta_j_sum, "mva_qq_eta_j_sum/F");
 	tree_qq->Branch("mjj_over_detajj", &mva_qq_mjj_over_detajj, "mva_qq_mjj_over_detajj/F");
 	tree_qq->Branch("abs_etajet_sum", &mva_qq_abs_etajet_sum, "mva_qq_abs_etajet_sum/F");
+	tree_qq->Branch("weight", &mva_qq_weight, "mva_qq_weight/F");
 
 
 	TTree *tree_gg = new TTree("gg","gg");
@@ -428,6 +430,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_gg_jet1_qg_tagger, mva_gg_jet2_qg_tagger;
 	float mva_gg_dbkg_kin, mva_gg_eta_j1, mva_gg_eta_j2, mva_gg_pt_jet1, mva_gg_pt_jet2, mva_gg_eta_j_sum;
 	float mva_gg_mjj_over_detajj, mva_gg_abs_etajet_sum;
+	float mva_gg_weight;
 
 	tree_gg->Branch("mjj", &mva_gg_mjj, "mva_gg_mjj/F");
 	tree_gg->Branch("deta_jj", &mva_gg_deta_jj, "mva_gg_deta_jj/F");
@@ -459,6 +462,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_gg->Branch("eta_j_sum", &mva_gg_eta_j_sum, "mva_gg_eta_j_sum/F");
 	tree_gg->Branch("mjj_over_detajj", &mva_gg_mjj_over_detajj, "mva_gg_mjj_over_detajj/F");
 	tree_gg->Branch("abs_etajet_sum", &mva_gg_abs_etajet_sum, "mva_gg_abs_etajet_sum/F");
+	tree_gg->Branch("weight", &mva_gg_weight, "mva_gg_weight/F");
 
 
 	TTree *tree_zx = new TTree("zx","zx");
@@ -472,6 +476,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_zx_jet1_qg_tagger, mva_zx_jet2_qg_tagger;
 	float mva_zx_dbkg_kin, mva_zx_eta_j1, mva_zx_eta_j2, mva_zx_pt_jet1, mva_zx_pt_jet2, mva_zx_eta_j_sum;
 	float mva_zx_mjj_over_detajj, mva_zx_abs_etajet_sum;
+	float mva_zx_weight;
 
 	tree_zx->Branch("mjj", &mva_zx_mjj, "mva_zx_mjj/F");
 	tree_zx->Branch("deta_jj", &mva_zx_deta_jj, "mva_zx_deta_jj/F");
@@ -503,6 +508,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_zx->Branch("eta_j_sum", &mva_zx_eta_j_sum, "mva_zx_eta_j_sum/F");
 	tree_zx->Branch("mjj_over_detajj", &mva_zx_mjj_over_detajj, "mva_zx_mjj_over_detajj/F");
 	tree_zx->Branch("abs_etajet_sum", &mva_zx_abs_etajet_sum, "mva_zx_abs_etajet_sum/F");
+	tree_zx->Branch("weight", &mva_zx_weight, "mva_zx_weight/F");
 
 
 	TTree *tree_ttzwwz = new TTree("ttzwwz","ttzwwz");
@@ -515,6 +521,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_ttzwwz_jet1_qg_tagger, mva_ttzwwz_jet2_qg_tagger;
 	float mva_ttzwwz_dbkg_kin, mva_ttzwwz_eta_j1, mva_ttzwwz_eta_j2, mva_ttzwwz_pt_jet1, mva_ttzwwz_pt_jet2, mva_ttzwwz_eta_j_sum;
 	float mva_ttzwwz_mjj_over_detajj, mva_ttzwwz_abs_etajet_sum;
+	float mva_ttzwwz_weight;
 
 	tree_ttzwwz->Branch("mjj", &mva_ttzwwz_mjj, "mva_ttzwwz_mjj/F");
 	tree_ttzwwz->Branch("deta_jj", &mva_ttzwwz_deta_jj, "mva_ttzwwz_deta_jj/F");
@@ -546,6 +553,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_ttzwwz->Branch("eta_j_sum", &mva_ttzwwz_eta_j_sum, "mva_ttzwwz_eta_j_sum/F");
 	tree_ttzwwz->Branch("mjj_over_detajj", &mva_ttzwwz_mjj_over_detajj, "mva_ttzwwz_mjj_over_detajj/F");
 	tree_ttzwwz->Branch("abs_etajet_sum", &mva_ttzwwz_abs_etajet_sum, "mva_ttzwwz_abs_etajet_sum/F");
+	tree_ttzwwz->Branch("weight", &mva_ttzwwz_weight, "mva_ttzwwz_weight/F");
 
 
 	TTree *tree_data = new TTree("data","data");
@@ -558,6 +566,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	float mva_data_jet1_qg_tagger, mva_data_jet2_qg_tagger;
 	float mva_data_dbkg_kin, mva_data_eta_j1, mva_data_eta_j2, mva_data_pt_jet1, mva_data_pt_jet2, mva_data_eta_j_sum;
 	float mva_data_mjj_over_detajj, mva_data_abs_etajet_sum;
+	float mva_data_weight;
 
 	tree_data->Branch("mjj", &mva_data_mjj, "mva_data_mjj/F");
 	tree_data->Branch("deta_jj", &mva_data_deta_jj, "mva_data_deta_jj/F");
@@ -589,10 +598,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	tree_data->Branch("eta_j_sum", &mva_data_eta_j_sum, "mva_data_eta_j_sum/F");
 	tree_data->Branch("mjj_over_detajj", &mva_data_mjj_over_detajj, "mva_data_mjj_over_detajj/F");
 	tree_data->Branch("abs_etajet_sum", &mva_data_abs_etajet_sum, "mva_data_abs_etajet_sum/F");
+	tree_data->Branch("weight", &mva_data_weight, "mva_data_weight/F");
 
 
 	// ------------------------------------------------------------------------------------------- end of preparing MVA trees ----------------------------------------------------------------------------------------
-
 	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++)
@@ -682,7 +691,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 		{
 	    	tqqzz->GetEntry(i);
 
-	    	if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
+	    	if(DiJetMass>400 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
 			{
 				// ------------------------------------------------------------ construc electron and muon objects -----------------------------------------
 				
@@ -732,7 +741,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
             	if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
             	if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
 	      		if (j==5) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-	      		if (j==3) weight=1.; 
+	      		if (j==3) weight=1.;
 
 	      		//division in channels
 	      		if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121) chan=2;
@@ -1068,9 +1077,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					mva_sig_eta_j_sum = JetEta->at(0) + JetEta->at(1);
 					mva_sig_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
 					mva_sig_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+					mva_sig_weight = weight;
 
-					if (overallEventWeight > 0)
-						tree_sig->Fill();
+					tree_sig->Fill();
 				}
 				if (j==5)	//qq
 				{
@@ -1104,9 +1113,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					mva_qq_eta_j_sum = JetEta->at(0) + JetEta->at(1);
 					mva_qq_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
 					mva_qq_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+					mva_qq_weight = weight;
 
-					if (overallEventWeight > 0)
-						tree_qq->Fill();
+					tree_qq->Fill();
 				}
 				if (j==1)	//gg
 				{
@@ -1140,9 +1149,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					mva_gg_eta_j_sum = JetEta->at(0) + JetEta->at(1);
 					mva_gg_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
 					mva_gg_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+					mva_gg_weight = weight;
 
-					if (overallEventWeight > 0)
-						tree_gg->Fill();
+					tree_gg->Fill();
 				}
 				if (j==4)	//ttZ,WWZ
 				{
@@ -1176,9 +1185,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					mva_ttzwwz_eta_j_sum = JetEta->at(0) + JetEta->at(1);
 					mva_ttzwwz_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
 					mva_ttzwwz_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+					mva_ttzwwz_weight = weight;
 
-					if (overallEventWeight > 0)
-						tree_ttzwwz->Fill();
+					tree_ttzwwz->Fill();
 				}
 				if (j==3)	//data
 				{
@@ -1212,9 +1221,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 					mva_data_eta_j_sum = JetEta->at(0) + JetEta->at(1);
 					mva_data_mjj_over_detajj = DiJetMass/fabs(DiJetDEta);
 					mva_data_abs_etajet_sum = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
+					mva_data_weight = weight;
 
-					if (overallEventWeight > 0)
-						tree_data->Fill();
+					tree_data->Fill();
 				}
 	    	}
 		}//entries loop  end
@@ -1514,9 +1523,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 		mva_zx_eta_j_sum = etajet1_zx + etajet2_zx;
 		mva_zx_mjj_over_detajj = DiJetMass_zx/fabs(DiJetDEta_zx);
 		mva_zx_abs_etajet_sum = fabs(etajet1_zx) + fabs(etajet2_zx);
+		mva_zx_weight = weight_zx;
 
-		if (overallEventWeight > 0)
-			tree_zx->Fill();
+		tree_zx->Fill();
 	}
 	
 	for (int it=0; it < 5; it++) 
@@ -1622,6 +1631,81 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 	    	// else 
 	    	hqqzz[iv]->Scale(powheg_integral/hqqzz[iv]->Integral());
 	  	}
+
+
+		// ---------------------------------------------- saving mjj and detajj to file ------------------------------------
+
+		if (iv == 2)
+		{
+			TString name = "./onlymjjCut_jet_pt_gt_30/mjj_" + to_string(year) + ".root";
+			TFile *h_all_contributions = new TFile(name, "recreate");
+			TH1F *h_ewk = (TH1F*) hvbs[iv]->Clone();
+			h_ewk->SetName("vbs");
+			h_ewk->Write();
+
+			TH1F *h_qq = (TH1F*) hqqzz[iv]->Clone();
+			h_qq->SetName("QCD_qq");
+			h_qq->Write();
+
+			TH1F *h_gg = (TH1F*) hggzz[iv]->Clone();
+			h_gg->SetName("QCD_gg");
+			h_gg->Write();
+
+			TH1F *h_data = (TH1F*) hdata[iv]->Clone();
+			h_data->SetName("data");
+			h_data->Write();
+
+			TH1F *h_zx = (TH1F*) hzx[iv]->Clone();
+			h_zx->SetName("ZX");
+			h_zx->Write();
+
+			TH1F *h_ttz = (TH1F*) httz[iv]->Clone();
+			h_ttz->SetName("ttZ");
+			h_ttz->Write();
+
+			TH1F *h_wwz = (TH1F*) hwwz[iv]->Clone();
+			h_wwz->SetName("WWZ");
+			h_wwz->Write();
+			
+			h_all_contributions->Close();
+		}
+
+		if (iv == 3)
+		{
+			TString name = "./onlymjjCut_jet_pt_gt_30/detajj_" + to_string(year) + ".root";
+			TFile *h_all_contributions = new TFile(name, "recreate");
+			TH1F *h_ewk = (TH1F*) hvbs[iv]->Clone();
+			h_ewk->SetName("vbs");
+			h_ewk->Write();
+
+			TH1F *h_qq = (TH1F*) hqqzz[iv]->Clone();
+			h_qq->SetName("QCD_qq");
+			h_qq->Write();
+
+			TH1F *h_gg = (TH1F*) hggzz[iv]->Clone();
+			h_gg->SetName("QCD_gg");
+			h_gg->Write();
+
+			TH1F *h_data = (TH1F*) hdata[iv]->Clone();
+			h_data->SetName("data");
+			h_data->Write();
+
+			TH1F *h_zx = (TH1F*) hzx[iv]->Clone();
+			h_zx->SetName("ZX");
+			h_zx->Write();
+
+			TH1F *h_ttz = (TH1F*) httz[iv]->Clone();
+			h_ttz->SetName("ttZ");
+			h_ttz->Write();
+
+			TH1F *h_wwz = (TH1F*) hwwz[iv]->Clone();
+			h_wwz->SetName("WWZ");
+			h_wwz->Write();
+			
+			h_all_contributions->Close();
+		}
+
+		// ------------------------------------------ end of saving mjj and detajj to file ---------------------------------
 	  
 	  	//HISTOGRAMS ADDED TO STACK
 	  	hzx[iv]->SetFillColor(kGreen);
@@ -1651,32 +1735,6 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 		//saving EWK, qq, gg and data histogram in root file for aQGC part
 		if (iv == 1 && calculate_aQGC_limits == false)
 		{
-
-			/*TFile *ewk_hist = new TFile("ewk.root","recreate");
-			hvbs[iv]->Write();
-			ewk_hist->Write();
-			ewk_hist->Close();
-
-			TFile *qq_hist = new TFile("qq.root","recreate");
-			hqqzz[iv]->Write();
-			qq_hist->Write();
-			qq_hist->Close();
-
-			TFile *gg_hist = new TFile("gg.root","recreate");
-			hggzz[iv]->Write();
-			gg_hist->Write();
-			gg_hist->Close();
-
-			TFile *data_hist = new TFile("data.root","recreate");
-			hdata[iv]->Write();
-			data_hist->Write();
-			data_hist->Close();
-
-			TFile *zx_hist = new TFile("zx.root","recreate");
-			hzx[iv]->Write();
-			zx_hist->Write();
-			zx_hist->Close();*/
-
 			TString name = "./aQGC/raw_histos/all_contributions_" + to_string(year) + ".root";
 			TFile *h_all_contributions = new TFile(name, "recreate");
 			TH1F *h_ewk = (TH1F*) hvbs[iv]->Clone();

@@ -127,7 +127,10 @@ void make_aQGC_stack()
 
     // ------------------------------------ stacking histograms --------------------------------------------------------
 
-    THStack *hs = new THStack();
+    //THStack *hs = new THStack();
+    char filetitle[300];
+	sprintf(filetitle,"CMS Preliminary                                                               137.1 fb^{-1}");  
+    THStack *hs = new THStack("",filetitle);
 
     hs->Add(hsum2,"hist");
 	hs->Add(hsum1,"hist");
@@ -141,11 +144,6 @@ void make_aQGC_stack()
     TCanvas *c1 = new TCanvas("c1","example",800,1000);
     gPad->SetLogy();
     c1->cd();
-    //TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1,0);
-	//pad1->SetBottomMargin(0);
-	//pad1->Draw();
-	//pad1->SetLogy();
-	//pad1->cd();
 
     hs->Draw("nostack");
 
@@ -164,8 +162,11 @@ void make_aQGC_stack()
     legend->Draw();
 
     hs->GetXaxis()->SetTitle("M_{4l} [GeV]");
-    hs->GetYaxis()->SetTitle("event/bin");
+    hs->GetYaxis()->SetTitle("Event/bin");
     hs->GetYaxis()->SetTitleOffset(1.4);
     hs->GetXaxis()->SetTitleOffset(1.4);
-    c1->SaveAs("m4l_combined.png");
+
+    hs->SetMinimum(0.2);
+
+    c1->SaveAs("m4l_plot_allMCatNLO.pdf");
 }

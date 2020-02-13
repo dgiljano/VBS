@@ -407,12 +407,6 @@
     sw.Stop();
     std::cout << "--- End of event loop: "; sw.Print();
 
-    /*histo_signal->Draw();
-    histo_qq->Draw("same");
-    histo_gg->Draw("same");
-    histo_ttzwwz->Draw("same");
-    histo_zx->Draw("same");*/
-
     //TFile *bdt_stack_histos = new TFile("bdt_stack_histos.root", "RECREATE");
     TFile *bdt_stack_histos = new TFile("BDT_stack_2018.root", "RECREATE");
     histo_signal->Write();
@@ -473,9 +467,11 @@
     hs->GetYaxis()->SetTitleOffset(1.4);
     hs->GetXaxis()->SetTitleOffset(1.4);
 
-    TCanvas *c2 = new TCanvas();
+    c1->SaveAs("BDT_stack_2018.pdf");
+
+    /*TCanvas *c2 = new TCanvas();
     c2->cd();
-    histo_qq_weight->Draw();
+    histo_qq_weight->Draw();*/
  
  
     std::cout << "--- Created root file: \"TMVApp.root\" containing the MVA output histograms" << std::endl;

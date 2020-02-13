@@ -7,7 +7,7 @@
 
 string jet_pt_cut = "jet_pt_gt_30";
 
-TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
+TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
 
   	char filename[300];
 	char pname[30];
@@ -51,7 +51,7 @@ TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
    	return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
+void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
 {
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO
@@ -691,7 +691,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 		{
 	    	tqqzz->GetEntry(i);
 
-	    	if(DiJetMass>400 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
+	    	if(DiJetMass > 100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60)
 			{
 				// ------------------------------------------------------------ construc electron and muon objects -----------------------------------------
 				
@@ -1633,7 +1633,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 	  	}
 
 
-		// ---------------------------------------------- saving mjj and detajj to file ------------------------------------
+		// ---------------------------------------------- saving mjj, detajj and kD to file ------------------------------------
 
 		if (iv == 2)
 		{
@@ -1705,7 +1705,41 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 			h_all_contributions->Close();
 		}
 
-		// ------------------------------------------ end of saving mjj and detajj to file ---------------------------------
+		/*if (iv == 0)
+		{
+			TString name = "./onlymjjCut_jet_pt_gt_30/kd_" + to_string(year) + ".root";
+			TFile *h_all_contributions = new TFile(name, "recreate");
+			TH1F *h_ewk = (TH1F*) hvbs[iv]->Clone();
+			h_ewk->SetName("bkg_vbs");
+			h_ewk->Write();
+
+			TH1F *h_qq = (TH1F*) hqqzz[iv]->Clone();
+			h_qq->SetName("bkg_qqzz");
+			h_qq->Write();
+
+			TH1F *h_gg = (TH1F*) hggzz[iv]->Clone();
+			h_gg->SetName("bkg_ggzz");
+			h_gg->Write();
+
+			TH1F *h_data = (TH1F*) hdata[iv]->Clone();
+			h_data->SetName("data_obs");
+			h_data->Write();
+
+			TH1F *h_zx = (TH1F*) hzx[iv]->Clone();
+			h_zx->SetName("bkg_zjet");
+			h_zx->Write();
+
+			TH1F *h_ttz = (TH1F*) httz[iv]->Clone();
+			TH1F *h_wwz = (TH1F*) hwwz[iv]->Clone();
+			TH1F *h_ttzwwz = (TH1F*) httz[iv]->Clone();
+			h_ttzwwz->Add(hwwz[iv]);
+			h_ttzwwz->SetName("bkg_ttzwzz");
+			h_ttzwwz->Write();
+			
+			h_all_contributions->Close();
+		}*/
+
+		// ------------------------------------------ end of saving mjj, detajj and kD to file ---------------------------------
 	  
 	  	//HISTOGRAMS ADDED TO STACK
 	  	hzx[iv]->SetFillColor(kGreen);

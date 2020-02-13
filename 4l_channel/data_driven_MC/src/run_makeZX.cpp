@@ -17,7 +17,7 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] )
 {	
-    int year = 2016;
+    int year = 2018;
 	string pt_cut = "jet_pt_gt_30";
 
     int passtot = 0;
@@ -214,7 +214,7 @@ int main( int argc, char *argv[] )
 		float WP_VBF2j = getDVBF2jetsWP(data.ZZMass, 0);
 		
 		
-        if(data.DiJetMass>400 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60)
+        if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60)
 		{
 		  	passtot++;
 		  

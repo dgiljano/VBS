@@ -325,6 +325,7 @@ int TMVAClassification( TString myMethodList = "" )
       vars[26] = signal_mjj_over_detajj;
       vars[27] = signal_abs_etajet_sum;*/
 
+      //if (signal_weight < 0) continue;
       if (i < signal->GetEntries()/2.0) dataloader->AddSignalTrainingEvent( vars, signal_weight );
       else                              dataloader->AddSignalTestEvent    ( vars, signal_weight );
 
@@ -400,6 +401,7 @@ int TMVAClassification( TString myMethodList = "" )
       vars[26] = background_mjj_over_detajj;
       vars[27] = background_abs_etajet_sum;*/
 
+      //if (background_weight < 0) continue;
       if (i < background->GetEntries()/2.0) dataloader->AddBackgroundTrainingEvent( vars, background_weight );
       else                                  dataloader->AddBackgroundTestEvent    ( vars, background_weight );
    }

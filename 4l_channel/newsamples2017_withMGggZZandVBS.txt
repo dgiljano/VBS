@@ -3,3 +3,5 @@
 /data_cms_upgrade/giljanovic/VBS/MC_2017/ggZZnew_1jet/ZZ4lAnalysis.root
 /data_cms_upgrade/giljanovic/VBS/MC_2017/VBFTo4lJJ_0PMH125Contin_madgraph_2017/ZZ4lAnalysis.root
 /data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/MC_2016/TTZToLLNuNu_M10/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/MC_2017/WWZ/ZZ4lAnalysis.root

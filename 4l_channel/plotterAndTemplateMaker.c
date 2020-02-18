@@ -7,7 +7,7 @@
 
 string jet_pt_cut = "jet_pt_gt_30";
 
-TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
+TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
 
   	char filename[300];
 	char pname[30];
@@ -51,7 +51,7 @@ TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
    	return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1)
+void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1)
 {
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO

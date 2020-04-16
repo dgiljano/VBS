@@ -4,7 +4,7 @@ void make_aQGC_stack()
 
     // ---------------------------------------------- 2016 histograms ------------------------------------------------
 
-    TFile *f_2016 = new TFile("../onlymjjCut_jet_pt_gt_30/m4l_histos_2016.root");
+    TFile *f_2016 = new TFile("../onlymjjCut_jet_pt_gt_30/2016/m4l_histos_2016.root");
 
     TH1F *hsum2_2016 = new TH1F("hsum2_2016","hsum2_2016", 9, bins_FT);
     hsum2_2016 = (TH1F*)f_2016->Get("hsum2_1");
@@ -24,15 +24,18 @@ void make_aQGC_stack()
     TH1F *hdata_2016 = new TH1F("hdata_2016","hdata_2016", 9, bins_FT);
     hdata_2016 = (TH1F*)f_2016->Get("hdata_1");
 
-    TH1F *hft8_2016 = new TH1F("hft8_2016","hft8_2016", 9, bins_FT);
-    hft8_2016 = (TH1F*)f_2016->Get("BLS_hvbs_1_rescaled_FT8_1");
+    /*TH1F *hft8_2016 = new TH1F("hft8_2016","hft8_2016", 9, bins_FT);
+    hft8_2016 = (TH1F*)f_2016->Get("BLS_diboson_rescaled_FT8_1");
 
     TH1F *hft9_2016 = new TH1F("hft9_2016","hft9_2016", 9, bins_FT);
-    hft9_2016 = (TH1F*)f_2016->Get("BLS_hvbs_1_rescaled_FT9_2");
+    hft9_2016 = (TH1F*)f_2016->Get("BLS_diboson_rescaled_FT9_2");*/
+
+    TH1F *hsum2_atgc_2016 = new TH1F("hsum2_atgc_2016","hsum2_atgc_2016", 9, bins_FT);
+    hsum2_atgc_2016 = (TH1F*)f_2016->Get("hsum2_atgc_1");
 
     // ---------------------------------------------- 2017 histograms ------------------------------------------------
 
-    TFile *f_2017 = new TFile("../onlymjjCut_jet_pt_gt_30/m4l_histos_2017.root");
+    TFile *f_2017 = new TFile("../onlymjjCut_jet_pt_gt_30/2017/m4l_histos_2017.root");
 
     TH1F *hsum2_2017 = new TH1F("hsum2_2017","hsum2_2017", 9, bins_FT);
     hsum2_2017 = (TH1F*)f_2017->Get("hsum2_1");
@@ -52,15 +55,15 @@ void make_aQGC_stack()
     TH1F *hdata_2017 = new TH1F("hdata_2017","hdata_2017", 9, bins_FT);
     hdata_2017 = (TH1F*)f_2017->Get("hdata_1");
 
-    TH1F *hft8_2017 = new TH1F("hft8_2017","hft8_2017", 9, bins_FT);
+    /*TH1F *hft8_2017 = new TH1F("hft8_2017","hft8_2017", 9, bins_FT);
     hft8_2017 = (TH1F*)f_2017->Get("BLS_diboson_rescaled_FT8_1");
 
     TH1F *hft9_2017 = new TH1F("hft9_2017","hft9_2017", 9, bins_FT);
-    hft9_2017 = (TH1F*)f_2017->Get("BLS_diboson_rescaled_FT9_2");
+    hft9_2017 = (TH1F*)f_2017->Get("BLS_diboson_rescaled_FT9_2");*/
 
     // ---------------------------------------------- 2018 histograms ------------------------------------------------
 
-    TFile *f_2018 = new TFile("../onlymjjCut_jet_pt_gt_30/m4l_histos_2018.root");
+    TFile *f_2018 = new TFile("../onlymjjCut_jet_pt_gt_30/2018/m4l_histos_2018.root");
 
     TH1F *hsum2_2018 = new TH1F("hsum2_2018","hsum2_2018", 9, bins_FT);
     hsum2_2018 = (TH1F*)f_2018->Get("hsum2_1");
@@ -80,11 +83,11 @@ void make_aQGC_stack()
     TH1F *hdata_2018 = new TH1F("hdata_2018","hdata_2018", 9, bins_FT);
     hdata_2018 = (TH1F*)f_2018->Get("hdata_1");
 
-    TH1F *hft8_2018 = new TH1F("hft8_2018","hft8_2018", 9, bins_FT);
+    /*TH1F *hft8_2018 = new TH1F("hft8_2018","hft8_2018", 9, bins_FT);
     hft8_2018 = (TH1F*)f_2018->Get("BLS_diboson_rescaled_FT8_1");
 
     TH1F *hft9_2018 = new TH1F("hft9_2018","hft9_2018", 9, bins_FT);
-    hft9_2018 = (TH1F*)f_2018->Get("BLS_diboson_rescaled_FT9_2");
+    hft9_2018 = (TH1F*)f_2018->Get("BLS_diboson_rescaled_FT9_2");*/
 
 
     // -------------------------------------------- summing years -----------------------------------------------------
@@ -98,6 +101,8 @@ void make_aQGC_stack()
     TH1F *hft8 = new TH1F("hft8","hft8", 9, bins_FT);
     TH1F *hft9 = new TH1F("hft9","hft9", 9, bins_FT);
 
+    TH1F *hsum2_atgc = new TH1F("hsum2_atgc","hsum2_atgc", 9, bins_FT);
+
     for (int i = 1; i < 10; i++)
     {
         hsum2->SetBinContent(i, hsum2_2016->GetBinContent(i) + hsum2_2017->GetBinContent(i) + hsum2_2018->GetBinContent(i));
@@ -106,8 +111,10 @@ void make_aQGC_stack()
         httzwwz->SetBinContent(i, httzwwz_2016->GetBinContent(i) + httzwwz_2017->GetBinContent(i) + httzwwz_2018->GetBinContent(i));
         hzx->SetBinContent(i, hzx_2016->GetBinContent(i) + hzx_2017->GetBinContent(i) + hzx_2018->GetBinContent(i));
         hdata->SetBinContent(i, hdata_2016->GetBinContent(i) + hdata_2017->GetBinContent(i) + hdata_2018->GetBinContent(i));
-        hft8->SetBinContent(i, hft8_2016->GetBinContent(i) + hft8_2017->GetBinContent(i) + hft8_2018->GetBinContent(i));
-        hft9->SetBinContent(i, hft9_2016->GetBinContent(i) + hft9_2017->GetBinContent(i) + hft9_2018->GetBinContent(i));
+        //hft8->SetBinContent(i, hft8_2016->GetBinContent(i) + hft8_2017->GetBinContent(i) + hft8_2018->GetBinContent(i));
+        //hft9->SetBinContent(i, hft9_2016->GetBinContent(i) + hft9_2017->GetBinContent(i) + hft9_2018->GetBinContent(i));
+
+        hsum2_atgc->SetBinContent(i, hsum2_atgc_2016->GetBinContent(i) * 3.8189);
     }
 
     hzx->SetFillColor(kGreen);
@@ -117,13 +124,15 @@ void make_aQGC_stack()
     hsum2->SetFillColor(kMagenta);
     hdata->SetMarkerStyle(20);
 
-    hft8->SetLineColor(kYellow+1);
+    /*hft8->SetLineColor(kYellow+1);
 	hft8->SetLineWidth(3);
 	hft8->SetLineStyle(9);
 
     hft9->SetLineColor(kRed+1);
 	hft9->SetLineWidth(3);
-	hft9->SetLineStyle(9);
+	hft9->SetLineStyle(9);*/
+
+    hsum2_atgc->SetFillColor(kGray);
 
     // ------------------------------------ stacking histograms --------------------------------------------------------
 
@@ -132,6 +141,7 @@ void make_aQGC_stack()
 	sprintf(filetitle,"CMS Preliminary                                                               137.1 fb^{-1}");  
     THStack *hs = new THStack("",filetitle);
 
+    hs->Add(hsum2_atgc,"hist");
     hs->Add(hsum2,"hist");
 	hs->Add(hsum1,"hist");
 	hs->Add(hqqzz,"hist");
@@ -140,6 +150,7 @@ void make_aQGC_stack()
     hs->Add(hft8);
 	hs->Add(hft9);
     hs->Add(hdata,"E1");
+
 
     TCanvas *c1 = new TCanvas("c1","example",800,1000);
     gPad->SetLogy();
@@ -156,8 +167,9 @@ void make_aQGC_stack()
 	legend->AddEntry(hsum1,"gg#rightarrowZZ","f");
 	legend->AddEntry(hsum2,"VBS","f");
 	legend->AddEntry(hdata,"Data","lep");
-    legend->AddEntry(hft8,"f_{T8} /#Lambda^{4} = 1 TeV^{-4}","f");
-	legend->AddEntry(hft9,"f_{T9} /#Lambda^{4} = 2 TeV^{-4}","f");
+    //legend->AddEntry(hft8,"f_{T8} /#Lambda^{4} = 1 TeV^{-4}","f");
+	//legend->AddEntry(hft9,"f_{T9} /#Lambda^{4} = 2 TeV^{-4}","f");
+    legend->AddEntry(hsum2_atgc,"aTGC","f");
 	legend->SetBorderSize(0);
     legend->Draw();
 

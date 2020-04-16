@@ -51,7 +51,7 @@ TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
    	return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched = 0)
+void plotterAndTemplateMaker_MCStat_test(int year = 2016, int useMCatNLO = 1, int enriched = 0)
 {
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO
@@ -114,8 +114,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 	TH1F *httzwzz_mm[vars];//ttz + wwz mu
 	TH1F *httzwzz_em[vars];//ttz + wwz e mu
 
-	TH1F *hsum2_atgc[vars];
-
 	//------------------------------------------------------------------------------- my histograms ------------------------------------------------------------------------------
 
 	TH1F *hZ1Mass_duje = new TH1F ("Z1Mass_duje", "", 40, 50, 130);
@@ -131,12 +129,11 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 	TH1F *hwwz[vars];//wwz only
 	TH1F *hwzz[vars];//wzz only
 
-	TH1F *hatgc[vars]; // aQGC
 
 	//--------------------------------------------------------------------------- end of my histograms ---------------------------------------------------------------------------
 
 	//TF_8 and TF_9 files
-	bool calculate_aQGC_limits = true;
+	bool calculate_aQGC_limits = false;
 	TString aQGC_filename = "onlymjjCut_jet_pt_gt_30/m4l_histos_" + to_string(year) + ".root";
 	TFile *aQGC_histos_file = new TFile(aQGC_filename, "RECREATE");
 	//TH1F *hewk_FT8, *hewk_FT9;
@@ -186,42 +183,36 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		sprintf(filename,"hwwz_%d",iv); hwwz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
 		sprintf(filename,"hwzz_%d",iv); hwzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
 
-		sprintf(filename,"hatgc_%d",iv); hatgc[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
-		sprintf(filename,"hsum2_atgc_%d",iv);   hsum2_atgc[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
-
 		if (iv == 1)
 		{
-			Float_t bins_m4l[] = { 0, 200, 300, 400, 500, 600, 800, 1000, 1200, 1400 };
+			Float_t bins_m4l[] = { 0, 1 };
 
-	  		sprintf(filename,"hdata_%d",iv);   hdata[iv] = new TH1F(filename,"",9,bins_m4l); //data, because we are hiding higher energies in this phase
-	  		sprintf(filename,"hqqzz_powheg_%d",iv);   hqqzz_powheg[iv] = new TH1F(filename,"",9,bins_m4l); //ew
-	  		sprintf(filename,"hqqzz_%d",iv);   hqqzz[iv] = new TH1F(filename,"",9,bins_m4l); //ew+zx -> real ew
-	  		sprintf(filename,"hggzz_%d",iv);   hggzz[iv] = new TH1F(filename,"",9,bins_m4l); //gg
-	  		sprintf(filename,"hvbs_%d",iv);   hvbs[iv] = new TH1F(filename,"",9,bins_m4l); //vbs
-	  		sprintf(filename,"hsum1_%d",iv);   hsum1[iv] = new TH1F(filename,"",9,bins_m4l); //gg+ew -> real gg
-	  		sprintf(filename,"hsum2_%d",iv);   hsum2[iv] = new TH1F(filename,"",9,bins_m4l); //gg+ew+vbs
-	  		sprintf(filename,"hqqzz_ee_%d",iv);   hqqzz_ee[iv] = new TH1F(filename,"",9,bins_m4l); //qqzz e
-	  		sprintf(filename,"hqqzz_mm_%d",iv);   hqqzz_mm[iv] = new TH1F(filename,"",9,bins_m4l); //qqzz mu
-	  		sprintf(filename,"hqqzz_em_%d",iv);   hqqzz_em[iv] = new TH1F(filename,"",9,bins_m4l); //qqzz e mu
-	  		sprintf(filename,"hggzz_ee_%d",iv);   hggzz_ee[iv] = new TH1F(filename,"",9,bins_m4l);//ggzz e
-	  		sprintf(filename,"hggzz_mm_%d",iv);   hggzz_mm[iv] = new TH1F(filename,"",9,bins_m4l);//ggzz mu
-	  		sprintf(filename,"hggzz_em_%d",iv);  hggzz_em[iv] = new TH1F(filename,"",9,bins_m4l); //ggzz e mu
-	  		sprintf(filename,"hvbs_ee_%d",iv); hvbs_ee[iv] = new TH1F(filename,"",9,bins_m4l);//vbs e
-	  		sprintf(filename,"hvbs_mm_%d",iv); hvbs_mm[iv] = new TH1F(filename,"",9,bins_m4l);//vbs mu
-	  		sprintf(filename,"hvbs_em_%d",iv); hvbs_em[iv] = new TH1F(filename,"",9,bins_m4l);//vbs e mu
-	  		sprintf(filename,"hdataee_%d",iv); hdata_ee[iv] = new TH1F(filename,"",9,bins_m4l);//vbs e
-	  		sprintf(filename,"hdatamm_%d",iv); hdata_mm[iv] = new TH1F(filename,"",9,bins_m4l);//vbs mu
-	  		sprintf(filename,"hdataem_%d",iv); hdata_em[iv] = new TH1F(filename,"",9,bins_m4l);//vbs e mu
-	  		sprintf(filename,"httzwzz_%d",iv); httzwzz[iv] = new TH1F(filename,"",9,bins_m4l);//for 2018 rescale
-	  		sprintf(filename,"httzwzz_ee_%d",iv); httzwzz_ee[iv] = new TH1F(filename,"",9,bins_m4l);//ttzwwz e
-	  		sprintf(filename,"httzwzz_mm_%d",iv); httzwzz_mm[iv] = new TH1F(filename,"",9,bins_m4l);//ttzwwz mu
-	  		sprintf(filename,"httzwzz_em_%d",iv); httzwzz_em[iv] = new TH1F(filename,"",9,bins_m4l);//ttzwwz e mu
-			sprintf(filename,"httz_%d",iv); httz[iv] = new TH1F(filename,"",9,bins_m4l);
-			sprintf(filename,"hwwz_%d",iv); hwwz[iv] = new TH1F(filename,"",9,bins_m4l);
-			sprintf(filename,"hwzz_%d",iv); hwzz[iv] = new TH1F(filename,"",9,bins_m4l);
-
-			sprintf(filename,"hatgc_%d",iv); hatgc[iv] = new TH1F(filename,"",9,bins_m4l);
-			sprintf(filename,"hsum2_atgc_%d",iv);   hsum2_atgc[iv] = new TH1F(filename,"",9,bins_m4l);	  
+	  		sprintf(filename,"hdata_%d",iv);   hdata[iv] = new TH1F(filename,"",1,bins_m4l); //data, because we are hiding higher energies in this phase
+	  		sprintf(filename,"hqqzz_powheg_%d",iv);   hqqzz_powheg[iv] = new TH1F(filename,"",1,bins_m4l); //ew
+	  		sprintf(filename,"hqqzz_%d",iv);   hqqzz[iv] = new TH1F(filename,"",1,bins_m4l); //ew+zx -> real ew
+	  		sprintf(filename,"hggzz_%d",iv);   hggzz[iv] = new TH1F(filename,"",1,bins_m4l); //gg
+	  		sprintf(filename,"hvbs_%d",iv);   hvbs[iv] = new TH1F(filename,"",1,bins_m4l); //vbs
+	  		sprintf(filename,"hsum1_%d",iv);   hsum1[iv] = new TH1F(filename,"",1,bins_m4l); //gg+ew -> real gg
+	  		sprintf(filename,"hsum2_%d",iv);   hsum2[iv] = new TH1F(filename,"",1,bins_m4l); //gg+ew+vbs
+	  		sprintf(filename,"hqqzz_ee_%d",iv);   hqqzz_ee[iv] = new TH1F(filename,"",1,bins_m4l); //qqzz e
+	  		sprintf(filename,"hqqzz_mm_%d",iv);   hqqzz_mm[iv] = new TH1F(filename,"",1,bins_m4l); //qqzz mu
+	  		sprintf(filename,"hqqzz_em_%d",iv);   hqqzz_em[iv] = new TH1F(filename,"",1,bins_m4l); //qqzz e mu
+	  		sprintf(filename,"hggzz_ee_%d",iv);   hggzz_ee[iv] = new TH1F(filename,"",1,bins_m4l);//ggzz e
+	  		sprintf(filename,"hggzz_mm_%d",iv);   hggzz_mm[iv] = new TH1F(filename,"",1,bins_m4l);//ggzz mu
+	  		sprintf(filename,"hggzz_em_%d",iv);  hggzz_em[iv] = new TH1F(filename,"",1,bins_m4l); //ggzz e mu
+	  		sprintf(filename,"hvbs_ee_%d",iv); hvbs_ee[iv] = new TH1F(filename,"",1,bins_m4l);//vbs e
+	  		sprintf(filename,"hvbs_mm_%d",iv); hvbs_mm[iv] = new TH1F(filename,"",1,bins_m4l);//vbs mu
+	  		sprintf(filename,"hvbs_em_%d",iv); hvbs_em[iv] = new TH1F(filename,"",1,bins_m4l);//vbs e mu
+	  		sprintf(filename,"hdataee_%d",iv); hdata_ee[iv] = new TH1F(filename,"",1,bins_m4l);//vbs e
+	  		sprintf(filename,"hdatamm_%d",iv); hdata_mm[iv] = new TH1F(filename,"",1,bins_m4l);//vbs mu
+	  		sprintf(filename,"hdataem_%d",iv); hdata_em[iv] = new TH1F(filename,"",1,bins_m4l);//vbs e mu
+	  		sprintf(filename,"httzwzz_%d",iv); httzwzz[iv] = new TH1F(filename,"",1,bins_m4l);//for 2018 rescale
+	  		sprintf(filename,"httzwzz_ee_%d",iv); httzwzz_ee[iv] = new TH1F(filename,"",1,bins_m4l);//ttzwwz e
+	  		sprintf(filename,"httzwzz_mm_%d",iv); httzwzz_mm[iv] = new TH1F(filename,"",1,bins_m4l);//ttzwwz mu
+	  		sprintf(filename,"httzwzz_em_%d",iv); httzwzz_em[iv] = new TH1F(filename,"",1,bins_m4l);//ttzwwz e mu
+			sprintf(filename,"httz_%d",iv); httz[iv] = new TH1F(filename,"",1,bins_m4l);
+			sprintf(filename,"hwwz_%d",iv); hwwz[iv] = new TH1F(filename,"",1,bins_m4l);
+			sprintf(filename,"hwzz_%d",iv); hwzz[iv] = new TH1F(filename,"",1,bins_m4l);	  
 		}
 	}   
 	gStyle->SetPalette(1);
@@ -621,10 +612,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 
 
 	// ------------------------------------------------------------------------------------------- end of preparing MVA trees ----------------------------------------------------------------------------------------
-	int N = 0;
-	int N9 = 0;
-	int N8 = 0;
-	int N7 = 0;
+	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++)
 	{
@@ -645,7 +633,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		bool is_ttZ = false;
 		bool is_wwZ = false;
 		bool is_wZZ = false;
-		bool is_aTGC = false;
 		if (rootname[is].Contains("AllData")) j = 3;   
 		if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
     	if (rootname[is].Contains("VBFTo")) j = 2;
@@ -654,7 +641,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		if (rootname[is].Contains("WWZ")) is_wwZ = true;
 		if (rootname[is].Contains("TTZ")) is_ttZ = true;
 		if (rootname[is].Contains("WZZ")) is_wZZ = true;
-		if (rootname[is].Contains("aTGC")) is_aTGC = true;
 	
 		//	float lumi = 35.9E03;
 		float my_sum = 0;
@@ -835,6 +821,7 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
             	    int iv = il; 
 					if (il == 0) theVar = dbkg_kin;
 					if (il == 1) theVar = ZZMass;
+					//if (il == 1) theVar = 0.5;
 					if (il == 2) theVar = DiJetMass;
 					if (il == 3) theVar = fabs(DiJetDEta);
             	    if (il == 4) theVar = JetPt->at(0);
@@ -1007,65 +994,52 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		  				if (chan == 3) hdata_em[iv]->Fill(theVar);
 					}
 					if (j==0)	//qqzz
-					{                              
-					  hqqzz_powheg[iv]->Fill(theVar,weight);
+					{ 
+					  	if (il == 1 && theVar >= 1200 && theVar < 1400) hqqzz_powheg[iv]->Fill(0.5,weight);
 
 					  /* if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
 					  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
 					  if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);  */        //mu+e
 					}
 					if (j==1)	//gg
-					{                              
-					  hggzz[iv]->Fill(theVar,weight);
-					  hggzz[iv]->SetFillColor(kBlue);
+					{ 	                             
+					  	if (il == 1 && theVar >= 1200 && theVar < 1400) hggzz[iv]->Fill(0.5,weight);
+					  	hggzz[iv]->SetFillColor(kBlue);
 
-					  if (chan == 1) hggzz_mm[iv]->Fill(theVar,weight); //mu
-					  if (chan == 2) hggzz_ee[iv]->Fill(theVar,weight); //e
-					  if (chan == 3)  hggzz_em[iv]->Fill(theVar,weight);          //mu+e
+					  	if (chan == 1) hggzz_mm[iv]->Fill(theVar,weight); //mu
+					  	if (chan == 2) hggzz_ee[iv]->Fill(theVar,weight); //e
+					  	if (chan == 3)  hggzz_em[iv]->Fill(theVar,weight);          //mu+e
 
 					}
 					if (j==2)	//vbs
-					{                              
-					  hvbs[iv]->Fill(theVar,weight);
-					  hvbs[iv]->SetFillColor(kMagenta);
+					{                             
+					  	if (il == 1 && theVar >= 1200 && theVar < 1400) hvbs[iv]->Fill(0.5,weight);
+					  	hvbs[iv]->SetFillColor(kMagenta);
 
-					  if (chan == 1) hvbs_mm[iv]->Fill(theVar,weight); //mu
-					  if (chan == 2) hvbs_ee[iv]->Fill(theVar,weight); //e
-					  if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
+					  	if (chan == 1) hvbs_mm[iv]->Fill(theVar,weight); //mu
+					  	if (chan == 2) hvbs_ee[iv]->Fill(theVar,weight); //e
+					  	if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
 
 					}
 					if (j==5) 
 					{
-					  hqqzz[iv]->Fill(theVar,weight);
+					  	if (il == 1 && theVar >= 1200 && theVar < 1400) hqqzz[iv]->Fill(0.5,weight);
 
-					  if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
-					  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
-					  if (chan == 3) hqqzz_em[iv]->Fill(theVar,weight);
+					  	if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
+					  	if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
+					  	if (chan == 3) hqqzz_em[iv]->Fill(theVar,weight);
 					}
 					if (j==4) 
 					{
-					  httzwzz[iv]->Fill(theVar,weight);
+					  	if (il == 1 && theVar >= 1200 && theVar < 1400) httzwzz[iv]->Fill(0.5,weight);
 
-					  if (chan == 1) httzwzz_mm[iv]->Fill(theVar,weight); //mu
-					  if (chan == 2) httzwzz_ee[iv]->Fill(theVar,weight); //e
-					  if (chan == 3) httzwzz_em[iv]->Fill(theVar,weight);          //mu+e
+					  	if (chan == 1) httzwzz_mm[iv]->Fill(theVar,weight); //mu
+					  	if (chan == 2) httzwzz_ee[iv]->Fill(theVar,weight); //e
+					  	if (chan == 3) httzwzz_em[iv]->Fill(theVar,weight);          //mu+e
 					}
 					if (is_ttZ) httz[iv]->Fill(theVar,weight);
 					if (is_wwZ) hwwz[iv]->Fill(theVar,weight);
 					if (is_wZZ) hwzz[iv]->Fill(theVar,weight);
-					if (is_aTGC)
-					{
-						hatgc[iv]->Fill(theVar,weight);
-
-						if (il == 1)
-						{
-							N++;
-
-							if (theVar >= 1200) N9++;
-							if (theVar >= 1000 && theVar < 1200) N8++;
-							if (theVar >= 800 && theVar < 1000) N7++;
-						}
-					} 
 	      		}
                 // filling trees for TMVA
 
@@ -1274,12 +1248,12 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 
 		if (iv == 1)
 		{
-			Float_t bins_m4l[] = { 0, 200, 300, 400, 500, 600, 800, 1000, 1200, 1400 };
+			Float_t bins_m4l[] = {0, 1 };
 
-			sprintf(filename,"hzx%d",iv);   	hzx[iv] = new TH1F(filename,"",9,bins_m4l); //full histogram
-	  		sprintf(filename,"hzx_ee%d",iv);   	hzx_ee[iv] = new TH1F(filename,"",9,bins_m4l); //full histogram
-	  		sprintf(filename,"hzx_mm%d",iv);   	hzx_mm[iv] = new TH1F(filename,"",9,bins_m4l); //full histogram
-	  		sprintf(filename,"hzx_em%d",iv);   	hzx_em[iv] = new TH1F(filename,"",9,bins_m4l); //full histogram
+			sprintf(filename,"hzx%d",iv);   	hzx[iv] = new TH1F(filename,"",1,bins_m4l); //full histogram
+	  		sprintf(filename,"hzx_ee%d",iv);   	hzx_ee[iv] = new TH1F(filename,"",1,bins_m4l); //full histogram
+	  		sprintf(filename,"hzx_mm%d",iv);   	hzx_mm[iv] = new TH1F(filename,"",1,bins_m4l); //full histogram
+	  		sprintf(filename,"hzx_em%d",iv);   	hzx_em[iv] = new TH1F(filename,"",1,bins_m4l); //full histogram
 		}
 	}
 	
@@ -1352,7 +1326,8 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		{
             int iv = il; 
 	    	if (iv == 0) var_zx = dbkg_kin_zx;
-	    	if (iv == 1) var_zx = ZZMass_zx;
+	    	//if (iv == 1) var_zx = ZZMass_zx;
+			if (iv == 1) var_zx = 0.5;
 	    	if (iv == 2) var_zx = DiJetMass_zx;
 	    	if (iv == 3) var_zx = fabs(DiJetDEta_zx);
 	    	if (il == 4) var_zx = ptjet1_zx;
@@ -1510,6 +1485,8 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 
 	    	if (fabs(weight_zx) < 100000.) 
 			{
+				if (il == 1)
+					if (var_zx < 1200 || var_zx > 1400) continue;
 	      		hzx[iv]->Fill(var_zx,weight_zx);
 	      		if (chan_zx == 2) hzx_ee[iv]->Fill(var_zx,weight_zx);
 	      		if (chan_zx == 1) hzx_mm[iv]->Fill(var_zx,weight_zx);
@@ -1780,48 +1757,35 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 			TFile *h_all_contributions = new TFile(name, "recreate");
 			TH1F *h_ewk = (TH1F*) hvbs[iv]->Clone();
 			h_ewk->SetName("diboson");
-			h_ewk->SetBinContent(h_ewk->GetNbinsX(), h_ewk->GetBinContent(h_ewk->GetNbinsX()) + h_ewk->GetBinContent(h_ewk->GetNbinsX() + 1));
 			h_ewk->Write();
 
 			TH1F *h_qq = (TH1F*) hqqzz[iv]->Clone();
 			h_qq->SetName("QCD_qq");
-			h_qq->SetBinContent(h_qq->GetNbinsX(), h_qq->GetBinContent(h_qq->GetNbinsX()) + h_qq->GetBinContent(h_qq->GetNbinsX() + 1));
 			h_qq->Write();
 
 			TH1F *h_gg = (TH1F*) hggzz[iv]->Clone();
 			h_gg->SetName("QCD_gg");
-			h_gg->SetBinContent(h_gg->GetNbinsX(), h_gg->GetBinContent(h_gg->GetNbinsX()) + h_gg->GetBinContent(h_gg->GetNbinsX() + 1));
 			h_gg->Write();
 
 			TH1F *h_data = (TH1F*) hdata[iv]->Clone();
 			h_data->SetName("data_obs");
-			h_data->SetBinContent(h_data->GetNbinsX(), h_data->GetBinContent(h_data->GetNbinsX()) + h_data->GetBinContent(h_data->GetNbinsX() + 1));
 			h_data->Write();
 
 			TH1F *h_zx = (TH1F*) hzx[iv]->Clone();
 			h_zx->SetName("ZpX");
-			h_zx->SetBinContent(h_zx->GetNbinsX(), h_zx->GetBinContent(h_zx->GetNbinsX()) + h_zx->GetBinContent(h_zx->GetNbinsX() + 1));
 			h_zx->Write();
 
 			TH1F *h_ttz = (TH1F*) httz[iv]->Clone();
 			h_ttz->SetName("ttZ");
-			h_ttz->SetBinContent(h_ttz->GetNbinsX(), h_ttz->GetBinContent(h_ttz->GetNbinsX()) + h_ttz->GetBinContent(h_ttz->GetNbinsX() + 1));
 			h_ttz->Write();
 
 			TH1F *h_wwz = (TH1F*) hwwz[iv]->Clone();
 			h_wwz->SetName("WWZ");
-			h_wwz->SetBinContent(h_wwz->GetNbinsX(), h_wwz->GetBinContent(h_wwz->GetNbinsX()) + h_wwz->GetBinContent(h_wwz->GetNbinsX() + 1));
 			h_wwz->Write();
 
 			TH1F *h_wzz = (TH1F*) hwzz[iv]->Clone();
 			h_wzz->SetName("WZZ");
-			h_wzz->SetBinContent(h_wzz->GetNbinsX(), h_wzz->GetBinContent(h_wzz->GetNbinsX()) + h_wzz->GetBinContent(h_wzz->GetNbinsX() + 1));
 			h_wzz->Write();
-
-			TH1F *h_atgc = (TH1F*) hatgc[iv]->Clone();
-			h_atgc->SetName("aTGC");
-			h_atgc->SetBinContent(h_atgc->GetNbinsX(), h_atgc->GetBinContent(h_atgc->GetNbinsX()) + h_atgc->GetBinContent(h_atgc->GetNbinsX() + 1));
-			h_atgc->Write();
 			
 			h_all_contributions->Close();
 		}
@@ -1838,14 +1802,11 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 	  	hsum1[iv]->SetFillColor(kBlue);
 	  	hsum2[iv]->Add(hsum1[iv],hvbs[iv],1,1);    //real vbs
 	  	hsum2[iv]->SetFillColor(kMagenta);
-		hsum2_atgc[iv]->Add(hsum1[iv],hatgc[iv],1,1);    //aTGC
-	  	hsum2_atgc[iv]->SetFillColor(kGray);
 
 
 		//INCLUDING OVERFLOW INTO THE LAST BIN (for m4l plot)
 		if (iv == 1)
 		{
-			hsum2_atgc[iv]->SetBinContent(hsum2_atgc[iv]->GetNbinsX(), hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX()) + hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX() + 1));
 			hsum2[iv]->SetBinContent(hsum2[iv]->GetNbinsX(), hsum2[iv]->GetBinContent(hsum2[iv]->GetNbinsX()) + hsum2[iv]->GetBinContent(hsum2[iv]->GetNbinsX() + 1));	//gg+ew+vbs (magenta -> signal)
 			hsum1[iv]->SetBinContent(hsum1[iv]->GetNbinsX(), hsum1[iv]->GetBinContent(hsum1[iv]->GetNbinsX()) + hsum1[iv]->GetBinContent(hsum1[iv]->GetNbinsX() + 1));	//gg+ew ->real gg (blue)
 			hqqzz[iv]->SetBinContent(hqqzz[iv]->GetNbinsX(), hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX()) + hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX() + 1));	//real ew (cyan)
@@ -1876,7 +1837,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		}
 	  
 	  	//add histograms to stack
-		hs[iv]->Add(hsum2_atgc[iv],"hist");
 	  	hs[iv]->Add(hsum2[iv],"hist");
 	  	hs[iv]->Add(hsum1[iv],"hist");
 	  	hs[iv]->Add(hqqzz[iv],"hist");
@@ -1887,7 +1847,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 		if (iv == 1 && calculate_aQGC_limits)
 		{
 			aQGC_histos_file->cd();
-			hsum2_atgc[iv]->Write();
 			hsum2[iv]->Write();
 			hsum1[iv]->Write();
 			hqqzz[iv]->Write();
@@ -2069,11 +2028,6 @@ void plotterAndTemplateMaker(int year = 2016, int useMCatNLO = 1, int enriched =
 	hZ2M_difference->Draw();
 	//hZ2M_difference->SetMaximum(350000);
 	c6->SaveAs("Z2Mass_difference.png");
-
-	cout << "Ukupno eventova koji prolaze selekciju: " << N << endl;
-	cout << "U zadnjem binu " << N9 << endl;
-	cout << "U osmom binu " << N8 << endl;
-	cout << "U sedmom binu " << N7 << endl;
 
 	// ------------------------------------- Write TMVA trees ----------------------------------------
 

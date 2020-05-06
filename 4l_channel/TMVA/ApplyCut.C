@@ -123,7 +123,7 @@
     TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
 
     Float_t mjj, deta_jj, m4l, eta_star_Z1, eta_star_Z2, R_pt_hard, R_pt_jet, weight;
-    //float_t abs_etajet_min, abs_etajet_max, abs_etalep_min, abs_etalep_max, delta_phi_ZZ, rapidity_Z1, rapidity_Z2, rapidity_j1, rapidity_j2, pt_Z1, pt_Z2, pt_l3, jet1_qg_tagger, jet2_qg_tagger, eta_j1, eta_j2, pt_jet1, pt_jet2, eta_j_sum, mjj_over_detajj, abs_etajet_sum;
+    float_t abs_etajet_min, abs_etajet_max, abs_etalep_min, abs_etalep_max, delta_phi_ZZ, rapidity_Z1, rapidity_Z2, rapidity_j1, rapidity_j2, pt_Z1, pt_Z2, pt_l3, jet1_qg_tagger, jet2_qg_tagger, eta_j1, eta_j2, pt_jet1, pt_jet2, eta_j_sum, mjj_over_detajj, abs_etajet_sum;
 
     reader->AddVariable( "mjj", &mjj);
     reader->AddVariable( "deta_jj", &deta_jj);
@@ -133,7 +133,7 @@
     reader->AddVariable( "R_pt_hard", &R_pt_hard);
     reader->AddVariable( "R_pt_jet", &R_pt_jet);
 
-    /*reader->AddVariable( "abs_etajet_min", &abs_etajet_min);
+    reader->AddVariable( "abs_etajet_min", &abs_etajet_min);
     reader->AddVariable( "abs_etajet_max", &abs_etajet_max);
     reader->AddVariable( "abs_etalep_min", &abs_etalep_min);
     reader->AddVariable( "abs_etalep_max", &abs_etalep_max);
@@ -153,7 +153,7 @@
     reader->AddVariable( "pt_jet2", &pt_jet2);
     reader->AddVariable( "eta_j_sum", &eta_j_sum);
     reader->AddVariable( "mjj_over_detajj", &mjj_over_detajj);
-    reader->AddVariable( "abs_etajet_sum", &abs_etajet_sum);*/
+    reader->AddVariable( "abs_etajet_sum", &abs_etajet_sum);
  
     // Book the MVA methods
  
@@ -196,7 +196,7 @@
     t_signal->SetBranchAddress( "R_pt_jet", &R_pt_jet);
     t_signal->SetBranchAddress( "weight", &weight);
 
-    /*t_signal->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
+    t_signal->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
     t_signal->SetBranchAddress( "abs_etajet_max", &abs_etajet_max);
     t_signal->SetBranchAddress( "abs_etalep_min", &abs_etalep_min);
     t_signal->SetBranchAddress( "abs_etalep_max", &abs_etalep_max);
@@ -216,7 +216,7 @@
     t_signal->SetBranchAddress( "pt_jet2", &pt_jet2);
     t_signal->SetBranchAddress( "eta_j_sum", &eta_j_sum);
     t_signal->SetBranchAddress( "mjj_over_detajj", &mjj_over_detajj);
-    t_signal->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);*/
+    t_signal->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);
 
     //--------------------------------------------------------
 
@@ -229,7 +229,7 @@
     t_qq->SetBranchAddress( "R_pt_jet", &R_pt_jet);
     t_qq->SetBranchAddress( "weight", &weight);
 
-    /*t_qq->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
+    t_qq->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
     t_qq->SetBranchAddress( "abs_etajet_max", &abs_etajet_max);
     t_qq->SetBranchAddress( "abs_etalep_min", &abs_etalep_min);
     t_qq->SetBranchAddress( "abs_etalep_max", &abs_etalep_max);
@@ -249,7 +249,7 @@
     t_qq->SetBranchAddress( "pt_jet2", &pt_jet2);
     t_qq->SetBranchAddress( "eta_j_sum", &eta_j_sum);
     t_qq->SetBranchAddress( "mjj_over_detajj", &mjj_over_detajj);
-    t_qq->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);*/
+    t_qq->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);
 
     //--------------------------------------------------------
 
@@ -262,7 +262,7 @@
     t_gg->SetBranchAddress( "R_pt_jet", &R_pt_jet );
     t_gg->SetBranchAddress( "weight", &weight);
 
-    /*t_gg->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
+    t_gg->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
     t_gg->SetBranchAddress( "abs_etajet_max", &abs_etajet_max);
     t_gg->SetBranchAddress( "abs_etalep_min", &abs_etalep_min);
     t_gg->SetBranchAddress( "abs_etalep_max", &abs_etalep_max);
@@ -282,7 +282,7 @@
     t_gg->SetBranchAddress( "pt_jet2", &pt_jet2);
     t_gg->SetBranchAddress( "eta_j_sum", &eta_j_sum);
     t_gg->SetBranchAddress( "mjj_over_detajj", &mjj_over_detajj);
-    t_gg->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);*/
+    t_gg->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);
 
     //-------------------------------------------------------
 
@@ -295,7 +295,7 @@
     t_ttzwwz->SetBranchAddress( "R_pt_jet", &R_pt_jet );
     t_ttzwwz->SetBranchAddress( "weight", &weight);
 
-    /*t_ttzwwz->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
+    t_ttzwwz->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
     t_ttzwwz->SetBranchAddress( "abs_etajet_max", &abs_etajet_max);
     t_ttzwwz->SetBranchAddress( "abs_etalep_min", &abs_etalep_min);
     t_ttzwwz->SetBranchAddress( "abs_etalep_max", &abs_etalep_max);
@@ -315,7 +315,7 @@
     t_ttzwwz->SetBranchAddress( "pt_jet2", &pt_jet2);
     t_ttzwwz->SetBranchAddress( "eta_j_sum", &eta_j_sum);
     t_ttzwwz->SetBranchAddress( "mjj_over_detajj", &mjj_over_detajj);
-    t_ttzwwz->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);*/
+    t_ttzwwz->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);
 
     //-------------------------------------------------------
 
@@ -328,7 +328,7 @@
     t_zx->SetBranchAddress( "R_pt_jet", &R_pt_jet );
     t_zx->SetBranchAddress( "weight", &weight);
 
-    /*t_zx->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
+    t_zx->SetBranchAddress( "abs_etajet_min", &abs_etajet_min);
     t_zx->SetBranchAddress( "abs_etajet_max", &abs_etajet_max);
     t_zx->SetBranchAddress( "abs_etalep_min", &abs_etalep_min);
     t_zx->SetBranchAddress( "abs_etalep_max", &abs_etalep_max);
@@ -348,17 +348,23 @@
     t_zx->SetBranchAddress( "pt_jet2", &pt_jet2);
     t_zx->SetBranchAddress( "eta_j_sum", &eta_j_sum);
     t_zx->SetBranchAddress( "mjj_over_detajj", &mjj_over_detajj);
-    t_zx->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);*/
+    t_zx->SetBranchAddress( "abs_etajet_sum", &abs_etajet_sum);
 
     //-------------------------------------------------------
 
-    TH1F* histo_signal = new TH1F("bkg_vbs", "histo_signal", 25, -0.3, 0.5);
+    /*TH1F* histo_signal = new TH1F("bkg_vbs", "histo_signal", 25, -0.3, 0.5);
     TH1F* histo_qq = new TH1F("bkg_qqzz", "histo_qq", 25, -0.3, 0.5);
     TH1F* histo_gg = new TH1F("bkg_ggzz", "histo_gg", 25, -0.3, 0.5);
     TH1F* histo_ttzwwz = new TH1F("bkg_ttzwzz", "histo_ttzwwz", 25, -0.3, 0.5);
     TH1F* histo_zx = new TH1F("bkg_zjet", "histo_zx", 25, -0.3, 0.5);
-    TH1F* histo_data = new TH1F("data_obs", "data_obs", 25, -0.3, 0.5);
- 
+    TH1F* histo_data = new TH1F("data_obs", "data_obs", 25, -0.3, 0.5);*/
+
+    TH1F* histo_signal = new TH1F("bkg_vbs", "histo_signal", 25, -1, 1);
+    TH1F* histo_qq = new TH1F("bkg_qqzz", "histo_qq", 25, -1, 1);
+    TH1F* histo_gg = new TH1F("bkg_ggzz", "histo_gg", 25, -1, 1);
+    TH1F* histo_ttzwwz = new TH1F("bkg_ttzwzz", "histo_ttzwwz", 25, -1, 1);
+    TH1F* histo_zx = new TH1F("bkg_zjet", "histo_zx", 25, -1, 1);
+    TH1F* histo_data = new TH1F("data_obs", "data_obs", 25, -1, 1);
  
     std::cout << "--- Processing: " << t_signal->GetEntries() << " events" << std::endl;
     TStopwatch sw;
@@ -369,14 +375,14 @@
     for (Long64_t ievt=0; ievt<t_signal->GetEntries();ievt++) 
     {
         t_signal->GetEntry(ievt);
-        float tBDT_signal = reader->EvaluateMVA("BDT method");
+        float tBDT_signal = reader->EvaluateMVA("BDTG method");
         histo_signal->Fill(tBDT_signal, weight);
     }
 
     for (Long64_t ievt=0; ievt<t_qq->GetEntries();ievt++) 
     {
         t_qq->GetEntry(ievt);
-        float tBDT_qq = reader->EvaluateMVA("BDT method");
+        float tBDT_qq = reader->EvaluateMVA("BDTG method");
         histo_qq->Fill(tBDT_qq, weight);
 
         histo_qq_weight->Fill(weight);
@@ -385,21 +391,21 @@
     for (Long64_t ievt=0; ievt<t_gg->GetEntries();ievt++) 
     {
         t_gg->GetEntry(ievt);
-        float tBDT_gg = reader->EvaluateMVA("BDT method");
+        float tBDT_gg = reader->EvaluateMVA("BDTG method");
         histo_gg->Fill(tBDT_gg, weight);
     }
 
     for (Long64_t ievt=0; ievt<t_ttzwwz->GetEntries();ievt++) 
     {
         t_ttzwwz->GetEntry(ievt);
-        float tBDT_ttzwwz = reader->EvaluateMVA("BDT method");
+        float tBDT_ttzwwz = reader->EvaluateMVA("BDTG method");
         histo_ttzwwz->Fill(tBDT_ttzwwz, weight);
     }
 
     for (Long64_t ievt=0; ievt<t_zx->GetEntries();ievt++) 
     {
         t_zx->GetEntry(ievt);
-        float tBDT_zx = reader->EvaluateMVA("BDT method");
+        float tBDT_zx = reader->EvaluateMVA("BDTG method");
         histo_zx->Fill(tBDT_zx, weight);
     }
  
@@ -408,7 +414,7 @@
     std::cout << "--- End of event loop: "; sw.Print();
 
     //TFile *bdt_stack_histos = new TFile("bdt_stack_histos.root", "RECREATE");
-    TFile *bdt_stack_histos = new TFile("BDT_stack_2018.root", "RECREATE");
+    TFile *bdt_stack_histos = new TFile("BDT_stack_2016.root", "RECREATE");
     histo_signal->Write();
     histo_qq->Write();
     histo_gg->Write();
@@ -419,7 +425,7 @@
     // ------------------------------------ stacking histograms --------------------------------------------------------
     //THStack *hs = new THStack();
     char filetitle[300];
-	sprintf(filetitle,"CMS Preliminary                                                                35.9 fb^{-1}");  
+	sprintf(filetitle,"CMS Preliminary                                                                59.7 fb^{-1}");  
     THStack *hs = new THStack("",filetitle);
 
     histo_signal->SetFillColor(kMagenta);
@@ -467,7 +473,7 @@
     hs->GetYaxis()->SetTitleOffset(1.4);
     hs->GetXaxis()->SetTitleOffset(1.4);
 
-    c1->SaveAs("BDT_stack_2018.pdf");
+    c1->SaveAs("BDT_stack_2016.pdf");
 
     /*TCanvas *c2 = new TCanvas();
     c2->cd();

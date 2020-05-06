@@ -1,0 +1,8 @@
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/ZZTo4lamcatnlo_2016/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/ggZZnew_012jet_2016/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/VBFTo4lJJ_0PMH125Contin_madgraph_2016/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/AllData/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/TTZToLLNuNu_M10/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/WWZ/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/WZZ/ZZ4lAnalysis.root
+/data_cms_upgrade/giljanovic/VBS/cut_based/2016/aTGC/ZZ4lAnalysis.root

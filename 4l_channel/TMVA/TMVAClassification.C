@@ -200,7 +200,7 @@ int TMVAClassification( TString myMethodList = "" )
    dataloader->AddVariable( "R_pt_hard",          "R_pt_hard", "units", 'F' );
    dataloader->AddVariable( "R_pt_jet",           "R_pt_jet", "units", 'F' );
 
-   /*dataloader->AddVariable( "abs_etajet_min",           "abs_etajet_min", "units", 'F' );
+   dataloader->AddVariable( "abs_etajet_min",           "abs_etajet_min", "units", 'F' );
    dataloader->AddVariable( "abs_etajet_max",           "abs_etajet_max", "units", 'F' );
    dataloader->AddVariable( "abs_etalep_min",           "abs_etalep_min", "units", 'F' );
    dataloader->AddVariable( "abs_etalep_max",           "abs_etalep_max", "units", 'F' );
@@ -221,7 +221,7 @@ int TMVAClassification( TString myMethodList = "" )
    dataloader->AddVariable( "pt_jet2",           "pt_jet2", "units", 'F' );
    dataloader->AddVariable( "eta_j_sum",           "eta_j_sum", "units", 'F' );
    dataloader->AddVariable( "mjj_over_detajj",           "mjj_over_detajj", "units", 'F' );
-   dataloader->AddVariable( "abs_etajet_sum",           "abs_etajet_sum", "units", 'F' );*/
+   dataloader->AddVariable( "abs_etajet_sum",           "abs_etajet_sum", "units", 'F' );
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -253,7 +253,7 @@ int TMVAClassification( TString myMethodList = "" )
 
 
 
-   std::vector<Double_t> vars(7);
+   std::vector<Double_t> vars(28);
    //Signal
    float signal_mjj, signal_deta_jj, signal_m4l, signal_eta_star_Z1, signal_eta_star_Z2, signal_R_pt_hard, signal_R_pt_jet;
    float signal_abs_etajet_min, signal_abs_etajet_max, signal_abs_etalep_min, signal_abs_etalep_max, signal_delta_phi_ZZ, signal_rapidity_Z1, signal_rapidity_Z2, signal_rapidity_j1, signal_rapidity_j2, signal_pt_Z1, signal_pt_Z2, signal_pt_l3, signal_jet1_qg_tagger, signal_jet2_qg_tagger, signal_eta_j1, signal_eta_j2, signal_pt_jet1, signal_pt_jet2, signal_eta_j_sum, signal_mjj_over_detajj, signal_abs_etajet_sum;
@@ -268,7 +268,7 @@ int TMVAClassification( TString myMethodList = "" )
    signal->SetBranchAddress("R_pt_jet", &signal_R_pt_jet);
    signal->SetBranchAddress("weight", &signal_weight);
 
-   /*signal->SetBranchAddress( "abs_etajet_min", &signal_abs_etajet_min);
+   signal->SetBranchAddress( "abs_etajet_min", &signal_abs_etajet_min);
    signal->SetBranchAddress( "abs_etajet_max", &signal_abs_etajet_max);
    signal->SetBranchAddress( "abs_etalep_min", &signal_abs_etalep_min);
    signal->SetBranchAddress( "abs_etalep_max", &signal_abs_etalep_max);
@@ -288,11 +288,13 @@ int TMVAClassification( TString myMethodList = "" )
    signal->SetBranchAddress( "pt_jet2", &signal_pt_jet2);
    signal->SetBranchAddress( "eta_j_sum", &signal_eta_j_sum);
    signal->SetBranchAddress( "mjj_over_detajj", &signal_mjj_over_detajj);
-   signal->SetBranchAddress( "abs_etajet_sum", &signal_abs_etajet_sum);*/
+   signal->SetBranchAddress( "abs_etajet_sum", &signal_abs_etajet_sum);
 
-
+    int N_sig = 0;
+    int N_bkg = 0;
    for (int i = 0; i < signal->GetEntries(); i++)
    {
+      N_sig++;
       signal->GetEntry(i);
 
       vars[0] = signal_mjj;
@@ -303,7 +305,7 @@ int TMVAClassification( TString myMethodList = "" )
       vars[5] = signal_R_pt_hard;
       vars[6] = signal_R_pt_jet;
 
-      /*vars[7] = signal_abs_etajet_min;
+      vars[7] = signal_abs_etajet_min;
       vars[8] = signal_abs_etajet_max;
       vars[9] = signal_abs_etalep_min;
       vars[10] = signal_abs_etalep_max;
@@ -323,9 +325,11 @@ int TMVAClassification( TString myMethodList = "" )
       vars[24] = signal_pt_jet2;
       vars[25] = signal_eta_j_sum;
       vars[26] = signal_mjj_over_detajj;
-      vars[27] = signal_abs_etajet_sum;*/
+      vars[27] = signal_abs_etajet_sum;
 
+      //if (N_sig > 48793) continue;
       //if (signal_weight < 0) continue;
+      //if (i < 48793/2.0) dataloader->AddSignalTrainingEvent( vars, signal_weight );
       if (i < signal->GetEntries()/2.0) dataloader->AddSignalTrainingEvent( vars, signal_weight );
       else                              dataloader->AddSignalTestEvent    ( vars, signal_weight );
 
@@ -345,7 +349,7 @@ int TMVAClassification( TString myMethodList = "" )
    background->SetBranchAddress("R_pt_jet", &background_R_pt_jet);
    background->SetBranchAddress("weight", &background_weight);
 
-   /*background->SetBranchAddress( "abs_etajet_min", &background_abs_etajet_min);
+   background->SetBranchAddress( "abs_etajet_min", &background_abs_etajet_min);
    background->SetBranchAddress( "abs_etajet_max", &background_abs_etajet_max);
    background->SetBranchAddress( "abs_etalep_min", &background_abs_etalep_min);
    background->SetBranchAddress( "abs_etalep_max", &background_abs_etalep_max);
@@ -365,10 +369,11 @@ int TMVAClassification( TString myMethodList = "" )
    background->SetBranchAddress( "pt_jet2", &background_pt_jet2);
    background->SetBranchAddress( "eta_j_sum", &background_eta_j_sum);
    background->SetBranchAddress( "mjj_over_detajj", &background_mjj_over_detajj);
-   background->SetBranchAddress( "abs_etajet_sum", &background_abs_etajet_sum);*/
+   background->SetBranchAddress( "abs_etajet_sum", &background_abs_etajet_sum);
 
    for (int i = 0; i < background->GetEntries(); i++)
    {
+      N_bkg++;
       background->GetEntry(i);
 
       vars[0] = background_mjj;
@@ -379,7 +384,7 @@ int TMVAClassification( TString myMethodList = "" )
       vars[5] = background_R_pt_hard;
       vars[6] = background_R_pt_jet;
 
-      /*vars[7] = background_abs_etajet_min;
+      vars[7] = background_abs_etajet_min;
       vars[8] = background_abs_etajet_max;
       vars[9] = background_abs_etalep_min;
       vars[10] = background_abs_etalep_max;
@@ -399,7 +404,7 @@ int TMVAClassification( TString myMethodList = "" )
       vars[24] = background_pt_jet2;
       vars[25] = background_eta_j_sum;
       vars[26] = background_mjj_over_detajj;
-      vars[27] = background_abs_etajet_sum;*/
+      vars[27] = background_abs_etajet_sum;
 
       //if (background_weight < 0) continue;
       if (i < background->GetEntries()/2.0) dataloader->AddBackgroundTrainingEvent( vars, background_weight );
@@ -679,6 +684,8 @@ int TMVAClassification( TString myMethodList = "" )
    // Launch the GUI for the root macros
    if (!gROOT->IsBatch()) TMVA::TMVAGui( outfileName );
 
+   cout << "Signal: " << N_sig << endl;
+   cout << "Background: " << N_bkg << endl;
    return 0;
 }
 

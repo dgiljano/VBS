@@ -18,7 +18,15 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 int main( int argc, char *argv[] )
 {	
     int year = 2018;
+	int enriched = 0;
+	//int enriched = atoi(argv[2]);
 	string pt_cut = "jet_pt_gt_30";
+
+	string theExtra = "";
+    if (enriched == 1) theExtra = "_VBSenr";
+    if (enriched == 2) theExtra = "_superVBSenr";
+    if (enriched == 3) theExtra = "_bkgdEnr";
+    if (enriched == 4) theExtra = "_ptjet50";
 
     int passtot = 0;
     int n2e2mu = 0;
@@ -37,18 +45,18 @@ int main( int argc, char *argv[] )
     _fs_ROS_SS.push_back(1.00);//2mu2e   	
  
     char name[200];
-	if (year == 2016) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2016/FakeRates/FakeRates_SS_2016_Legacy.root");
-	if (year == 2017) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2017/FakeRates/FakeRates_SS_2017_Legacy.root"); 
-    if (year == 2018) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/MC_2018/FakeRates/FakeRates_SS_2018_Legacy.root");
+	if (year == 2016) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/cut_based/2016/FakeRates/FakeRates_SS_2016.root");
+	if (year == 2017) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/cut_based/2017/FakeRates/FakeRates_SS_2017.root"); 
+    if (year == 2018) sprintf(name,"/data_cms_upgrade/giljanovic/VBS/cut_based/2018/FakeRates/FakeRates_SS_2018.root");
 
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
-	if (year == 2016) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2016/AllData/ZZ4lAnalysis.root");
-    if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2017/AllData/ZZ4lAnalysis.root");
-    if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/Data_2018/AllData/ZZ4lAnalysis.root");
+	if (year == 2016) t->Add("/data_cms_upgrade/giljanovic/VBS/cut_based/2016/AllData/ZZ4lAnalysis.root");
+    if (year == 2017) t->Add("/data_cms_upgrade/giljanovic/VBS/cut_based/2017/AllData/ZZ4lAnalysis.root");
+    if (year == 2018) t->Add("/data_cms_upgrade/giljanovic/VBS/cut_based/2018/AllData/ZZ4lAnalysis.root");
 
-	float c_constant = 8.5;
+	float c_constant = 14.0;
     //if (year == 2017) c_constant = 2.3;
 	//if (year == 2018) c_constant = 2.3; 
         
@@ -93,6 +101,8 @@ int main( int argc, char *argv[] )
 	data.fChain->SetBranchStatus("LepEta", 1);
 	data.fChain->SetBranchStatus("LepPhi", 1);
 	data.fChain->SetBranchStatus("JetQGLikelihood", 1);
+
+	data.fChain->SetBranchStatus("Nvtx", 1);
 
 
 	// ----------------------------------------------------------------------------- end of my branches ------------------------------------------------------------
@@ -145,6 +155,8 @@ int main( int argc, char *argv[] )
 
 	float j1_qg_tagger, j2_qg_tagger;
 
+	int Nvtx = data.Nvtx;
+
 	// ------------------------------------------------ end of my declarations --------------------------------------------------------
 
     sprintf(name,"ZX%d_%s.root",year,pt_cut.c_str());
@@ -187,6 +199,8 @@ int main( int argc, char *argv[] )
 	tnew->Branch("pt_l3",&pt_l3,"pt_l3/F");
 	tnew->Branch("j1_qg_tagger",&j1_qg_tagger,"j1_qg_tagger/F");
 	tnew->Branch("j2_qg_tagger",&j2_qg_tagger,"j2_qg_tagger/F");
+
+	tnew->Branch("Nvtx",&Nvtx,"Nvtx/I");
 	// --------------------------------------------------------------------
 
 	for(Long64_t jentry=0; jentry<nentries;jentry++)
@@ -216,6 +230,10 @@ int main( int argc, char *argv[] )
 		
         if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60)
 		{
+			if (enriched == 1 && (data.DiJetMass < 400 || fabs(data.DiJetDEta) < 2.4)) continue;
+		  	if (enriched == 2 && (data.DiJetMass < 400 || fabs(data.DiJetDEta) < 5.0)) continue;
+		  	if (enriched == 3 && data.DiJetMass > 400 && fabs(data.DiJetDEta) > 2.4) continue;
+		  	if (enriched == 4 && (data.JetPt->at(0) < 50 || data.JetPt->at(1) < 50)) continue;
 		  	passtot++;
 		  
 		  	vbfcate=1;
@@ -268,6 +286,8 @@ int main( int argc, char *argv[] )
 			
 			j1_qg_tagger = data.JetQGLikelihood->at(0);
 			j2_qg_tagger = data.JetQGLikelihood->at(1);
+
+			Nvtx = data.Nvtx;
 	
 		  	tnew->Fill();
 		}	

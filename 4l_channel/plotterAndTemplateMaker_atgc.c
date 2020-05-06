@@ -7,7 +7,7 @@
 
 string jet_pt_cut = "jet_pt_gt_30";
 
-TH2F* rebinTemplate(TH2F* orig, int year=2017, int itype=0) {
+TH2F* rebinTemplate(TH2F* orig, int year=2018, int itype=0) {
 
   	char filename[300];
 	char pname[30];
@@ -51,7 +51,7 @@ TH2F* rebinTemplate(TH2F* orig, int year=2017, int itype=0) {
    	return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched = 0)
+void plotterAndTemplateMaker_atgc(int year = 2018, int useMCatNLO = 1, int enriched = 0)
 {
     //useMCatNLO = 0 : use just POWHEG
     //useMCatNLO = 1 : use just aMCatNLO
@@ -67,14 +67,14 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 	if (enriched == 3) theExtra = "_bkgdEnr";
 	if (enriched == 4) theExtra = "_ptjet50";
 
-	static const int vars = 35;
-    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T}(j)","#eta_{j}","#eta(j_{1})","#eta(j_{2})","p_{T}(j_{1})","p_{T}(j_{2})","sum(#eta_{j})","m_{jj}/#Delta#eta_{jj}","#eta*(Z_{1})","#eta*(Z_{2})","R(p_{T}^{hard})","R(p_{T}^{jet})","|#eta_{min}(j)|","|#eta_{max}(j)|","|#eta_{min}(l)|","|#eta_{max}(l)|","#Delta#Phi(Z_{1}Z_{2})","y(Z_{1})","y(Z_{2})","y(j_{1})","y(j_{2})","p_{T}(Z_{1})","p_{T}(Z_{2})","p_{T}(l_{3})","qg tagger(j_{1})","qg tagger(j_{2})","M_{4l} [GeV]","qg tagger(j_{1})","qg tagger(j_{2})","sum(|#eta(j)|)", "Nvtx"};        
-    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin", "Events/bin"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj","eta_Z1_star","eta_Z2_star","R_pt_hard","R_pt_jet","abs_etajet_min","abs_etajet_max","abs_etalep_min","abs_etalep_max","delta_phi_ZZ","rapidity_Z1","rapidity_Z2","rapidity_j1","rapidity_j2","pt_Z1","pt_Z2","pt_l3","j1_qg_tagger_check","j2_qg_tagger_check","m4l_original","j1_qg_tagger","j2_qg_tagger","abs_etajet_sum", "Nvtx"};
-    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30,20,20,30,30,30,30,30,30,70,30,30,30,30,30,30,30,50,50,20,50,50,30,30};
-    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.,-6.,-6.,0.,0.,0.,0.,0.,0.,0.,-2.5,-2.5,-2.5,-2.5,0.,0.,0.,-1.3,-1.3,0.,0.,0.,0.,0.};
-	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.,6.,6.,1.,1.,3.,3.,3.,3.,3.15,2.5,2.5,2.5,2.5,600.,600.,600.,1.3,1.3,1400.,1.,1.,7.,60.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true};
+	static const int vars = 34;
+    string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T}(j)","#eta_{j}","#eta(j_{1})","#eta(j_{2})","p_{T}(j_{1})","p_{T}(j_{2})","sum(#eta_{j})","m_{jj}/#Delta#eta_{jj}","#eta*(Z_{1})","#eta*(Z_{2})","R(p_{T}^{hard})","R(p_{T}^{jet})","|#eta_{min}(j)|","|#eta_{max}(j)|","|#eta_{min}(l)|","|#eta_{max}(l)|","#Delta#Phi(Z_{1}Z_{2})","y(Z_{1})","y(Z_{2})","y(j_{1})","y(j_{2})","p_{T}(Z_{1})","p_{T}(Z_{2})","p_{T}(l_{3})","qg tagger(j_{1})","qg tagger(j_{2})","M_{4l} [GeV]","qg tagger(j_{1})","qg tagger(j_{2})","sum(|#eta(j)|)"};        
+    string titley[vars] = {"Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin","Events/bin"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","eta_j1","eta_j2","pt_jet1","pt_jet2","eta_j_sum","mjj_over_detajj","eta_Z1_star","eta_Z2_star","R_pt_hard","R_pt_jet","abs_etajet_min","abs_etajet_max","abs_etalep_min","abs_etalep_max","delta_phi_ZZ","rapidity_Z1","rapidity_Z2","rapidity_j1","rapidity_j2","pt_Z1","pt_Z2","pt_l3","j1_qg_tagger_check","j2_qg_tagger_check","m4l_original","j1_qg_tagger","j2_qg_tagger","abs_etajet_sum"};
+    int bins[vars] = {20,20,20,20,30,20,20,20,30,30,20,30,20,20,30,30,30,30,30,30,70,30,30,30,30,30,30,30,50,50,20,50,50,30};
+    float xmin[vars] = {0.,0.,100.,0.,0.,-5.,-5.,-5.,25.,25.,-8.,-5.,-6.,-6.,0.,0.,0.,0.,0.,0.,0.,-2.5,-2.5,-2.5,-2.5,0.,0.,0.,-1.3,-1.3,0.,0.,0.,0.};
+	float xmax[vars] = {1.,1400.,1000.,8.,300.,5.,5.,5.,600.,600.,8.,400.,6.,6.,1.,1.,3.,3.,3.,3.,3.15,2.5,2.5,2.5,2.5,600.,600.,600.,1.3,1.3,1400.,1.,1.,7.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true};
 
 	//histogram stack
     char filename[300]; char filetitle[300];
@@ -342,7 +342,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 	float pt_Z1, pt_Z2, pt_l3;
 
 	vector<float> *jet_qg_tagger = new vector<float>;
-	int Nvtx;
 
 	// --------------------------------------------------------------------------------------------- end of my declarations ------------------------------------------------------------------------------------------
 
@@ -622,10 +621,12 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 
 
 	// ------------------------------------------------------------------------------------------- end of preparing MVA trees ----------------------------------------------------------------------------------------
-	/*int N = 0;
+	int N = 0;
 	int N9 = 0;
 	int N8 = 0;
-	int N7 = 0;*/
+	int N7 = 0;
+	Float_t N500_qq = 0;
+	Float_t N500_atgc = 0;
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++)
 	{
@@ -704,8 +705,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 		tqqzz->SetBranchAddress("LepEta",&lepEta);
 		tqqzz->SetBranchAddress("LepPhi",&lepPhi);
 		tqqzz->SetBranchAddress("JetQGLikelihood",&jet_qg_tagger);
-
-		tqqzz->SetBranchAddress("Nvtx",&Nvtx);
 
 		// ----------------------------------------------------------------------------- end of my branches ------------------------------------------------------------
 
@@ -991,12 +990,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 					{
 						theVar = fabs(JetEta->at(0)) + fabs(JetEta->at(1));
 						iv = 33;
-					}					
-					if (il == 36)
-					{
-						//cout << theVar << endl;
-						theVar = Nvtx;
-						iv = 34;
 					}
 	
 					//1D kin var hist fill
@@ -1045,6 +1038,10 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 					}
 					if (j==5) 
 					{
+					  if (il == 1)
+					  {
+						if (theVar <= 300) N500_qq += weight;
+					  }
 					  hqqzz[iv]->Fill(theVar,weight);
 
 					  if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
@@ -1064,16 +1061,18 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 					if (is_wZZ) hwzz[iv]->Fill(theVar,weight);
 					if (is_aTGC)
 					{
-						hatgc[iv]->Fill(theVar,weight);
 
-						/*if (il == 1)
+						hatgc[iv]->Fill(theVar, weight);
+
+						if (il == 1)
 						{
 							N++;
 
+							if (theVar <= 300) N500_atgc += weight;
 							if (theVar >= 1200) N9++;
 							if (theVar >= 1000 && theVar < 1200) N8++;
 							if (theVar >= 800 && theVar < 1000) N7++;
-						}*/
+						}
 					} 
 	      		}
                 // filling trees for TMVA
@@ -1321,8 +1320,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 
 	float j1_qg_tagger_zx, j2_qg_tagger_zx;
 
-	int Nvtx_zx;
-
 	// ---------------------------------------------------------------------------------------------------
 
 	// ---------------------------------------- my branches ----------------------------------------------
@@ -1350,8 +1347,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 
 	tqqzz_zx->SetBranchAddress("j1_qg_tagger",&j1_qg_tagger_zx);
 	tqqzz_zx->SetBranchAddress("j2_qg_tagger",&j2_qg_tagger_zx);
-
-	tqqzz_zx->SetBranchAddress("Nvtx",&Nvtx_zx);
 
 	// ---------------------------------------------------------------------------------------------------
 
@@ -1519,11 +1514,6 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 			{
 				var_zx = fabs(etajet1_zx) + fabs(etajet2_zx);
 				iv = 33;
-			}
-			if (il == 36)
-			{
-				var_zx = Nvtx_zx;
-				iv = 34;
 			}	
 
 	    	if (fabs(weight_zx) < 100000.) 
@@ -1846,27 +1836,40 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 
 	  
 	  	//HISTOGRAMS ADDED TO STACK
-	  	hzx[iv]->SetFillColor(kGreen);
+	  	/*hzx[iv]->SetFillColor(kGreen);
         httzwzz[iv]->Add(httzwzz[iv],hzx[iv],1,1);    //tt
-	  	httzwzz[iv]->SetFillColor(kYellow);
-	  	if (useMCatNLO == 0) hqqzz[iv]->Add(httzwzz[iv],hqqzz_powheg[iv],1,1); //real ew
-	  	else hqqzz[iv]->Add(httzwzz[iv],hqqzz[iv],1,1); //real ew
-	  	hqqzz[iv]->SetFillColor(kCyan);
-	  	hsum1[iv]->Add(hqqzz[iv],hggzz[iv],1,1); //real gg
+	  	httzwzz[iv]->SetFillColor(kYellow);	
+	  	hsum1[iv]->Add(httzwzz[iv],hggzz[iv],1,1); //real gg
 	  	hsum1[iv]->SetFillColor(kBlue);
-	  	hsum2[iv]->Add(hsum1[iv],hvbs[iv],1,1);    //real vbs
-	  	hsum2[iv]->SetFillColor(kMagenta);
-		//hsum2_atgc[iv]->Add(hsum1[iv],hatgc[iv],1,1);    //aTGC
-	  	//hsum2_atgc[iv]->SetFillColor(kGray);
+		hsum2_atgc[iv]->Add(hsum1[iv],hsum2_atgc[iv],1,1); //real qq
+	  	hsum2_atgc[iv]->SetFillColor(kCyan);*/
+		
+		hatgc[iv]->Scale(N500_qq/N500_atgc);
 
+		hzx[iv]->SetFillColor(kGreen);
+		httzwzz[iv]->Add(httzwzz[iv],hzx[iv],1,1);	// ttZWWzWZZ
+		httzwzz[iv]->SetFillColor(kYellow);
+		hsum1[iv]->Add(httzwzz[iv],hggzz[iv],1,1); //real gg
+	  	hsum1[iv]->SetFillColor(kBlue);
+		hsum2_atgc[iv]->Add(hsum1[iv],hatgc[iv],1,1); //aTGC
+		hsum2_atgc[iv]->SetLineColor(kRed);
+		hsum2_atgc[iv]->SetLineWidth(3);
+		hsum2_atgc[iv]->SetLineStyle(9);
+	  	//hsum2_atgc[iv]->SetFillColor(kRed);
+		hsum2[iv]->Add(hsum1[iv], hqqzz[iv],1,1);	// qq
+		hsum2[iv]->SetFillColor(kCyan);
+		
+		cout << "N500_qq: " << N500_qq << endl;
+		cout << "N500_aTGC: " << N500_atgc << endl;
+		//hsum2_atgc[iv]->Scale(N500_qq/N500_atgc);
 
 		//INCLUDING OVERFLOW INTO THE LAST BIN (for m4l plot)
 		if (iv == 1)
 		{
-			//hsum2_atgc[iv]->SetBinContent(hsum2_atgc[iv]->GetNbinsX(), hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX()) + hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX() + 1));
+			hsum2_atgc[iv]->SetBinContent(hsum2_atgc[iv]->GetNbinsX(), hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX()) + hsum2_atgc[iv]->GetBinContent(hsum2_atgc[iv]->GetNbinsX() + 1));
 			hsum2[iv]->SetBinContent(hsum2[iv]->GetNbinsX(), hsum2[iv]->GetBinContent(hsum2[iv]->GetNbinsX()) + hsum2[iv]->GetBinContent(hsum2[iv]->GetNbinsX() + 1));	//gg+ew+vbs (magenta -> signal)
 			hsum1[iv]->SetBinContent(hsum1[iv]->GetNbinsX(), hsum1[iv]->GetBinContent(hsum1[iv]->GetNbinsX()) + hsum1[iv]->GetBinContent(hsum1[iv]->GetNbinsX() + 1));	//gg+ew ->real gg (blue)
-			hqqzz[iv]->SetBinContent(hqqzz[iv]->GetNbinsX(), hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX()) + hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX() + 1));	//real ew (cyan)
+			//hqqzz[iv]->SetBinContent(hqqzz[iv]->GetNbinsX(), hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX()) + hqqzz[iv]->GetBinContent(hqqzz[iv]->GetNbinsX() + 1));	//real ew (cyan)
 			hzx[iv]->SetBinContent(hzx[iv]->GetNbinsX(), hzx[iv]->GetBinContent(hzx[iv]->GetNbinsX()) + hzx[iv]->GetBinContent(hzx[iv]->GetNbinsX() + 1));	//full Z+X (green)
 			hdata[iv]->SetBinContent(hdata[iv]->GetNbinsX(), hdata[iv]->GetBinContent(hdata[iv]->GetNbinsX()) + hdata[iv]->GetBinContent(hdata[iv]->GetNbinsX() + 1));	//data
 			httzwzz[iv]->SetBinContent(httzwzz[iv]->GetNbinsX(), httzwzz[iv]->GetBinContent(httzwzz[iv]->GetNbinsX()) + httzwzz[iv]->GetBinContent(httzwzz[iv]->GetNbinsX() + 1));	//ttzwwz
@@ -1894,21 +1897,31 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 		}
 	  
 	  	//add histograms to stack
+		//hs[iv]->Add(hsum2_atgc[iv],"hist");
+	  	//hs[iv]->Add(hsum2[iv],"hist");
+		
+		//hs[iv]->Add(hsum2_atgc[iv],"hist");
+		hs[iv]->Add(hsum2[iv],"hist");
 		hs[iv]->Add(hsum2_atgc[iv],"hist");
-	  	hs[iv]->Add(hsum2[iv],"hist");
-	  	hs[iv]->Add(hsum1[iv],"hist");
-	  	hs[iv]->Add(hqqzz[iv],"hist");
+		hs[iv]->Add(hsum1[iv],"hist");
+		hs[iv]->Add(httzwzz[iv],"hist");
+		hs[iv]->Add(hzx[iv],"hist");
+
+		//hs[iv]->Add(hdata[iv],"E1");
+		TH1F *hdatadivide = (TH1F*)hdata[iv]->Clone();
+	  	/*hs[iv]->Add(hsum1[iv],"hist");
+		hs[iv]->Add(hsum2_atgc[iv],"hist");
       	hs[iv]->Add(httzwzz[iv],"hist");
 	  	hs[iv]->Add(hzx[iv],"hist");
 	  	TH1F *hdatadivide = (TH1F*)hdata[iv]->Clone();
-	  	hs[iv]->Add(hdata[iv],"E1");
+	  	hs[iv]->Add(hdata[iv],"E1");*/
 		if (iv == 1 && calculate_aQGC_limits)
 		{
 			aQGC_histos_file->cd();
 			hsum2_atgc[iv]->Write();
 			hsum2[iv]->Write();
 			hsum1[iv]->Write();
-			hqqzz[iv]->Write();
+			//hqqzz[iv]->Write();
 			httzwzz[iv]->Write();
 			hzx[iv]->Write();
 			hdata[iv]->Write();
@@ -1916,8 +1929,8 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 			hewk_FT9->Write();
 			aQGC_histos_file->Close();
 
-			hs[iv]->Add(hewk_FT8);
-			hs[iv]->Add(hewk_FT9);
+			//hs[iv]->Add(hewk_FT8);
+			//hs[iv]->Add(hewk_FT9);
 		}
 	  
 	  	// draw the legend
@@ -1926,10 +1939,10 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 	  	legend->SetTextSize(0.04);
 	  	legend->AddEntry(hzx[iv],"Z+X","f");
 		legend->AddEntry(httzwzz[iv],"t#bar{t}Z, WWZ, WZZ","f");
-	  	legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
+	  	legend->AddEntry(hsum2_atgc[iv],"aTGC","f");
 	  	legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
-	  	legend->AddEntry(hsum2[iv],"VBS","f");
-	  	legend->AddEntry(hdata[iv],"Data","lep");
+	  	legend->AddEntry(hsum2[iv],"qq#rightarrowZZ","f");
+	  	//legend->AddEntry(hdata[iv],"Data","lep");
 	  	legend->SetBorderSize(0);
 	  
 	  	//GRAPHICS
@@ -1954,9 +1967,7 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 		if (iv ==0 && year == 2016) hs[iv]->SetMaximum(48);
 		if (iv ==0 && year == 2017) hs[iv]->SetMaximum(55);
 		if (iv ==0 && year == 2018) hs[iv]->SetMaximum(75);
-		if (iv ==34 && year == 2016) hs[iv]->SetMaximum(30);
-		if (iv ==34 && year == 2017) hs[iv]->SetMaximum(30);
-		if (iv ==34 && year == 2018) hs[iv]->SetMaximum(40); 
+		if (iv ==1 && year == 2016) hs[iv]->SetMaximum(50000);
 		
 
 	  	hs[iv]->Draw("nostack"); //old
@@ -2091,10 +2102,10 @@ void plotterAndTemplateMaker(int year = 2017, int useMCatNLO = 1, int enriched =
 	//hZ2M_difference->SetMaximum(350000);
 	c6->SaveAs("Z2Mass_difference.png");
 
-	/*cout << "Ukupno eventova koji prolaze selekciju: " << N << endl;
+	cout << "Ukupno eventova koji prolaze selekciju: " << N << endl;
 	cout << "U zadnjem binu " << N9 << endl;
 	cout << "U osmom binu " << N8 << endl;
-	cout << "U sedmom binu " << N7 << endl;*/
+	cout << "U sedmom binu " << N7 << endl;
 
 	// ------------------------------------- Write TMVA trees ----------------------------------------
 
